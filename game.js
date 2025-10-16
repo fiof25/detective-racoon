@@ -28,7 +28,9 @@ const CONFIG = {
     }
   },
   inside: {
-    bgSrc: 'assets/static_downstairs.png'
+    bgSrc: 'assets/static_downstairs.png',
+    // Exit hotspot location inside (percent of image). Tweak as needed.
+    exit: { xPct: 12, yPct: 72, radius: 220 }
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -49,7 +51,8 @@ let lastTime = 0;
 let worldW = 0, worldH = 0; // natural bg size per scene
 let racX = 0, racY = 0;     // raccoon feet position in world coordinates
 let cameraX = 0, cameraY = 0; // camera top-left in world coords
-let doorWorld = { x: 0, y: 0 };
+let doorWorld = { x: 0, y: 0 }; // outside door
+let exitWorld = { x: 0, y: 0 }; // inside exit
 let canInteract = false;
 let lastFacing = 1; // 1 = facing right, -1 = facing left
 let vy = 0;         // vertical velocity for jump/gravity
@@ -140,6 +143,13 @@ function updateDoorWorldFromScaled() {
   doorWorld.y = (yPct / 100) * worldH;
 }
 
+function updateExitWorldFromScaled() {
+  const e = CONFIG.inside.exit;
+  if (!e) return;
+  exitWorld.x = (e.xPct / 100) * worldW;
+  exitWorld.y = (e.yPct / 100) * worldH;
+}
+
 function spawnRaccoonOutside() {
   const { xPct, yPct } = CONFIG.raccoon.spawnOutside;
   racX = (xPct / 100) * worldW;
@@ -224,6 +234,7 @@ async function enterInside() {
   racY = getGroundY(); vy = 0; onGround = true;
   setRaccoonImage(CONFIG.raccoon.idleSrc);
   placeRaccoon();
+  updateExitWorldFromScaled();
   centerCameraOn(racX, racY);
 }
 
@@ -234,6 +245,18 @@ function tryEnterHouse() {
   });
 }
 
+function tryExitHouse() {
+  if (scene !== 'inside' || !canInteract) return;
+  fadeOutIn(async () => {
+    await enterOutside();
+    // Place raccoon just outside the door on ground
+    racX = doorWorld.x;
+    racY = getGroundY();
+    placeRaccoon();
+    centerCameraOn(racX, racY);
+  });
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -241,7 +264,8 @@ window.addEventListener('keydown', (e) => {
     keys.add(k);
   }
   if (k === 'enter') {
-    tryEnterHouse();
+    if (scene === 'outside') tryEnterHouse();
+    else if (scene === 'inside') tryExitHouse();
   }
   // Jump: spacebar only
   if ((k === ' ' || k === 'spacebar' || k === 'space') && onGround) {
@@ -311,16 +335,26 @@ function tick(ts) {
     worldEl.style.transform = `translate(${-cameraX}px, ${-cameraY}px)`;
   } 
 
-  // Door interaction visibility
+  // Interaction visibility for outside/inside
   if (scene === 'outside') {
     const dist = distance({ x: racX, y: racY }, doorWorld);
     const near = dist <= CONFIG.outside.door.radius;
-    if (near && !canInteract) {
-      canInteract = true; show(interactBtn);
-    } else if (!near && canInteract) {
-      canInteract = false; hide(interactBtn);
+    if (near && !canInteract) { canInteract = true; show(interactBtn); }
+    else if (!near && canInteract) { canInteract = false; hide(interactBtn); }
+    if (canInteract) {
+      interactBtn.textContent = 'Enter house ⏎';
+      placeInteractButtonAtWorld(doorWorld.x, doorWorld.y);
     }
-    if (canInteract) placeInteractButtonAtWorld(doorWorld.x, doorWorld.y);
+  } else if (scene === 'inside') {
+    const e = CONFIG.inside.exit;
+    const dist = distance({ x: racX, y: racY }, exitWorld);
+    const near = e ? dist <= e.radius : false;
+    if (near && !canInteract) { canInteract = true; show(interactBtn); }
+    else if (!near && canInteract) { canInteract = false; hide(interactBtn); }
+    if (canInteract) {
+      interactBtn.textContent = 'Exit house ⏎';
+      placeInteractButtonAtWorld(exitWorld.x, exitWorld.y);
+    }
   } else {
     canInteract = false; hide(interactBtn);
   }
