@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detective Raccoon</title>
+  <link rel="preload" as="image" href="assets/idle.gif">
+  <link rel="preload" as="image" href="assets/walking.gif">
+  <link rel="preload" as="image" href="assets/outside_house.jpg">
+  <link rel="preload" as="image" href="assets/static_downstairs.png">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="game">
+    <!-- World layer holds background and raccoon -->
+    <div id="world">
+      <img id="bg" alt="background" />
+      <img id="raccoon" alt="raccoon" />
+    </div>
+
+    <!-- UI layer -->
+    <div id="ui">
+      <button id="interact" class="hidden" title="Enter the house (Enter/Click)">Enter house ⏎</button>
+    </div>
+
+    <!-- Fade overlay for scene transitions -->
+    <div id="fade" class="hidden"></div>
+  </div>
+
+  <script src="game.js" defer></script>
+</body>
+</html>

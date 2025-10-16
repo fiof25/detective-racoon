@@ -1,0 +1,80 @@
+/* Base layout */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: #111;
+  color: #fff;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden; /* the game handles its own scrolling/camera */
+}
+
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh; /* ensure full image height is visible */
+  overflow: hidden; /* camera effect via translate of #world */
+  background: #0b0b0b;
+}
+
+/* World layer: background and raccoon live here */
+#world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+  z-index: 1;
+}
+
+#bg {
+  position: absolute;
+  left: 0; top: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+#raccoon {
+  position: absolute;
+  width: 540px; /* 3x previous size */
+  height: auto;
+  transform: translate(-50%, -90%) scaleX(var(--facing, 1)); /* anchor feet + directional flip */
+  transform-origin: 50% 90%;
+  image-rendering: auto;
+  pointer-events: none;
+}
+
+/* UI layer */
+#ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* UI children enable their own interactions */
+  z-index: 2;
+}
+
+#interact {
+  position: absolute;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: rgba(255, 213, 130, 0.95);
+  color: #3a2d12;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+#interact:hover { transform: translateY(-2px); }
+.hidden { display: none; }
+
+/* Fade for transitions */
+#fade {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 500ms ease;
+  z-index: 3;
+}
+#fade.show { opacity: 1; }
