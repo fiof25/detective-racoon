@@ -21,15 +21,23 @@ const CONFIG = {
   outside: {
     bgSrc: 'assets/outside_house.jpg',
     // Door hotspot on the outside image (as percentages of bg natural size for easy tuning)
-    // Adjust these if the prompt doesn't show in the right place.
     door: {
       xPct: 74,     // approximate door horizontal location in percent of width
       yPct: 66,     // approximate door vertical location in percent of height
-      radius: 180   // proximity in pixels to show the prompt (increased)
+      radius: 300   // proximity in pixels to show the prompt (wider range)
     }
   },
   inside: {
     bgSrc: 'assets/static_downstairs.png'
+  },
+  physics: {
+    gravity: 1800,     // px/s^2 downward
+    jumpSpeed: 900,    // initial upward speed
+    groundOffsetOutside: 140, // px from bottom (raised by 100px)
+    groundOffsetInside: 90, // lowered ground by 50px (from 140)
+    climbSpeed: 700,   // px/s when holding up/down (faster so up arrow feels responsive)
+    ceilingOffsetOutside: 10,
+    ceilingOffsetInside: 10
   },
   transitionMs: 500
 };
@@ -44,6 +52,8 @@ let cameraX = 0, cameraY = 0; // camera top-left in world coords
 let doorWorld = { x: 0, y: 0 };
 let canInteract = false;
 let lastFacing = 1; // 1 = facing right, -1 = facing left
+let vy = 0;         // vertical velocity for jump/gravity
+let onGround = false;
 
 // DOM elements
 const gameEl = document.getElementById('game');
@@ -172,6 +182,17 @@ function fitBackgroundToViewportCover(imgEl) {
   worldEl.style.height = `${dispH}px`;
 }
 
+// Ground line (feet Y position)
+function getGroundY() {
+  const off = scene === 'outside' ? CONFIG.physics.groundOffsetOutside : CONFIG.physics.groundOffsetInside;
+  return worldH - off;
+}
+
+function getCeilingY() {
+  const off = scene === 'outside' ? CONFIG.physics.ceilingOffsetOutside : CONFIG.physics.ceilingOffsetInside;
+  return off;
+}
+
 // -------- Scenes --------
 async function enterOutside() {
   scene = 'outside';
@@ -184,6 +205,8 @@ async function enterOutside() {
 
   updateDoorWorldFromScaled();
   spawnRaccoonOutside();
+  // snap to ground on enter
+  racY = getGroundY(); vy = 0; onGround = true;
   setRaccoonImage(CONFIG.raccoon.idleSrc);
   placeRaccoon();
   centerCameraOn(racX, racY);
@@ -197,6 +220,8 @@ async function enterInside() {
   fitBackgroundToViewportHeight(img);
 
   spawnRaccoonInside();
+  // snap to ground on enter
+  racY = getGroundY(); vy = 0; onGround = true;
   setRaccoonImage(CONFIG.raccoon.idleSrc);
   placeRaccoon();
   centerCameraOn(racX, racY);
@@ -212,11 +237,16 @@ function tryEnterHouse() {
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
-  if (['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)) {
+  if (['arrowleft','arrowright','a','d'].includes(k)) {
     keys.add(k);
   }
   if (k === 'enter') {
     tryEnterHouse();
+  }
+  // Jump: spacebar only
+  if ((k === ' ' || k === 'spacebar' || k === 'space') && onGround) {
+    vy = -CONFIG.physics.jumpSpeed;
+    onGround = false;
   }
 });
 window.addEventListener('keyup', (e) => {
@@ -232,20 +262,34 @@ function tick(ts) {
   lastTime = ts;
 
   // Movement intent
-  let vx = 0, vy = 0;
+  let vx = 0;
+  let vControl = 0; // -1 up, +1 down
   if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
   if (keys.has('arrowright') || keys.has('d')) vx += 1;
-  if (keys.has('arrowup') || keys.has('w')) vy -= 1;
-  if (keys.has('arrowdown') || keys.has('s')) vy += 1;
+  if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
+  if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
 
-  const moving = vx !== 0 || vy !== 0;
+  const moving = vx !== 0 || vControl !== 0 || !onGround || vy !== 0;
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
-    const inv = 1 / Math.hypot(vx || 1, vy || 1);
-    vx *= inv; vy *= inv;
+    const inv = 1 / Math.hypot(vx || 1, 1);
+    vx *= inv;
+    // horizontal
     racX += vx * CONFIG.raccoon.speed * dt;
-    racY += vy * CONFIG.raccoon.speed * dt;
+    // vertical physics: controlled climb overrides gravity while held
+    if (vControl !== 0) {
+      vy = vControl * CONFIG.physics.climbSpeed;
+      onGround = false;
+    } else {
+      vy += CONFIG.physics.gravity * dt;
+    }
+    racY += vy * dt;
+    // ground collision
+    const gY = getGroundY();
+    const cY = getCeilingY();
+    if (racY >= gY) { racY = gY; vy = 0; onGround = true; }
+    if (racY <= cY) { racY = cY; vy = 0; }
     // Clamp to world bounds for both scenes
     racX = clamp(racX, 0, worldW);
     racY = clamp(racY, 0, worldH);
