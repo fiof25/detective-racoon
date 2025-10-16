@@ -11,7 +11,7 @@
 const CONFIG = {
   raccoon: {
     width: 540,            // px (mirrors styles.css)
-    speed: 220,            // px per second
+    speed: 250,            // px per second (slightly faster)
     idleSrc: 'assets/idle.gif',
     walkSrc: 'assets/walking.gif',
     // Start closer to the house so the door is reachable without scrolling outside
@@ -57,6 +57,7 @@ let canInteract = false;
 let lastFacing = 1; // 1 = facing right, -1 = facing left
 let vy = 0;         // vertical velocity for jump/gravity
 let onGround = false;
+let chatTimerId = null; // auto-hide timer for chat bubble
 
 // DOM elements
 const gameEl = document.getElementById('game');
@@ -65,6 +66,7 @@ const racEl = document.getElementById('raccoon');
 const worldEl = document.getElementById('world');
 const interactBtn = document.getElementById('interact');
 const fadeEl = document.getElementById('fade');
+const chatEl = document.getElementById('chat');
 
 // -------- Utilities --------
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -105,6 +107,21 @@ function placeInteractButtonAtWorld(x, y) {
   interactBtn.style.left = `${vx - w / 2}px`;
   interactBtn.style.top = `${vy - h}px`;
   if (wasHidden && !canInteract) interactBtn.classList.add('hidden');
+}
+
+function placeChatAtWorld(x, y) {
+  // place a bubble above a world position accounting for camera offset
+  const vx = x - cameraX;
+  const vyWorld = y - cameraY; // base point
+  // Ensure we can measure size
+  const wasHidden = chatEl.classList.contains('hidden');
+  if (wasHidden) chatEl.classList.remove('hidden');
+  const w = chatEl.offsetWidth || 0;
+  const h = chatEl.offsetHeight || 0;
+  // Position bubble centered horizontally with a small upward offset
+  chatEl.style.left = `${vx - w / 2}px`;
+  chatEl.style.top = `${vyWorld - h - 16}px`;
+  if (wasHidden && chatTimerId === null) chatEl.classList.add('hidden');
 }
 
 function distance(a, b) {
@@ -236,6 +253,17 @@ async function enterInside() {
   placeRaccoon();
   updateExitWorldFromScaled();
   centerCameraOn(racX, racY);
+
+  // Show chat bubble briefly when entering the house
+  if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
+  chatEl.textContent = 'Not too shabby.. Eh?';
+  show(chatEl);
+  // initial placement above raccoon (feet are at racY)
+  placeChatAtWorld(racX, racY - 220);
+  chatTimerId = setTimeout(() => {
+    hide(chatEl);
+    chatTimerId = null;
+  }, 2600);
 }
 
 function tryEnterHouse() {
@@ -357,6 +385,11 @@ function tick(ts) {
     }
   } else {
     canInteract = false; hide(interactBtn);
+  }
+
+  // Keep chat bubble following the raccoon while visible
+  if (!chatEl.classList.contains('hidden')) {
+    placeChatAtWorld(racX, racY - 220);
   }
 
   requestAnimationFrame(tick);
