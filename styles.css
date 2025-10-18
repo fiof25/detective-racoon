@@ -141,14 +141,18 @@ body {
   background: center/cover no-repeat url('assets/suitcase.png');
 }
 
-/* Inventory layers positioned exactly like suitcase background */
-.inv-layer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: auto;
+/* Individual inventory assets */
+.inv-asset {
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  transform-origin: center;
+}
+
+.inv-asset:hover {
+  transform: scale(1.15);
+  z-index: 999 !important; /* bring hovered item to front */
+  filter: brightness(1.1) drop-shadow(0 0 12px rgba(255, 213, 130, 0.5)) drop-shadow(0 0 24px rgba(255, 213, 130, 0.2));
 }
 
 /* Positioned item icons layered over suitcase */
