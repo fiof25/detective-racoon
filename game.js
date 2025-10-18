@@ -11,7 +11,7 @@
 const CONFIG = {
   raccoon: {
     width: 540,            // px (mirrors styles.css)
-    speed: 250,            // px per second (slightly faster)
+    speed: 350,            // px per second (faster walking)
     idleSrc: 'assets/idle.gif',
     walkSrc: 'assets/walking.gif',
     // Start closer to the house so the door is reachable without scrolling outside
@@ -118,13 +118,20 @@ function placeBtnAtWorld(el, x, y, yOffset = -40) {
 }
 
 function placeSuitcaseAtFixedWorld(el, x, y) {
-  // Place suitcase at fixed world coordinates (doesn't move with camera)
+  // Place suitcase at static viewport position (doesn't move with camera)
   const wasHidden = el.classList.contains('hidden');
   if (wasHidden) el.classList.remove('hidden');
   const w = el.offsetWidth || 0;
   const h = el.offsetHeight || 0;
-  el.style.left = `${x - w / 2}px`;
-  el.style.top = `${y - h}px`;
+  
+  // Calculate static position as percentage of viewport
+  const viewportW = window.innerWidth;
+  const viewportH = window.innerHeight;
+  const staticX = viewportW * 0.22 + 100; // 22% from left edge + 100px right
+  const staticY = viewportH * 0.85 + 60;  // 85% from top + 60px down
+  
+  el.style.left = `${staticX - w / 2}px`;
+  el.style.top = `${staticY - h}px`;
   if (wasHidden) el.classList.add('hidden');
 }
 
@@ -356,6 +363,24 @@ function closeInventory() {
   if (!overlayOpen) return;
   overlayOpen = false;
   inventoryOverlay?.classList.add('hidden');
+  
+  // Reset interaction state and check if we should show exit prompt
+  canInteract = false;
+  canOpenSuitcase = false;
+  
+  // Check if we're near the exit after closing inventory
+  if (scene === 'inside') {
+    const e = CONFIG.inside.exit;
+    const exitDist = distance({ x: racX, y: racY }, exitWorld);
+    const nearExit = e ? exitDist <= e.radius : false;
+    
+    if (nearExit) {
+      canInteract = true;
+      show(interactBtn);
+      interactBtn.textContent = 'Exit house ⏎';
+      placeInteractButtonAtWorld(exitWorld.x, exitWorld.y);
+    }
+  }
 }
 
 // -------- Input --------
@@ -370,10 +395,13 @@ window.addEventListener('keydown', (e) => {
   }
   if (k === 'enter') {
     if (scene === 'outside') tryEnterHouse();
-    else if (scene === 'inside') tryExitHouse();
+    else if (scene === 'inside') {
+      if (canOpenSuitcase) openInventory();
+      else tryExitHouse();
+    }
   }
-  // Jump: spacebar only
-  if ((k === ' ' || k === 'spacebar' || k === 'space') && onGround) {
+  // Jump: spacebar or up arrow
+  if ((k === ' ' || k === 'spacebar' || k === 'space' || k === 'arrowup' || k === 'w') && onGround) {
     vy = -CONFIG.physics.jumpSpeed;
     onGround = false;
   }
@@ -524,9 +552,24 @@ function tick(ts) {
         if (sNear || mouseOverSuitcase) {
           suitcaseHotspot.classList.add('hover-active');
           canOpenSuitcase = true;
+          // Show briefcase interaction prompt
+          if (!canInteract) {
+            canInteract = true;
+            show(interactBtn);
+          }
+          interactBtn.textContent = 'Open briefcase ⏎';
+          placeInteractButtonAtWorld(suitcaseWorld.x, suitcaseWorld.y);
         } else {
           suitcaseHotspot.classList.remove('hover-active');
           canOpenSuitcase = false;
+          // Hide briefcase prompt if not near exit either
+          const e = CONFIG.inside.exit;
+          const exitDist = distance({ x: racX, y: racY }, exitWorld);
+          const nearExit = e ? exitDist <= e.radius : false;
+          if (canInteract && !nearExit) {
+            canInteract = false;
+            hide(interactBtn);
+          }
         }
       }
     }
