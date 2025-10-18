@@ -33,7 +33,7 @@ const CONFIG = {
     exit: { xPct: 12, yPct: 72, radius: 220 },
     // Suitcase hotspot inside (under the window)
     // widthPct controls how wide the hotspot image is relative to world width
-    suitcase: { xPct: 22, yPct: 78, radius: 220, widthPct: 10 }
+    suitcase: { xPct: 22, yPct: 92, radius: 220, widthPct: 27 }
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -76,6 +76,7 @@ const chatEl = document.getElementById('chat');
 // dynamically created elements
 let suitcaseHotspot = null;
 let inventoryOverlay = null;
+let mouseOverSuitcase = false;
 
 // -------- Utilities --------
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -364,14 +365,16 @@ interactBtn.addEventListener('click', () => tryEnterHouse());
 // Create overlay and suitcase button in UI
 function createSuitcaseUI() {
   const ui = document.getElementById('ui');
-  // hotspot image (briefcase under window)
+  // hotspot image (briefcase under window) - append to world so it's behind raccoon
   suitcaseHotspot = document.createElement('img');
   suitcaseHotspot.id = 'suitcaseHotspot';
   suitcaseHotspot.className = 'hotspot-img hidden';
   suitcaseHotspot.src = 'assets/suitcaseAsset.png';
   suitcaseHotspot.alt = 'Open suitcase';
-  ui.appendChild(suitcaseHotspot);
+  worldEl.appendChild(suitcaseHotspot);
   suitcaseHotspot.addEventListener('click', () => openInventory());
+  suitcaseHotspot.addEventListener('mouseenter', () => { mouseOverSuitcase = true; });
+  suitcaseHotspot.addEventListener('mouseleave', () => { mouseOverSuitcase = false; });
 
   // overlay root
   inventoryOverlay = document.createElement('div');
@@ -477,22 +480,34 @@ function tick(ts) {
       interactBtn.textContent = 'Exit house ⏎';
       placeInteractButtonAtWorld(exitWorld.x, exitWorld.y);
     }
-    // suitcase proximity
+    // suitcase proximity - always visible, adds hover class when near or mouse over
     const s = CONFIG.inside.suitcase;
     const sDist = distance({ x: racX, y: racY }, suitcaseWorld);
     const sNear = s ? sDist <= s.radius : false;
     if (overlayOpen) {
       suitcaseHotspot && hide(suitcaseHotspot);
     } else {
-      if (sNear && !canOpenSuitcase) { canOpenSuitcase = true; suitcaseHotspot && show(suitcaseHotspot); }
-      else if (!sNear && canOpenSuitcase) { canOpenSuitcase = false; suitcaseHotspot && hide(suitcaseHotspot); }
-      if (canOpenSuitcase && suitcaseHotspot) {
+      // Always show suitcase when inside and not in overlay
+      if (suitcaseHotspot) {
+        show(suitcaseHotspot);
         placeBtnAtWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y, 0);
+        // Add hover effect when near or mouse is over
+        if (sNear || mouseOverSuitcase) {
+          suitcaseHotspot.classList.add('hover-active');
+          canOpenSuitcase = true;
+        } else {
+          suitcaseHotspot.classList.remove('hover-active');
+          canOpenSuitcase = false;
+        }
       }
     }
   } else {
     canInteract = false; hide(interactBtn);
-    canOpenSuitcase = false; suitcaseHotspot && hide(suitcaseHotspot);
+    canOpenSuitcase = false;
+    if (suitcaseHotspot) {
+      hide(suitcaseHotspot);
+      suitcaseHotspot.classList.remove('hover-active');
+    }
   }
 
   // Keep chat bubble following the raccoon while visible
