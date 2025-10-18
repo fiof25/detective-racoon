@@ -33,7 +33,7 @@ const CONFIG = {
     exit: { xPct: 12, yPct: 72, radius: 220 },
     // Suitcase hotspot inside (under the window)
     // widthPct controls how wide the hotspot image is relative to world width
-    suitcase: { xPct: 22, yPct: 92, radius: 220, widthPct: 27 }
+    suitcase: { xPct: 22, yPct: 96, radius: 220, widthPct: 27 }
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -114,6 +114,17 @@ function placeBtnAtWorld(el, x, y, yOffset = -40) {
   const h = el.offsetHeight || 0;
   el.style.left = `${vx - w / 2}px`;
   el.style.top = `${vy - h}px`;
+  if (wasHidden) el.classList.add('hidden');
+}
+
+function placeSuitcaseAtFixedWorld(el, x, y) {
+  // Place suitcase at fixed world coordinates (doesn't move with camera)
+  const wasHidden = el.classList.contains('hidden');
+  if (wasHidden) el.classList.remove('hidden');
+  const w = el.offsetWidth || 0;
+  const h = el.offsetHeight || 0;
+  el.style.left = `${x - w / 2}px`;
+  el.style.top = `${y - h}px`;
   if (wasHidden) el.classList.add('hidden');
 }
 
@@ -386,13 +397,13 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="suitcase-stage">
-        <!-- Sizes tuned to visually match suitcase.png proportions -->
-        <img class="inv-item" style="left:24%; top:20%; width:21%;" src="assets/designAsset.png" alt="design" />
-        <img class="inv-item" style="left:69%; top:20%; width:13%;" src="assets/revisionAsset.png" alt="revision" />
-        <img class="inv-item" style="left:50%; top:39%; width:21%;" src="assets/4sightAsset.png" alt="4sight" />
-        <img class="inv-item" style="left:18%; top:56%; width:19%;" src="assets/designtoAsset.png" alt="designto" />
-        <img class="inv-item" style="left:61%; top:58%; width:21%;" src="assets/fatherfigureAsset.png" alt="fatherfigure" />
-        <img class="inv-item" style="left:36%; top:66%; width:15%;" src="assets/lucyAsset.png" alt="lucy" />
+        <!-- Layered background images using same center/cover positioning as suitcase -->
+        <div class="inv-layer" style="background: center/cover no-repeat url('assets/revisionAsset.png');"></div>
+        <div class="inv-layer" style="background: center/cover no-repeat url('assets/4sightAsset.png');"></div>
+        <div class="inv-layer" style="background: center/cover no-repeat url('assets/designtoAsset.png');"></div>
+        <div class="inv-layer" style="background: center/cover no-repeat url('assets/fatherfigureAsset.png');"></div>
+        <div class="inv-layer" style="background: center/cover no-repeat url('assets/lucyAsset.png');"></div>
+        <div class="inv-layer" style="background: center/cover no-repeat url('assets/designAsset.png');"></div>
       </div>
     </div>`;
   ui.appendChild(inventoryOverlay);
@@ -490,7 +501,7 @@ function tick(ts) {
       // Always show suitcase when inside and not in overlay
       if (suitcaseHotspot) {
         show(suitcaseHotspot);
-        placeBtnAtWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y, 0);
+        placeSuitcaseAtFixedWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y);
         // Add hover effect when near or mouse is over
         if (sNear || mouseOverSuitcase) {
           suitcaseHotspot.classList.add('hover-active');

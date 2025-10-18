@@ -41,7 +41,7 @@ body {
   transform-origin: 50% 90%;
   image-rendering: auto;
   pointer-events: none;
-  z-index: 10; /* ensure raccoon is always on top */
+  z-index: 100; /* ensure raccoon is always on top of everything in world */
 }
 
 /* UI layer */
@@ -141,6 +141,16 @@ body {
   background: center/cover no-repeat url('assets/suitcase.png');
 }
 
+/* Inventory layers positioned exactly like suitcase background */
+.inv-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
 /* Positioned item icons layered over suitcase */
 .hotspot-img {
   position: absolute;
@@ -148,7 +158,7 @@ body {
   height: auto;
   pointer-events: auto;
   cursor: pointer;
-  z-index: 1; /* in world layer, below raccoon (z-index: 10) */
+  z-index: 1; /* in world layer, well below raccoon (z-index: 100) */
   transition: transform 150ms ease;
   filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
 }
