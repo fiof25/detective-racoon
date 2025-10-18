@@ -277,6 +277,14 @@ async function enterOutside() {
   setRaccoonImage(CONFIG.raccoon.idleSrc);
   placeRaccoon();
   centerCameraOn(racX, racY);
+  
+  // Ensure suitcase is hidden when outside
+  mouseOverSuitcase = false;
+  canOpenSuitcase = false;
+  if (suitcaseHotspot) {
+    hide(suitcaseHotspot);
+    suitcaseHotspot.classList.remove('hover-active');
+  }
 }
 
 async function enterInside() {
@@ -397,13 +405,13 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="suitcase-stage">
-        <!-- Layered background images using same center/cover positioning as suitcase -->
-        <div class="inv-layer" style="background: center/cover no-repeat url('assets/revisionAsset.png');"></div>
-        <div class="inv-layer" style="background: center/cover no-repeat url('assets/4sightAsset.png');"></div>
-        <div class="inv-layer" style="background: center/cover no-repeat url('assets/designtoAsset.png');"></div>
-        <div class="inv-layer" style="background: center/cover no-repeat url('assets/fatherfigureAsset.png');"></div>
-        <div class="inv-layer" style="background: center/cover no-repeat url('assets/lucyAsset.png');"></div>
-        <div class="inv-layer" style="background: center/cover no-repeat url('assets/designAsset.png');"></div>
+        <!-- Individual positioned images matching reference layout exactly -->
+        <img class="inv-asset hoverable-asset" id="design-asset" src="assets/designAsset.png" style="position: absolute; left: 25%; top: 56%; width: 18%; z-index: 6;" alt="design" />
+        <img class="inv-asset hoverable-asset" id="designto-asset" src="assets/designtoAsset.png" style="position: absolute; left: 26%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
+        <img class="inv-asset hoverable-asset" id="lucy-asset" src="assets/lucyAsset.png" style="position: absolute; left: 39%; top: 55%; width: 16%; z-index: 5;" alt="lucy" />
+        <img class="inv-asset hoverable-asset" id="4sight-asset" src="assets/4sightAsset.png" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="4sight" />
+        <img class="inv-asset hoverable-asset" id="revision-asset" src="assets/revisionAsset.png" style="position: absolute; left: 41%; top: 32%; width: 27%; z-index: 3;" alt="revision" />
+        <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="assets/fatherfigureAsset.png" style="position: absolute; left: 53%; top: 54%; width: 21%; z-index: 4;" alt="fatherfigure" />
       </div>
     </div>`;
   ui.appendChild(inventoryOverlay);
@@ -412,6 +420,12 @@ function createSuitcaseUI() {
   inventoryOverlay.addEventListener('click', (e) => {
     const t = e.target;
     if (t instanceof Element && t.hasAttribute('data-close')) closeInventory();
+  });
+
+  // Enable hover on all individual assets
+  const assets = inventoryOverlay.querySelectorAll('.inv-asset');
+  assets.forEach(asset => {
+    asset.style.pointerEvents = 'auto';
   });
 }
 
@@ -515,6 +529,7 @@ function tick(ts) {
   } else {
     canInteract = false; hide(interactBtn);
     canOpenSuitcase = false;
+    mouseOverSuitcase = false; // reset mouse hover state
     if (suitcaseHotspot) {
       hide(suitcaseHotspot);
       suitcaseHotspot.classList.remove('hover-active');
