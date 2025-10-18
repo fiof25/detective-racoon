@@ -30,7 +30,7 @@ const CONFIG = {
   inside: {
     bgSrc: 'assets/static_downstairs.png',
     // Exit hotspot location inside (percent of image). Tweak as needed.
-    exit: { xPct: 12, yPct: 72, radius: 220 },
+    exit: { xPct: 3, yPct: 72, radius: 160 },
     // Suitcase hotspot inside (under the window)
     // widthPct controls how wide the hotspot image is relative to world width
     suitcase: { xPct: 22, yPct: 96, radius: 220, widthPct: 27 }
@@ -137,7 +137,11 @@ function placeInteractButtonAtWorld(x, y) {
   if (wasHidden) interactBtn.classList.remove('hidden');
   const w = interactBtn.offsetWidth || 0;
   const h = interactBtn.offsetHeight || 0;
-  interactBtn.style.left = `${vx - w / 2}px`;
+  
+  // Move exit chat bubble right when at far left to keep it visible
+  const leftOffset = (scene === 'inside' && interactBtn.textContent.includes('Exit')) ? 50 : 0;
+  
+  interactBtn.style.left = `${vx - w / 2 + leftOffset}px`;
   interactBtn.style.top = `${vy - h}px`;
   if (wasHidden && !canInteract) interactBtn.classList.add('hidden');
 }
