@@ -32,7 +32,8 @@ const CONFIG = {
     // Exit hotspot location inside (percent of image). Tweak as needed.
     exit: { xPct: 12, yPct: 72, radius: 220 },
     // Suitcase hotspot inside (under the window)
-    suitcase: { xPct: 22, yPct: 78, radius: 220 }
+    // widthPct controls how wide the hotspot image is relative to world width
+    suitcase: { xPct: 22, yPct: 78, radius: 220, widthPct: 10 }
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -103,9 +104,9 @@ function placeRaccoon() {
   racEl.style.top = `${racY}px`;
 }
 
-function placeBtnAtWorld(el, x, y) {
+function placeBtnAtWorld(el, x, y, yOffset = -40) {
   const vx = x - cameraX;
-  const vy = y - cameraY - 40;
+  const vy = y - cameraY + yOffset;
   const wasHidden = el.classList.contains('hidden');
   if (wasHidden) el.classList.remove('hidden');
   const w = el.offsetWidth || 0;
@@ -280,6 +281,13 @@ async function enterInside() {
   placeRaccoon();
   updateExitWorldFromScaled();
   updateSuitcaseWorldFromScaled();
+  // scale hotspot image width to world size
+  if (suitcaseHotspot) {
+    const s = CONFIG.inside.suitcase;
+    if (s && s.widthPct) {
+      suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+    }
+  }
   centerCameraOn(racX, racY);
 
   // Show chat bubble briefly when entering the house
@@ -479,7 +487,7 @@ function tick(ts) {
       if (sNear && !canOpenSuitcase) { canOpenSuitcase = true; suitcaseHotspot && show(suitcaseHotspot); }
       else if (!sNear && canOpenSuitcase) { canOpenSuitcase = false; suitcaseHotspot && hide(suitcaseHotspot); }
       if (canOpenSuitcase && suitcaseHotspot) {
-        placeBtnAtWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y);
+        placeBtnAtWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y, 0);
       }
     }
   } else {
@@ -518,6 +526,13 @@ function tick(ts) {
       fitBackgroundToViewportHeight(bgEl);
       updateExitWorldFromScaled();
       updateSuitcaseWorldFromScaled();
+      // rescale hotspot size on viewport changes
+      if (suitcaseHotspot) {
+        const s = CONFIG.inside.suitcase;
+        if (s && s.widthPct) {
+          suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+        }
+      }
       centerCameraOn(racX, racY);
     }
   });
