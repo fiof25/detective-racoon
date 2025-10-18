@@ -30,7 +30,9 @@ const CONFIG = {
   inside: {
     bgSrc: 'assets/static_downstairs.png',
     // Exit hotspot location inside (percent of image). Tweak as needed.
-    exit: { xPct: 12, yPct: 72, radius: 220 }
+    exit: { xPct: 12, yPct: 72, radius: 220 },
+    // Suitcase hotspot inside (under the window)
+    suitcase: { xPct: 22, yPct: 78, radius: 220 }
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -54,10 +56,13 @@ let cameraX = 0, cameraY = 0; // camera top-left in world coords
 let doorWorld = { x: 0, y: 0 }; // outside door
 let exitWorld = { x: 0, y: 0 }; // inside exit
 let canInteract = false;
+let canOpenSuitcase = false;
 let lastFacing = 1; // 1 = facing right, -1 = facing left
 let vy = 0;         // vertical velocity for jump/gravity
 let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
+let overlayOpen = false; // inventory open state
+let suitcaseWorld = { x: 0, y: 0 };
 
 // DOM elements
 const gameEl = document.getElementById('game');
@@ -67,6 +72,9 @@ const worldEl = document.getElementById('world');
 const interactBtn = document.getElementById('interact');
 const fadeEl = document.getElementById('fade');
 const chatEl = document.getElementById('chat');
+// dynamically created elements
+let suitcaseHotspot = null;
+let inventoryOverlay = null;
 
 // -------- Utilities --------
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -93,6 +101,18 @@ function centerCameraOn(x, y) {
 function placeRaccoon() {
   racEl.style.left = `${racX}px`;
   racEl.style.top = `${racY}px`;
+}
+
+function placeBtnAtWorld(el, x, y) {
+  const vx = x - cameraX;
+  const vy = y - cameraY - 40;
+  const wasHidden = el.classList.contains('hidden');
+  if (wasHidden) el.classList.remove('hidden');
+  const w = el.offsetWidth || 0;
+  const h = el.offsetHeight || 0;
+  el.style.left = `${vx - w / 2}px`;
+  el.style.top = `${vy - h}px`;
+  if (wasHidden) el.classList.add('hidden');
 }
 
 function placeInteractButtonAtWorld(x, y) {
@@ -165,6 +185,13 @@ function updateExitWorldFromScaled() {
   if (!e) return;
   exitWorld.x = (e.xPct / 100) * worldW;
   exitWorld.y = (e.yPct / 100) * worldH;
+}
+
+function updateSuitcaseWorldFromScaled() {
+  const s = CONFIG.inside.suitcase;
+  if (!s) return;
+  suitcaseWorld.x = (s.xPct / 100) * worldW;
+  suitcaseWorld.y = (s.yPct / 100) * worldH;
 }
 
 function spawnRaccoonOutside() {
@@ -252,6 +279,7 @@ async function enterInside() {
   setRaccoonImage(CONFIG.raccoon.idleSrc);
   placeRaccoon();
   updateExitWorldFromScaled();
+  updateSuitcaseWorldFromScaled();
   centerCameraOn(racX, racY);
 
   // Show chat bubble briefly when entering the house
@@ -274,6 +302,7 @@ function tryEnterHouse() {
 }
 
 function tryExitHouse() {
+  if (overlayOpen) return; // ignore while inventory is open
   if (scene !== 'inside' || !canInteract) return;
   fadeOutIn(async () => {
     await enterOutside();
@@ -285,9 +314,25 @@ function tryExitHouse() {
   });
 }
 
+function openInventory() {
+  if (overlayOpen) return;
+  overlayOpen = true;
+  inventoryOverlay?.classList.remove('hidden');
+}
+
+function closeInventory() {
+  if (!overlayOpen) return;
+  overlayOpen = false;
+  inventoryOverlay?.classList.add('hidden');
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
+  if (overlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeInventory(); }
+    return;
+  }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
     keys.add(k);
   }
@@ -308,6 +353,46 @@ window.addEventListener('keyup', (e) => {
 
 interactBtn.addEventListener('click', () => tryEnterHouse());
 
+// Create overlay and suitcase button in UI
+function createSuitcaseUI() {
+  const ui = document.getElementById('ui');
+  // hotspot image (briefcase under window)
+  suitcaseHotspot = document.createElement('img');
+  suitcaseHotspot.id = 'suitcaseHotspot';
+  suitcaseHotspot.className = 'hotspot-img hidden';
+  suitcaseHotspot.src = 'assets/suitcaseAsset.png';
+  suitcaseHotspot.alt = 'Open suitcase';
+  ui.appendChild(suitcaseHotspot);
+  suitcaseHotspot.addEventListener('click', () => openInventory());
+
+  // overlay root
+  inventoryOverlay = document.createElement('div');
+  inventoryOverlay.id = 'inventoryOverlay';
+  inventoryOverlay.className = 'overlay hidden';
+  inventoryOverlay.setAttribute('aria-hidden', 'true');
+  inventoryOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close></div>
+    <button class="overlay-close" data-close aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="suitcase-stage">
+        <!-- Sizes tuned to visually match suitcase.png proportions -->
+        <img class="inv-item" style="left:24%; top:20%; width:21%;" src="assets/designAsset.png" alt="design" />
+        <img class="inv-item" style="left:69%; top:20%; width:13%;" src="assets/revisionAsset.png" alt="revision" />
+        <img class="inv-item" style="left:50%; top:39%; width:21%;" src="assets/4sightAsset.png" alt="4sight" />
+        <img class="inv-item" style="left:18%; top:56%; width:19%;" src="assets/designtoAsset.png" alt="designto" />
+        <img class="inv-item" style="left:61%; top:58%; width:21%;" src="assets/fatherfigureAsset.png" alt="fatherfigure" />
+        <img class="inv-item" style="left:36%; top:66%; width:15%;" src="assets/lucyAsset.png" alt="lucy" />
+      </div>
+    </div>`;
+  ui.appendChild(inventoryOverlay);
+
+  // close on backdrop click
+  inventoryOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close')) closeInventory();
+  });
+}
+
 // -------- Game Loop --------
 function tick(ts) {
   const dt = lastTime ? (ts - lastTime) / 1000 : 0;
@@ -316,12 +401,14 @@ function tick(ts) {
   // Movement intent
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
-  if (keys.has('arrowright') || keys.has('d')) vx += 1;
-  if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
-  if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
+  if (!overlayOpen) {
+    if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
+    if (keys.has('arrowright') || keys.has('d')) vx += 1;
+    if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
+    if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
+  }
 
-  const moving = vx !== 0 || vControl !== 0 || !onGround || vy !== 0;
+  const moving = !overlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
@@ -337,16 +424,16 @@ function tick(ts) {
       vy += CONFIG.physics.gravity * dt;
     }
     racY += vy * dt;
-    // ground collision
+    // ground/ceiling collision
     const gY = getGroundY();
     const cY = getCeilingY();
     if (racY >= gY) { racY = gY; vy = 0; onGround = true; }
     if (racY <= cY) { racY = cY; vy = 0; }
-    // Clamp to world bounds for both scenes
+    // Clamp to world bounds
     racX = clamp(racX, 0, worldW);
     racY = clamp(racY, 0, worldH);
     placeRaccoon();
-    // Update facing by horizontal intent
+    // facing by horizontal intent
     if (vx > 0.0001) lastFacing = 1;
     else if (vx < -0.0001) lastFacing = -1;
     racEl.style.setProperty('--facing', String(lastFacing));
@@ -354,16 +441,15 @@ function tick(ts) {
 
   // Camera behaviour
   if (scene === 'inside' || scene === 'outside') {
-    // follow raccoon horizontally; minor vertical follow to keep feet in view
     const { w, h } = viewportSize();
     const targetCamX = clamp(racX - w / 2, 0, Math.max(0, worldW - w));
     const targetCamY = clamp(racY - h * 0.75, 0, Math.max(0, worldH - h));
     cameraX = lerp(cameraX, targetCamX, 0.15);
     cameraY = lerp(cameraY, targetCamY, 0.15);
     worldEl.style.transform = `translate(${-cameraX}px, ${-cameraY}px)`;
-  } 
+  }
 
-  // Interaction visibility for outside/inside
+  // Interaction visibility
   if (scene === 'outside') {
     const dist = distance({ x: racX, y: racY }, doorWorld);
     const near = dist <= CONFIG.outside.door.radius;
@@ -383,8 +469,22 @@ function tick(ts) {
       interactBtn.textContent = 'Exit house ⏎';
       placeInteractButtonAtWorld(exitWorld.x, exitWorld.y);
     }
+    // suitcase proximity
+    const s = CONFIG.inside.suitcase;
+    const sDist = distance({ x: racX, y: racY }, suitcaseWorld);
+    const sNear = s ? sDist <= s.radius : false;
+    if (overlayOpen) {
+      suitcaseHotspot && hide(suitcaseHotspot);
+    } else {
+      if (sNear && !canOpenSuitcase) { canOpenSuitcase = true; suitcaseHotspot && show(suitcaseHotspot); }
+      else if (!sNear && canOpenSuitcase) { canOpenSuitcase = false; suitcaseHotspot && hide(suitcaseHotspot); }
+      if (canOpenSuitcase && suitcaseHotspot) {
+        placeBtnAtWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y);
+      }
+    }
   } else {
     canInteract = false; hide(interactBtn);
+    canOpenSuitcase = false; suitcaseHotspot && hide(suitcaseHotspot);
   }
 
   // Keep chat bubble following the raccoon while visible
@@ -403,6 +503,8 @@ function tick(ts) {
 
   await enterOutside();
   requestAnimationFrame(tick);
+  // build overlay UI once DOM is ready
+  createSuitcaseUI();
   // Recompute layout on resize to keep full image height visible
   window.addEventListener('resize', () => {
     // Re-fit current scene
@@ -414,6 +516,8 @@ function tick(ts) {
       centerCameraOn(racX, racY);
     } else {
       fitBackgroundToViewportHeight(bgEl);
+      updateExitWorldFromScaled();
+      updateSuitcaseWorldFromScaled();
       centerCameraOn(racX, racY);
     }
   });
