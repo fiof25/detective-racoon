@@ -112,6 +112,8 @@ body {
   inset: 0;
   z-index: 25; /* above fade */
   pointer-events: auto;
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 .overlay-backdrop {
   position: absolute;
@@ -150,10 +152,12 @@ body {
   cursor: pointer;
   transition: transform 0.15s ease;
   transform-origin: center;
+  will-change: transform;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .inv-asset:hover {
-  transform: scale(1.15);
+  transform: scale(1.15) translateZ(0);
   z-index: 999 !important; /* bring hovered item to front */
   filter: brightness(1.1) drop-shadow(0 0 12px rgba(255, 213, 130, 0.5)) drop-shadow(0 0 24px rgba(255, 213, 130, 0.2));
 }
@@ -194,24 +198,27 @@ body {
 .nav-arrow {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateZ(0);
   background: none;
   border: none;
   cursor: pointer;
   pointer-events: auto;
   z-index: 27;
-  transition: all 0.3s ease;
+  transition: transform 0.2s ease;
   padding: 0;
+  will-change: transform;
 }
 
 .nav-arrow:hover {
-  transform: translateY(-50%) scale(1.1);
+  transform: translateY(-50%) scale(1.1) translateZ(0);
 }
 
 .nav-arrow img {
   width: 192px;
   height: 192px;
-  transition: all 0.3s ease;
+  transition: filter 0.2s ease;
+  will-change: filter;
+  transform: translateZ(0);
 }
 
 .nav-arrow:hover img {
@@ -266,6 +273,52 @@ body {
   width: 50px;
   height: 50px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Design overlay with vertical scrolling */
+.design-stage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  padding-left: 200px; /* Move content further to the right */
+  will-change: scroll-position;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.design-note-image {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Custom scrollbar for design overlay */
+.design-stage::-webkit-scrollbar {
+  width: 12px;
+}
+
+.design-stage::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.design-stage::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+}
+
+.design-stage::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Chat bubble */

@@ -64,6 +64,7 @@ let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
+let designOverlayOpen = false; // design overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 
@@ -79,6 +80,7 @@ const chatEl = document.getElementById('chat');
 let suitcaseHotspot = null;
 let inventoryOverlay = null;
 let fatherFigureOverlay = null;
+let designOverlay = null;
 let mouseOverSuitcase = false;
 
 // -------- Utilities --------
@@ -386,11 +388,22 @@ function closeInventory() {
   }
 }
 
+// Cache DOM elements to avoid repeated queries
+let cachedFatherFigureElements = null;
+
 function updateFatherFigurePage() {
-  const notebookStage = fatherFigureOverlay?.querySelector('.notebook-stage');
-  const prevBtn = fatherFigureOverlay?.querySelector('#prevPageBtn');
-  const nextBtn = fatherFigureOverlay?.querySelector('#nextPageBtn');
-  const youtubeContainer = fatherFigureOverlay?.querySelector('#youtubeContainer');
+  // Cache elements on first call
+  if (!cachedFatherFigureElements) {
+    cachedFatherFigureElements = {
+      notebookStage: fatherFigureOverlay?.querySelector('.notebook-stage'),
+      prevBtn: fatherFigureOverlay?.querySelector('#prevPageBtn'),
+      nextBtn: fatherFigureOverlay?.querySelector('#nextPageBtn'),
+      youtubeContainer: fatherFigureOverlay?.querySelector('#youtubeContainer'),
+      githubLink: fatherFigureOverlay?.querySelector('#githubLink')
+    };
+  }
+  
+  const { notebookStage, prevBtn, nextBtn, youtubeContainer, githubLink } = cachedFatherFigureElements;
   
   if (notebookStage) {
     const backgroundImage = currentFatherFigurePage === 1 
@@ -413,7 +426,6 @@ function updateFatherFigurePage() {
   }
   
   // Position GitHub link differently on each page
-  const githubLink = fatherFigureOverlay?.querySelector('#githubLink');
   if (githubLink) {
     githubLink.style.display = 'block'; // Show on both pages
     if (currentFatherFigurePage === 1) {
@@ -460,6 +472,20 @@ function closeFatherFigureOverlay() {
   openInventory();
 }
 
+function openDesignOverlay() {
+  if (designOverlayOpen) return;
+  designOverlayOpen = true;
+  designOverlay?.classList.remove('hidden');
+}
+
+function closeDesignOverlay() {
+  if (!designOverlayOpen) return;
+  designOverlayOpen = false;
+  designOverlay?.classList.add('hidden');
+  // Return to inventory when closing design overlay
+  openInventory();
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -471,6 +497,10 @@ window.addEventListener('keydown', (e) => {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeFatherFigureOverlay(); }
     if (k === 'arrowleft') { e.preventDefault(); goToPrevPage(); }
     if (k === 'arrowright') { e.preventDefault(); goToNextPage(); }
+    return;
+  }
+  if (designOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeDesignOverlay(); }
     return;
   }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
@@ -552,6 +582,15 @@ function createSuitcaseUI() {
     });
   }
   
+  // Add click handler for design asset
+  const designAsset = inventoryOverlay.querySelector('#design-asset');
+  if (designAsset) {
+    designAsset.addEventListener('click', () => {
+      closeInventory();
+      openDesignOverlay();
+    });
+  }
+  
   // Create father figure overlay
   fatherFigureOverlay = document.createElement('div');
   fatherFigureOverlay.id = 'fatherFigureOverlay';
@@ -609,6 +648,27 @@ function createSuitcaseUI() {
       goToNextPage();
     });
   }
+  
+  // Create design overlay
+  designOverlay = document.createElement('div');
+  designOverlay.id = 'designOverlay';
+  designOverlay.className = 'overlay hidden';
+  designOverlay.setAttribute('aria-hidden', 'true');
+  designOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-design></div>
+    <button class="overlay-close" data-close-design aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="design-stage">
+        <img src="assets/designNote.png" alt="Design Note" class="design-note-image">
+      </div>
+    </div>`;
+  ui.appendChild(designOverlay);
+  
+  // Close on backdrop click
+  designOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-design')) closeDesignOverlay();
+  });
 }
 
 // -------- Game Loop --------
@@ -619,14 +679,14 @@ function tick(ts) {
   // Movement intent
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen && !fatherFigureOverlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen) {
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
     if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
     if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
   }
 
-  const moving = !overlayOpen && !fatherFigureOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
