@@ -133,6 +133,17 @@ body {
   background: center/cover no-repeat url('assets/suitcase.png');
 }
 
+/* Father figure notebook stage uses fatherfigureNote.png as background */
+.notebook-stage {
+  position: relative;
+  height: 100%;
+  background: center/contain no-repeat;
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 /* Individual inventory assets */
 .inv-asset {
   height: auto;
@@ -178,6 +189,46 @@ body {
   z-index: 26;
 }
 .overlay-close:hover { background: rgba(255,255,255,0.2); }
+
+/* Navigation arrows for father figure overlay */
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 27;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.nav-arrow:hover {
+  transform: translateY(-50%) scale(1.1);
+}
+
+.nav-arrow img {
+  width: 192px;
+  height: 192px;
+  transition: all 0.3s ease;
+}
+
+.nav-arrow:hover img {
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.7));
+}
+
+.nav-arrow.prev {
+  left: 2%;
+}
+
+.nav-arrow.prev img {
+  transform: scaleX(-1); /* Flip the arrow for previous button */
+}
+
+.nav-arrow.next {
+  right: 2%;
+}
 
 /* Chat bubble */
 .chat {

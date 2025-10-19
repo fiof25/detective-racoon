@@ -63,6 +63,8 @@ let vy = 0;         // vertical velocity for jump/gravity
 let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
 let overlayOpen = false; // inventory open state
+let fatherFigureOverlayOpen = false; // father figure overlay state
+let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 
 // DOM elements
@@ -76,6 +78,7 @@ const chatEl = document.getElementById('chat');
 // dynamically created elements
 let suitcaseHotspot = null;
 let inventoryOverlay = null;
+let fatherFigureOverlay = null;
 let mouseOverSuitcase = false;
 
 // -------- Utilities --------
@@ -341,7 +344,7 @@ function tryEnterHouse() {
 }
 
 function tryExitHouse() {
-  if (overlayOpen) return; // ignore while inventory is open
+  if (overlayOpen || fatherFigureOverlayOpen) return; // ignore while any overlay is open
   if (scene !== 'inside' || !canInteract) return;
   fadeOutIn(async () => {
     await enterOutside();
@@ -383,11 +386,68 @@ function closeInventory() {
   }
 }
 
+function updateFatherFigurePage() {
+  const notebookStage = fatherFigureOverlay?.querySelector('.notebook-stage');
+  const prevBtn = fatherFigureOverlay?.querySelector('#prevPageBtn');
+  const nextBtn = fatherFigureOverlay?.querySelector('#nextPageBtn');
+  
+  if (notebookStage) {
+    const backgroundImage = currentFatherFigurePage === 1 
+      ? 'assets/fatherfigureNote.png' 
+      : 'assets/fatherfigureNote2.png';
+    notebookStage.style.backgroundImage = `url('${backgroundImage}')`;
+  }
+  
+  // Show/hide navigation buttons based on current page
+  if (prevBtn) {
+    prevBtn.style.display = currentFatherFigurePage === 1 ? 'none' : 'flex';
+  }
+  if (nextBtn) {
+    nextBtn.style.display = currentFatherFigurePage === 2 ? 'none' : 'flex';
+  }
+}
+
+function goToNextPage() {
+  if (currentFatherFigurePage < 2) {
+    currentFatherFigurePage++;
+    updateFatherFigurePage();
+  }
+}
+
+function goToPrevPage() {
+  if (currentFatherFigurePage > 1) {
+    currentFatherFigurePage--;
+    updateFatherFigurePage();
+  }
+}
+
+function openFatherFigureOverlay() {
+  if (fatherFigureOverlayOpen) return;
+  fatherFigureOverlayOpen = true;
+  currentFatherFigurePage = 1; // Reset to first page when opening
+  fatherFigureOverlay?.classList.remove('hidden');
+  updateFatherFigurePage();
+}
+
+function closeFatherFigureOverlay() {
+  if (!fatherFigureOverlayOpen) return;
+  fatherFigureOverlayOpen = false;
+  fatherFigureOverlay?.classList.add('hidden');
+  // Return to inventory when closing father figure overlay
+  openInventory();
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
   if (overlayOpen) {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeInventory(); }
+    return;
+  }
+  if (fatherFigureOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeFatherFigureOverlay(); }
+    if (k === 'arrowleft') { e.preventDefault(); goToPrevPage(); }
+    if (k === 'arrowright') { e.preventDefault(); goToNextPage(); }
     return;
   }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
@@ -459,6 +519,60 @@ function createSuitcaseUI() {
   assets.forEach(asset => {
     asset.style.pointerEvents = 'auto';
   });
+  
+  // Add click handler for father figure asset
+  const fatherFigureAsset = inventoryOverlay.querySelector('#fatherfigure-asset');
+  if (fatherFigureAsset) {
+    fatherFigureAsset.addEventListener('click', () => {
+      closeInventory();
+      openFatherFigureOverlay();
+    });
+  }
+  
+  // Create father figure overlay
+  fatherFigureOverlay = document.createElement('div');
+  fatherFigureOverlay.id = 'fatherFigureOverlay';
+  fatherFigureOverlay.className = 'overlay hidden';
+  fatherFigureOverlay.setAttribute('aria-hidden', 'true');
+  fatherFigureOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-father></div>
+    <button class="overlay-close" data-close-father aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="notebook-stage">
+        <!-- Father figure notebook content will be styled with CSS background -->
+        <button class="nav-arrow prev" id="prevPageBtn" aria-label="Previous page">
+          <img src="assets/arrow.png" alt="Previous">
+        </button>
+        <button class="nav-arrow next" id="nextPageBtn" aria-label="Next page">
+          <img src="assets/arrow.png" alt="Next">
+        </button>
+      </div>
+    </div>`;
+  ui.appendChild(fatherFigureOverlay);
+  
+  // Close on backdrop click
+  fatherFigureOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-father')) closeFatherFigureOverlay();
+  });
+  
+  // Add navigation button event listeners
+  const prevBtn = fatherFigureOverlay.querySelector('#prevPageBtn');
+  const nextBtn = fatherFigureOverlay.querySelector('#nextPageBtn');
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToPrevPage();
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToNextPage();
+    });
+  }
 }
 
 // -------- Game Loop --------
@@ -469,14 +583,14 @@ function tick(ts) {
   // Movement intent
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen) {
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
     if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
     if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
   }
 
-  const moving = !overlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
