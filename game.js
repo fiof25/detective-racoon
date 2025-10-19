@@ -422,7 +422,16 @@ function updateFatherFigurePage() {
   
   // Show YouTube video only on page 1 (where the dad's photo is)
   if (youtubeContainer) {
-    youtubeContainer.style.display = currentFatherFigurePage === 1 ? 'block' : 'none';
+    if (currentFatherFigurePage === 1) {
+      youtubeContainer.style.display = 'block';
+    } else {
+      youtubeContainer.style.display = 'none';
+      // Pause video when navigating away from page 1
+      const youtubeIframe = youtubeContainer.querySelector('#youtubeVideo');
+      if (youtubeIframe) {
+        youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+      }
+    }
   }
   
   // Position GitHub link differently on each page
@@ -466,6 +475,14 @@ function openFatherFigureOverlay() {
 
 function closeFatherFigureOverlay() {
   if (!fatherFigureOverlayOpen) return;
+  
+  // Pause YouTube video when closing overlay
+  const youtubeIframe = fatherFigureOverlay?.querySelector('#youtubeVideo');
+  if (youtubeIframe) {
+    // Send pause command to YouTube iframe
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
+  
   fatherFigureOverlayOpen = false;
   fatherFigureOverlay?.classList.add('hidden');
   // Return to inventory when closing father figure overlay
