@@ -390,6 +390,7 @@ function updateFatherFigurePage() {
   const notebookStage = fatherFigureOverlay?.querySelector('.notebook-stage');
   const prevBtn = fatherFigureOverlay?.querySelector('#prevPageBtn');
   const nextBtn = fatherFigureOverlay?.querySelector('#nextPageBtn');
+  const youtubeContainer = fatherFigureOverlay?.querySelector('#youtubeContainer');
   
   if (notebookStage) {
     const backgroundImage = currentFatherFigurePage === 1 
@@ -404,6 +405,28 @@ function updateFatherFigurePage() {
   }
   if (nextBtn) {
     nextBtn.style.display = currentFatherFigurePage === 2 ? 'none' : 'flex';
+  }
+  
+  // Show YouTube video only on page 1 (where the dad's photo is)
+  if (youtubeContainer) {
+    youtubeContainer.style.display = currentFatherFigurePage === 1 ? 'block' : 'none';
+  }
+  
+  // Position GitHub link differently on each page
+  const githubLink = fatherFigureOverlay?.querySelector('#githubLink');
+  if (githubLink) {
+    githubLink.style.display = 'block'; // Show on both pages
+    if (currentFatherFigurePage === 1) {
+      // Page 1: Next to "father figure" title
+      githubLink.style.left = '45%';
+      githubLink.style.top = '9%';
+      githubLink.style.right = 'auto';
+    } else {
+      // Page 2: Top right corner
+      githubLink.style.left = 'auto';
+      githubLink.style.right = '17%';
+      githubLink.style.top = '8%';
+    }
   }
 }
 
@@ -540,6 +563,19 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="notebook-stage">
         <!-- Father figure notebook content will be styled with CSS background -->
+        <div class="youtube-embed-container" id="youtubeContainer">
+          <iframe 
+            id="youtubeVideo"
+            src="https://www.youtube.com/embed/rnDSdft8QbM?enablejsapi=1&rel=0&modestbranding=1" 
+            title="Father Figure Demo Video" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <a href="https://github.com/fiof25/father-figure-htn" target="_blank" class="github-link" id="githubLink">
+          <img src="assets/githubblack.png" alt="GitHub Repository" title="View on GitHub">
+        </a>
         <button class="nav-arrow prev" id="prevPageBtn" aria-label="Previous page">
           <img src="assets/arrow.png" alt="Previous">
         </button>

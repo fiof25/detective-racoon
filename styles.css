@@ -230,6 +230,44 @@ body {
   right: 2%;
 }
 
+/* YouTube video embed positioned over the dad's photo area */
+.youtube-embed-container {
+  position: absolute;
+  left: 18%;
+  top: 26%;
+  width: 30%;
+  height: 38%;
+  z-index: 28;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.youtube-embed-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* GitHub link positioned next to "father figure" title */
+.github-link {
+  position: absolute;
+  left: 45%;
+  top: 9%;
+  z-index: 29;
+  transition: transform 0.2s ease;
+}
+
+.github-link:hover {
+  transform: scale(1.1);
+}
+
+.github-link img {
+  width: 50px;
+  height: 50px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
 /* Chat bubble */
 .chat {
   position: absolute;
