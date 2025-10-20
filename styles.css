@@ -486,6 +486,74 @@ body {
   filter: brightness(1.1) drop-shadow(0 0 12px rgba(255, 213, 130, 0.5));
 }
 
+/* Lucy notebook stage uses lucyNote.png as background */
+.lucy-notebook-stage {
+  position: relative;
+  height: 100%;
+  background: center/contain no-repeat;
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url('assets/lucyNote.png');
+}
+
+/* YouTube video embed positioned over Lucy's note */
+.lucy-youtube-embed-container {
+  position: absolute;
+  left: 58%;
+  top: 16%;
+  width: 21%;
+  height: 28%;
+  z-index: 28;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.lucy-youtube-embed-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Lucy news icon link positioned on the note */
+.lucy-news-link {
+  position: absolute;
+  left: 36%;
+  top: 70%;
+  z-index: 29;
+  transition: transform 0.2s ease;
+}
+
+.lucy-news-link:hover {
+  transform: scale(1.1);
+}
+
+.lucy-news-link img {
+  width: 220px;
+  height: 160px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Lucy full demo icon link positioned on the note */
+.lucy-demo-link {
+  position: absolute;
+  left: 31%;
+  top: 42%;
+  z-index: 29;
+  transition: transform 0.2s ease;
+}
+
+.lucy-demo-link:hover {
+  transform: scale(1.05);
+}
+
+.lucy-demo-link img {
+  width: 260px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
 
 /* Chat bubble */
 .chat {

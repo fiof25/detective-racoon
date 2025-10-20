@@ -67,6 +67,7 @@ let fatherFigureOverlayOpen = false; // father figure overlay state
 let designOverlayOpen = false; // design overlay state
 let designtoOverlayOpen = false; // designto overlay state
 let jamOverlayOpen = false; // jam overlay state
+let lucyOverlayOpen = false; // lucy overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 
@@ -85,6 +86,7 @@ let fatherFigureOverlay = null;
 let designOverlay = null;
 let designtoOverlay = null;
 let jamOverlay = null;
+let lucyOverlay = null;
 let mouseOverSuitcase = false;
 
 // -------- Utilities --------
@@ -535,6 +537,28 @@ function closeDesigntoOverlay() {
   openInventory();
 }
 
+function openLucyOverlay() {
+  if (lucyOverlayOpen) return;
+  lucyOverlayOpen = true;
+  lucyOverlay?.classList.remove('hidden');
+}
+
+function closeLucyOverlay() {
+  if (!lucyOverlayOpen) return;
+  
+  // Pause YouTube video when closing overlay
+  const youtubeIframe = lucyOverlay?.querySelector('#lucyYoutubeVideo');
+  if (youtubeIframe) {
+    // Send pause command to YouTube iframe
+    youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+  }
+  
+  lucyOverlayOpen = false;
+  lucyOverlay?.classList.add('hidden');
+  // Return to inventory when closing lucy overlay
+  openInventory();
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -558,6 +582,10 @@ window.addEventListener('keydown', (e) => {
   }
   if (jamOverlayOpen) {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeJamOverlay(); }
+    return;
+  }
+  if (lucyOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeLucyOverlay(); }
     return;
   }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
@@ -663,6 +691,15 @@ function createSuitcaseUI() {
     jamAsset.addEventListener('click', () => {
       closeInventory();
       openJamOverlay();
+    });
+  }
+  
+  // Add click handler for lucy asset
+  const lucyAsset = inventoryOverlay.querySelector('#lucy-asset');
+  if (lucyAsset) {
+    lucyAsset.addEventListener('click', () => {
+      closeInventory();
+      openLucyOverlay();
     });
   }
   
@@ -847,6 +884,43 @@ function createSuitcaseUI() {
       window.open('assets/DesignTO Marketing Campaign-FionaFang.pdf', '_blank');
     });
   }
+  
+  // Create lucy overlay
+  lucyOverlay = document.createElement('div');
+  lucyOverlay.id = 'lucyOverlay';
+  lucyOverlay.className = 'overlay hidden';
+  lucyOverlay.setAttribute('aria-hidden', 'true');
+  lucyOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-lucy></div>
+    <button class="overlay-close" data-close-lucy aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="lucy-notebook-stage">
+        <!-- Lucy notebook content will be styled with CSS background -->
+        <div class="lucy-youtube-embed-container" id="lucyYoutubeContainer">
+          <iframe 
+            id="lucyYoutubeVideo"
+            src="https://www.youtube.com/embed/GRENRaAo0oI?start=1&enablejsapi=1&rel=0&modestbranding=1" 
+            title="Lucy Demo Video" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen>
+          </iframe>
+        </div>
+        <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
+          <img src="assets/lucynewsicon.png" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
+        </a>
+        <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-demo-link" id="lucyDemoLink">
+          <img src="assets/lucyfulldemoIcon.png" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
+        </a>
+      </div>
+    </div>`;
+  ui.appendChild(lucyOverlay);
+  
+  // Close on backdrop click
+  lucyOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-lucy')) closeLucyOverlay();
+  });
 }
 
 // -------- Game Loop --------
@@ -857,14 +931,14 @@ function tick(ts) {
   // Movement intent
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen) {
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
     if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
     if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
   }
 
-  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
