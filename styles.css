@@ -593,3 +593,337 @@ body {
   border-right: 10px solid transparent;
   border-top: 10px solid rgba(0, 0, 0, 0.65);
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Adjust raccoon size for mobile */
+  #raccoon {
+    width: 270px; /* Half size for mobile */
+  }
+
+  /* Mobile-friendly interact button */
+  #interact {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 44px; /* iOS touch target minimum */
+    border-radius: 12px;
+  }
+
+  /* Mobile hotspot buttons */
+  .hotspot {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 44px;
+    border-radius: 12px;
+  }
+
+  /* Mobile overlay close button */
+  .overlay-close {
+    width: 56px;
+    height: 56px;
+    font-size: 32px;
+    line-height: 56px;
+    right: 12px;
+    top: 12px;
+  }
+
+  /* Mobile navigation arrows */
+  .nav-arrow img {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Mobile YouTube embed adjustments */
+  .youtube-embed-container {
+    left: 15%;
+    top: 25%;
+    width: 35%;
+    height: 40%;
+  }
+
+  .lucy-youtube-embed-container {
+    left: 55%;
+    top: 15%;
+    width: 25%;
+    height: 30%;
+  }
+
+  /* Mobile GitHub links */
+  .github-link img,
+  .jam-github-link img {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Mobile jam demo button */
+  .jam-demo-icon {
+    width: 200px;
+  }
+
+  /* Mobile design stage adjustments */
+  .design-stage {
+    padding: 10px;
+    padding-left: 20px;
+  }
+
+  .design-note-image {
+    max-width: 95%;
+  }
+
+  /* Mobile DesignTO adjustments */
+  .designto-icon {
+    max-width: 300px;
+  }
+
+  /* Mobile Lucy demo and news links */
+  .lucy-news-link img {
+    width: 180px;
+    height: 130px;
+  }
+
+  .lucy-demo-link img {
+    width: 200px;
+  }
+
+  /* Mobile chat bubble */
+  .chat {
+    max-width: 280px;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  /* Mobile jam video container */
+  .jam-video-container {
+    left: 17%;
+    top: 35%;
+    width: 28%;
+    height: 36%;
+  }
+
+  .jam-watch-button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small mobile devices */
+  #raccoon {
+    width: 200px; /* Even smaller for very small screens */
+  }
+
+  #interact,
+  .hotspot {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .overlay-close {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+    line-height: 48px;
+  }
+
+  .nav-arrow img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .youtube-embed-container {
+    left: 10%;
+    top: 20%;
+    width: 45%;
+    height: 45%;
+  }
+
+  .lucy-youtube-embed-container {
+    left: 50%;
+    top: 12%;
+    width: 30%;
+    height: 35%;
+  }
+
+  .github-link img,
+  .jam-github-link img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .jam-demo-icon {
+    width: 160px;
+  }
+
+  .designto-icon {
+    max-width: 250px;
+  }
+
+  .lucy-news-link img {
+    width: 140px;
+    height: 100px;
+  }
+
+  .lucy-demo-link img {
+    width: 160px;
+  }
+
+  .chat {
+    max-width: 240px;
+    font-size: 13px;
+  }
+
+  .jam-video-container {
+    left: 15%;
+    top: 32%;
+    width: 32%;
+    height: 38%;
+  }
+}
+
+/* Touch-friendly styles */
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  #interact:hover,
+  .hotspot:hover,
+  .overlay-close:hover,
+  .nav-arrow:hover,
+  .github-link:hover,
+  .jam-github-link:hover,
+  .jam-demo-button:hover,
+  .lucy-news-link:hover,
+  .lucy-demo-link:hover,
+  .jam-video-container:hover {
+    transform: none;
+    filter: none;
+    background: inherit;
+    box-shadow: inherit;
+  }
+
+  /* Add active states for touch feedback */
+  #interact:active,
+  .hotspot:active {
+    transform: translateY(1px);
+    opacity: 0.8;
+  }
+
+  .overlay-close:active {
+    background: rgba(255,255,255,0.3);
+  }
+
+  .nav-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .github-link:active,
+  .jam-github-link:active,
+  .jam-demo-button:active,
+  .lucy-news-link:active,
+  .lucy-demo-link:active {
+    transform: scale(0.95);
+  }
+
+  .jam-video-container:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Touch Controls */
+#touch-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  display: none; /* Hidden by default, shown only on touch devices */
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.touch-dpad {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  width: 140px;
+  height: 140px;
+  pointer-events: auto;
+}
+
+.touch-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.touch-middle {
+  grid-column: 1 / 4;
+  grid-row: 2;
+  display: flex;
+  justify-content: space-between;
+}
+
+.touch-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.touch-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  backdrop-filter: blur(10px);
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  pointer-events: auto;
+}
+
+.touch-dpad .touch-btn {
+  width: 40px;
+  height: 40px;
+}
+
+.touch-interact {
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  border-radius: 50%;
+  background: rgba(255, 213, 130, 0.2);
+  border-color: rgba(255, 213, 130, 0.5);
+}
+
+.touch-btn:active,
+.touch-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(0.95);
+}
+
+.touch-interact:active,
+.touch-interact.active {
+  background: rgba(255, 213, 130, 0.4);
+  border-color: rgba(255, 213, 130, 0.8);
+}
+
+/* Show touch controls only on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  #touch-controls {
+    display: flex !important;
+  }
+}
+
+/* Hide touch controls when overlays are open */
+body.overlay-open #touch-controls {
+  display: none !important;
+}
