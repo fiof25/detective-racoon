@@ -368,12 +368,14 @@ function openInventory() {
   if (overlayOpen) return;
   overlayOpen = true;
   inventoryOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
 }
 
 function closeInventory() {
   if (!overlayOpen) return;
   overlayOpen = false;
   inventoryOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
   
   // Reset interaction state and check if we should show exit prompt
   canInteract = false;
@@ -476,6 +478,7 @@ function openFatherFigureOverlay() {
   fatherFigureOverlayOpen = true;
   currentFatherFigurePage = 1; // Reset to first page when opening
   fatherFigureOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
   updateFatherFigurePage();
 }
 
@@ -491,6 +494,7 @@ function closeFatherFigureOverlay() {
   
   fatherFigureOverlayOpen = false;
   fatherFigureOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
   // Return to inventory when closing father figure overlay
   openInventory();
 }
@@ -499,12 +503,14 @@ function openDesignOverlay() {
   if (designOverlayOpen) return;
   designOverlayOpen = true;
   designOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
 }
 
 function closeDesignOverlay() {
   if (!designOverlayOpen) return;
   designOverlayOpen = false;
   designOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
   // Return to inventory when closing design overlay
   openInventory();
 }
@@ -513,12 +519,14 @@ function openJamOverlay() {
   if (jamOverlayOpen) return;
   jamOverlayOpen = true;
   jamOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
 }
 
 function closeJamOverlay() {
   if (!jamOverlayOpen) return;
   jamOverlayOpen = false;
   jamOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
   // Return to inventory when closing jam overlay
   openInventory();
 }
@@ -527,12 +535,14 @@ function openDesigntoOverlay() {
   if (designtoOverlayOpen) return;
   designtoOverlayOpen = true;
   designtoOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
 }
 
 function closeDesigntoOverlay() {
   if (!designtoOverlayOpen) return;
   designtoOverlayOpen = false;
   designtoOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
   // Return to inventory when closing designto overlay
   openInventory();
 }
@@ -541,6 +551,7 @@ function openLucyOverlay() {
   if (lucyOverlayOpen) return;
   lucyOverlayOpen = true;
   lucyOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
 }
 
 function closeLucyOverlay() {
@@ -555,6 +566,7 @@ function closeLucyOverlay() {
   
   lucyOverlayOpen = false;
   lucyOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
   // Return to inventory when closing lucy overlay
   openInventory();
 }
@@ -610,6 +622,91 @@ window.addEventListener('keyup', (e) => {
 });
 
 interactBtn.addEventListener('click', () => tryEnterHouse());
+
+// -------- Touch Controls --------
+let touchControls = null;
+let touchState = {
+  left: false,
+  right: false,
+  up: false,
+  down: false,
+  interact: false
+};
+
+function createTouchControls() {
+  // Only create touch controls on mobile devices
+  if (!('ontouchstart' in window)) return;
+  
+  touchControls = document.createElement('div');
+  touchControls.id = 'touch-controls';
+  touchControls.innerHTML = `
+    <div class="touch-dpad">
+      <button class="touch-btn touch-up" data-key="up">↑</button>
+      <div class="touch-middle">
+        <button class="touch-btn touch-left" data-key="left">←</button>
+        <button class="touch-btn touch-right" data-key="right">→</button>
+      </div>
+      <button class="touch-btn touch-down" data-key="down">↓</button>
+    </div>
+    <button class="touch-btn touch-interact" data-key="interact">⏎</button>
+  `;
+  
+  document.body.appendChild(touchControls);
+  
+  // Add touch event listeners
+  const touchButtons = touchControls.querySelectorAll('.touch-btn');
+  touchButtons.forEach(btn => {
+    const key = btn.getAttribute('data-key');
+    
+    // Touch start
+    btn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      touchState[key] = true;
+      btn.classList.add('active');
+      
+      if (key === 'interact') {
+        if (canInteract) {
+          if (scene === 'outside') tryEnterHouse();
+          else if (scene === 'inside') {
+            if (canOpenSuitcase) openInventory();
+            else tryExitHouse();
+          }
+        }
+      }
+    });
+    
+    // Touch end
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      touchState[key] = false;
+      btn.classList.remove('active');
+    });
+    
+    // Touch cancel (when finger moves off button)
+    btn.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      touchState[key] = false;
+      btn.classList.remove('active');
+    });
+    
+    // Prevent context menu on long press
+    btn.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+  });
+}
+
+function hideTouchControls() {
+  if (touchControls) {
+    touchControls.style.display = 'none';
+  }
+}
+
+function showTouchControls() {
+  if (touchControls) {
+    touchControls.style.display = 'flex';
+  }
+}
 
 // Create overlay and suitcase button in UI
 function createSuitcaseUI() {
@@ -928,14 +1025,21 @@ function tick(ts) {
   const dt = lastTime ? (ts - lastTime) / 1000 : 0;
   lastTime = ts;
 
-  // Movement intent
+  // Movement intent (keyboard + touch)
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
   if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen) {
+    // Keyboard controls
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
     if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
     if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
+    
+    // Touch controls
+    if (touchState.left) vx -= 1;
+    if (touchState.right) vx += 1;
+    if (touchState.up) vControl -= 1;
+    if (touchState.down) vControl += 1;
   }
 
   const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
@@ -1063,6 +1167,8 @@ function tick(ts) {
   requestAnimationFrame(tick);
   // build overlay UI once DOM is ready
   createSuitcaseUI();
+  // create touch controls for mobile
+  createTouchControls();
   // Recompute layout on resize to keep full image height visible
   window.addEventListener('resize', () => {
     // Re-fit current scene
