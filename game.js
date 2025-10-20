@@ -65,6 +65,7 @@ let chatTimerId = null; // auto-hide timer for chat bubble
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
 let designOverlayOpen = false; // design overlay state
+let designtoOverlayOpen = false; // designto overlay state
 let jamOverlayOpen = false; // jam overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
@@ -82,6 +83,7 @@ let suitcaseHotspot = null;
 let inventoryOverlay = null;
 let fatherFigureOverlay = null;
 let designOverlay = null;
+let designtoOverlay = null;
 let jamOverlay = null;
 let mouseOverSuitcase = false;
 
@@ -348,7 +350,7 @@ function tryEnterHouse() {
 }
 
 function tryExitHouse() {
-  if (overlayOpen || fatherFigureOverlayOpen) return; // ignore while any overlay is open
+  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen) return; // ignore while any overlay is open
   if (scene !== 'inside' || !canInteract) return;
   fadeOutIn(async () => {
     await enterOutside();
@@ -519,6 +521,20 @@ function closeJamOverlay() {
   openInventory();
 }
 
+function openDesigntoOverlay() {
+  if (designtoOverlayOpen) return;
+  designtoOverlayOpen = true;
+  designtoOverlay?.classList.remove('hidden');
+}
+
+function closeDesigntoOverlay() {
+  if (!designtoOverlayOpen) return;
+  designtoOverlayOpen = false;
+  designtoOverlay?.classList.add('hidden');
+  // Return to inventory when closing designto overlay
+  openInventory();
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -534,6 +550,10 @@ window.addEventListener('keydown', (e) => {
   }
   if (designOverlayOpen) {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeDesignOverlay(); }
+    return;
+  }
+  if (designtoOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeDesigntoOverlay(); }
     return;
   }
   if (jamOverlayOpen) {
@@ -625,6 +645,15 @@ function createSuitcaseUI() {
     designAsset.addEventListener('click', () => {
       closeInventory();
       openDesignOverlay();
+    });
+  }
+  
+  // Add click handler for designto asset
+  const designtoAsset = inventoryOverlay.querySelector('#designto-asset');
+  if (designtoAsset) {
+    designtoAsset.addEventListener('click', () => {
+      closeInventory();
+      openDesigntoOverlay();
     });
   }
   
@@ -734,6 +763,12 @@ function createSuitcaseUI() {
             Watch Demo
           </button>
         </div>
+        <button class="jam-demo-button" id="jamDemoButton">
+          <img src="assets/jamDemo.png" alt="Try Demo" class="jam-demo-icon">
+        </button>
+        <a href="https://github.com/justinwuzijin/eye-tester-app" target="_blank" class="jam-github-link" id="jamGithubLink">
+          <img src="assets/githubblack.png" alt="GitHub Repository" title="View on GitHub">
+        </a>
       </div>
     </div>`;
   ui.appendChild(jamOverlay);
@@ -761,6 +796,57 @@ function createSuitcaseUI() {
       window.open('https://www.youtube.com/watch?v=G-rITGNKfxI', '_blank');
     });
   }
+  
+  // Add click handler for jam demo button
+  const jamDemoButton = jamOverlay.querySelector('#jamDemoButton');
+  if (jamDemoButton) {
+    jamDemoButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent overlay from closing
+      window.open('https://eye-tester-app.vercel.app', '_blank');
+    });
+  }
+  
+  // Create designto overlay
+  designtoOverlay = document.createElement('div');
+  designtoOverlay.id = 'designtoOverlay';
+  designtoOverlay.className = 'overlay hidden';
+  designtoOverlay.setAttribute('aria-hidden', 'true');
+  designtoOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-designto></div>
+    <button class="overlay-close" data-close-designto aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="designto-stage">
+        <img src="assets/designtoNote.png" alt="DesignTO Note" class="designto-note-image">
+        <img src="assets/designtoIcon.png" alt="DesignTO Icon" class="designto-icon">
+      </div>
+    </div>`;
+  ui.appendChild(designtoOverlay);
+  
+  // Close on backdrop click
+  designtoOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-designto')) closeDesigntoOverlay();
+  });
+  
+  // Add click handler for designto icon
+  const designtoIcon = designtoOverlay.querySelector('.designto-icon');
+  if (designtoIcon) {
+    designtoIcon.addEventListener('mouseenter', () => {
+      // Change to pressed state on hover
+      designtoIcon.src = 'assets/designtoIconPressed.png';
+    });
+    
+    designtoIcon.addEventListener('mouseleave', () => {
+      // Change back to normal state when not hovering
+      designtoIcon.src = 'assets/designtoIcon.png';
+    });
+    
+    designtoIcon.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent overlay from closing
+      // Open PDF in new tab
+      window.open('assets/DesignTO Marketing Campaign-FionaFang.pdf', '_blank');
+    });
+  }
 }
 
 // -------- Game Loop --------
@@ -771,14 +857,14 @@ function tick(ts) {
   // Movement intent
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !jamOverlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen) {
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
     if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
     if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
   }
 
-  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !jamOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
