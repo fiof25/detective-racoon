@@ -1,0 +1,16 @@
+{
+  "name": "detective-racoon",
+  "version": "1.0.0",
+  "description": "Interactive detective game with raccoon character",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'No build step required for static site'"
+  },
+  "keywords": ["game", "interactive", "detective", "web"],
+  "author": "Fiona Fang",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  }
+}
