@@ -350,6 +350,12 @@ body {
   align-items: center;
   justify-content: center;
   background: #000;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.jam-video-container:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
 .jam-video-thumbnail {
@@ -359,6 +365,11 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  transition: filter 0.2s ease;
+}
+
+.jam-video-container:hover .jam-video-thumbnail {
+  filter: brightness(1.1) contrast(1.05);
 }
 
 .jam-watch-button {
