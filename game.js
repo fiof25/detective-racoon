@@ -65,6 +65,7 @@ let chatTimerId = null; // auto-hide timer for chat bubble
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
 let designOverlayOpen = false; // design overlay state
+let jamOverlayOpen = false; // jam overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 
@@ -81,6 +82,7 @@ let suitcaseHotspot = null;
 let inventoryOverlay = null;
 let fatherFigureOverlay = null;
 let designOverlay = null;
+let jamOverlay = null;
 let mouseOverSuitcase = false;
 
 // -------- Utilities --------
@@ -503,6 +505,20 @@ function closeDesignOverlay() {
   openInventory();
 }
 
+function openJamOverlay() {
+  if (jamOverlayOpen) return;
+  jamOverlayOpen = true;
+  jamOverlay?.classList.remove('hidden');
+}
+
+function closeJamOverlay() {
+  if (!jamOverlayOpen) return;
+  jamOverlayOpen = false;
+  jamOverlay?.classList.add('hidden');
+  // Return to inventory when closing jam overlay
+  openInventory();
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -518,6 +534,10 @@ window.addEventListener('keydown', (e) => {
   }
   if (designOverlayOpen) {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeDesignOverlay(); }
+    return;
+  }
+  if (jamOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeJamOverlay(); }
     return;
   }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
@@ -571,7 +591,7 @@ function createSuitcaseUI() {
         <img class="inv-asset hoverable-asset" id="design-asset" src="assets/designAsset.png" style="position: absolute; left: 25%; top: 56%; width: 18%; z-index: 6;" alt="design" />
         <img class="inv-asset hoverable-asset" id="designto-asset" src="assets/designtoAsset.png" style="position: absolute; left: 26%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
         <img class="inv-asset hoverable-asset" id="lucy-asset" src="assets/lucyAsset.png" style="position: absolute; left: 39%; top: 55%; width: 16%; z-index: 5;" alt="lucy" />
-        <img class="inv-asset hoverable-asset" id="4sight-asset" src="assets/4sightAsset.png" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="4sight" />
+        <img class="inv-asset hoverable-asset" id="jam-asset" src="assets/jamAsset.png" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="jam" />
         <img class="inv-asset hoverable-asset" id="revision-asset" src="assets/revisionAsset.png" style="position: absolute; left: 41%; top: 32%; width: 27%; z-index: 3;" alt="revision" />
         <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="assets/fatherfigureAsset.png" style="position: absolute; left: 53%; top: 54%; width: 21%; z-index: 4;" alt="fatherfigure" />
       </div>
@@ -605,6 +625,15 @@ function createSuitcaseUI() {
     designAsset.addEventListener('click', () => {
       closeInventory();
       openDesignOverlay();
+    });
+  }
+  
+  // Add click handler for jam asset
+  const jamAsset = inventoryOverlay.querySelector('#jam-asset');
+  if (jamAsset) {
+    jamAsset.addEventListener('click', () => {
+      closeInventory();
+      openJamOverlay();
     });
   }
   
@@ -686,6 +715,27 @@ function createSuitcaseUI() {
     const t = e.target;
     if (t instanceof Element && t.hasAttribute('data-close-design')) closeDesignOverlay();
   });
+  
+  // Create jam overlay
+  jamOverlay = document.createElement('div');
+  jamOverlay.id = 'jamOverlay';
+  jamOverlay.className = 'overlay hidden';
+  jamOverlay.setAttribute('aria-hidden', 'true');
+  jamOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-jam></div>
+    <button class="overlay-close" data-close-jam aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="jam-notebook-stage">
+        <!-- Jam notebook content will be styled with CSS background -->
+      </div>
+    </div>`;
+  ui.appendChild(jamOverlay);
+  
+  // Close on backdrop click
+  jamOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-jam')) closeJamOverlay();
+  });
 }
 
 // -------- Game Loop --------
@@ -696,14 +746,14 @@ function tick(ts) {
   // Movement intent
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !jamOverlayOpen) {
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
     if (keys.has('arrowup') || keys.has('w')) vControl -= 1;
     if (keys.has('arrowdown') || keys.has('s')) vControl += 1;
   }
 
-  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !jamOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {

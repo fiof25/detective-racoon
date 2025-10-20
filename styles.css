@@ -321,6 +321,18 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* Jam notebook stage uses jamNote.png as background */
+.jam-notebook-stage {
+  position: relative;
+  height: 100%;
+  background: center/contain no-repeat;
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url('assets/jamNote.png');
+}
+
 /* Chat bubble */
 .chat {
   position: absolute;
