@@ -727,6 +727,13 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="jam-notebook-stage">
         <!-- Jam notebook content will be styled with CSS background -->
+        <div class="jam-video-container" id="jamVideoContainer">
+          <img src="assets/jamVid.png" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
+          <button class="jam-watch-button" id="jamWatchButton">
+            <span class="play-icon">▶</span>
+            Watch Demo
+          </button>
+        </div>
       </div>
     </div>`;
   ui.appendChild(jamOverlay);
@@ -736,6 +743,24 @@ function createSuitcaseUI() {
     const t = e.target;
     if (t instanceof Element && t.hasAttribute('data-close-jam')) closeJamOverlay();
   });
+  
+  // Add click handler for watch demo button
+  const jamWatchButton = jamOverlay.querySelector('#jamWatchButton');
+  if (jamWatchButton) {
+    jamWatchButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent overlay from closing
+      window.open('https://www.youtube.com/watch?v=G-rITGNKfxI', '_blank');
+    });
+  }
+  
+  // Make the entire video container clickable
+  const jamVideoContainer = jamOverlay.querySelector('#jamVideoContainer');
+  if (jamVideoContainer) {
+    jamVideoContainer.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent overlay from closing
+      window.open('https://www.youtube.com/watch?v=G-rITGNKfxI', '_blank');
+    });
+  }
 }
 
 // -------- Game Loop --------
