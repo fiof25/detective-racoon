@@ -75,6 +75,7 @@ let designOverlayOpen = false; // design overlay state
 let designtoOverlayOpen = false; // designto overlay state
 let jamOverlayOpen = false; // jam overlay state
 let lucyOverlayOpen = false; // lucy overlay state
+let revisionOverlayOpen = false; // revision overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 
@@ -94,6 +95,7 @@ let designOverlay = null;
 let designtoOverlay = null;
 let jamOverlay = null;
 let lucyOverlay = null;
+let revisionOverlay = null;
 let mouseOverSuitcase = false;
 
 // -------- Utilities --------
@@ -424,7 +426,7 @@ function tryEnterHouse() {
 }
 
 function tryExitHouse() {
-  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen) return; // ignore while any overlay is open
+  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen) return; // ignore while any overlay is open
   if (scene !== 'inside' || !canInteract) return;
   fadeOutIn(async () => {
     await enterOutside();
@@ -643,6 +645,22 @@ function closeLucyOverlay() {
   openInventory();
 }
 
+function openRevisionOverlay() {
+  if (revisionOverlayOpen) return;
+  revisionOverlayOpen = true;
+  revisionOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
+}
+
+function closeRevisionOverlay() {
+  if (!revisionOverlayOpen) return;
+  revisionOverlayOpen = false;
+  revisionOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
+  // Return to inventory when closing revision overlay
+  openInventory();
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -670,6 +688,10 @@ window.addEventListener('keydown', (e) => {
   }
   if (lucyOverlayOpen) {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeLucyOverlay(); }
+    return;
+  }
+  if (revisionOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeRevisionOverlay(); }
     return;
   }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
@@ -869,6 +891,15 @@ function createSuitcaseUI() {
     lucyAsset.addEventListener('click', () => {
       closeInventory();
       openLucyOverlay();
+    });
+  }
+  
+  // Add click handler for revision asset
+  const revisionAsset = inventoryOverlay.querySelector('#revision-asset');
+  if (revisionAsset) {
+    revisionAsset.addEventListener('click', () => {
+      closeInventory();
+      openRevisionOverlay();
     });
   }
   
@@ -1090,6 +1121,29 @@ function createSuitcaseUI() {
     const t = e.target;
     if (t instanceof Element && t.hasAttribute('data-close-lucy')) closeLucyOverlay();
   });
+  
+  // Create revision overlay
+  revisionOverlay = document.createElement('div');
+  revisionOverlay.id = 'revisionOverlay';
+  revisionOverlay.className = 'overlay hidden';
+  revisionOverlay.setAttribute('aria-hidden', 'true');
+  revisionOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-revision></div>
+    <button class="overlay-close" data-close-revision aria-label="Close">×</button>
+    <div class="overlay-panel">
+      <div class="revision-stage">
+        <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-demo-link" id="revisionDemoLink">
+          <img src="${versionedAsset('assets/revisionfulldemoIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
+        </a>
+      </div>
+    </div>`;
+  ui.appendChild(revisionOverlay);
+  
+  // Close on backdrop click
+  revisionOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-revision')) closeRevisionOverlay();
+  });
 }
 
 // -------- Game Loop --------
@@ -1100,7 +1154,7 @@ function tick(ts) {
   // Movement intent (keyboard + touch)
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen) {
     // Keyboard controls
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
@@ -1114,7 +1168,7 @@ function tick(ts) {
     if (touchState.down) vControl += 1;
   }
 
-  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
