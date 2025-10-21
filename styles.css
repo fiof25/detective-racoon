@@ -9,6 +9,41 @@ body {
   overflow: hidden; /* the game handles its own scrolling/camera */
   /* CSS custom property for consistent scaling */
   --scale-factor: 1;
+  cursor: none !important; /* Hide default cursor everywhere */
+}
+
+/* Ensure cursor is hidden on all elements */
+*, *::before, *::after {
+  cursor: none !important;
+}
+
+#custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  background-image: url('./assets/magnify.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.1s ease, transform 0.08s ease;
+  opacity: 0;
+}
+
+#custom-cursor.active {
+  opacity: 1;
+}
+
+#custom-cursor.hover {
+  transform: translate(-50%, -50%) scale(1.8);
+}
+
+#custom-cursor.click {
+  transform: translate(-50%, -50%) scale(0.8);
 }
 
 #game {
@@ -65,7 +100,6 @@ body {
   border: 0;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-  cursor: pointer;
   pointer-events: auto;
   transition: transform 120ms ease, opacity 120ms ease;
   z-index: 8;
@@ -83,7 +117,6 @@ body {
   border: 0;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.35);
-  cursor: pointer;
   pointer-events: auto;
   transition: transform 120ms ease, opacity 120ms ease;
   z-index: 8;
@@ -151,7 +184,6 @@ body {
 /* Individual inventory assets */
 .inv-asset {
   height: auto;
-  cursor: pointer;
   transition: transform 0.15s ease;
   transform-origin: center;
   will-change: transform;
@@ -170,7 +202,6 @@ body {
   width: auto; /* size set via JS */
   height: auto;
   pointer-events: auto;
-  cursor: pointer;
   z-index: 1; /* in world layer, well below raccoon (z-index: 100) */
   transition: filter 200ms ease;
   filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
@@ -191,7 +222,6 @@ body {
   font-size: 28px;
   line-height: 48px;
   text-align: center;
-  cursor: pointer;
   z-index: 26;
 }
 .overlay-close:hover { background: rgba(255,255,255,0.2); }
@@ -203,7 +233,6 @@ body {
   transform: translateY(-50%) translateZ(0);
   background: none;
   border: none;
-  cursor: pointer;
   pointer-events: auto;
   z-index: 27;
   transition: transform 0.2s ease;
@@ -388,7 +417,6 @@ body {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -429,7 +457,6 @@ body {
   font-family: 'Love Ya Like A Sister', cursive;
   font-size: 14px;
   font-weight: bold;
-  cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -455,7 +482,6 @@ body {
   top: 66%;
   background: none;
   border: none;
-  cursor: pointer;
   transition: transform 0.2s ease;
   z-index: 30;
   padding: 0;
@@ -532,7 +558,6 @@ body {
   max-width: 400px; /* Reasonable default size - maintains aspect ratio */
   z-index: 10; /* Above the background note */
   pointer-events: auto;
-  cursor: pointer;
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
@@ -939,7 +964,6 @@ body {
   font-size: 18px;
   font-weight: bold;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-  cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
