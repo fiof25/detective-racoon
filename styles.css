@@ -7,6 +7,8 @@ body {
   color: #fff;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden; /* the game handles its own scrolling/camera */
+  /* CSS custom property for consistent scaling */
+  --scale-factor: 1;
 }
 
 #game {
@@ -248,6 +250,8 @@ body {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  /* Maintain aspect ratio and positioning */
+  transform-origin: top left;
 }
 
 .youtube-embed-container iframe {
@@ -520,6 +524,8 @@ body {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  /* Maintain aspect ratio and positioning */
+  transform-origin: top left;
 }
 
 .lucy-youtube-embed-container iframe {
@@ -596,9 +602,9 @@ body {
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
-  /* Adjust raccoon size for mobile */
+  /* Adjust raccoon size for mobile - use calc to maintain proportions */
   #raccoon {
-    width: 270px; /* Half size for mobile */
+    width: calc(540px * var(--scale-factor, 0.5)); /* Scale proportionally */
   }
 
   /* Mobile-friendly interact button */
@@ -633,19 +639,21 @@ body {
     height: 120px;
   }
 
-  /* Mobile YouTube embed adjustments */
+  /* Mobile YouTube embed adjustments - maintain relative positioning */
   .youtube-embed-container {
-    left: 15%;
-    top: 25%;
-    width: 35%;
-    height: 40%;
+    /* Keep same relative position but adjust size slightly */
+    left: 18%;
+    top: 26%;
+    width: 32%;
+    height: 36%;
   }
 
   .lucy-youtube-embed-container {
-    left: 55%;
-    top: 15%;
-    width: 25%;
-    height: 30%;
+    /* Keep same relative position but adjust size slightly */
+    left: 58%;
+    top: 16%;
+    width: 22%;
+    height: 26%;
   }
 
   /* Mobile GitHub links */
@@ -692,12 +700,12 @@ body {
     padding: 8px 12px;
   }
 
-  /* Mobile jam video container */
+  /* Mobile jam video container - maintain consistent positioning */
   .jam-video-container {
-    left: 17%;
-    top: 35%;
-    width: 28%;
-    height: 36%;
+    left: 19%;
+    top: 37%;
+    width: 26%;
+    height: 34%;
   }
 
   .jam-watch-button {
@@ -709,7 +717,7 @@ body {
 @media (max-width: 480px) {
   /* Extra small mobile devices */
   #raccoon {
-    width: 200px; /* Even smaller for very small screens */
+    width: calc(540px * var(--scale-factor, 0.37)); /* Scale proportionally for small screens */
   }
 
   #interact,
@@ -731,17 +739,19 @@ body {
   }
 
   .youtube-embed-container {
-    left: 10%;
-    top: 20%;
-    width: 45%;
-    height: 45%;
+    /* Keep consistent positioning even on very small screens */
+    left: 18%;
+    top: 26%;
+    width: 34%;
+    height: 38%;
   }
 
   .lucy-youtube-embed-container {
-    left: 50%;
-    top: 12%;
-    width: 30%;
-    height: 35%;
+    /* Keep consistent positioning even on very small screens */
+    left: 58%;
+    top: 16%;
+    width: 24%;
+    height: 28%;
   }
 
   .github-link img,
@@ -773,10 +783,10 @@ body {
   }
 
   .jam-video-container {
-    left: 15%;
-    top: 32%;
-    width: 32%;
-    height: 38%;
+    left: 19%;
+    top: 37%;
+    width: 27%;
+    height: 34%;
   }
 }
 
