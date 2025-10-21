@@ -1284,6 +1284,80 @@ function tick(ts) {
   requestAnimationFrame(tick);
 }
 
+// -------- Custom Floating Cursor --------
+function createCustomCursor() {
+  // Create cursor element
+  const cursor = document.createElement('div');
+  cursor.id = 'custom-cursor';
+  document.body.appendChild(cursor);
+  
+  let mouseX = 0;
+  let mouseY = 0;
+  let isVisible = false;
+  
+  // Update cursor position
+  function updateCursor() {
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+    requestAnimationFrame(updateCursor);
+  }
+  
+  // Mouse move handler
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    if (!isVisible) {
+      cursor.classList.add('active');
+      isVisible = true;
+    }
+  });
+  
+  // Mouse enter/leave handlers for hover effects
+  document.addEventListener('mouseover', (e) => {
+    const target = e.target;
+    // Check if element or its parent is clickable
+    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, a, button, [onclick], .clickable');
+    
+    if (clickableElement) {
+      cursor.classList.add('hover');
+    }
+  });
+  
+  document.addEventListener('mouseout', (e) => {
+    const target = e.target;
+    // Check if element or its parent is clickable
+    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, a, button, [onclick], .clickable');
+    
+    if (clickableElement) {
+      cursor.classList.remove('hover');
+    }
+  });
+  
+  // Hide cursor when mouse leaves window
+  document.addEventListener('mouseleave', () => {
+    cursor.classList.remove('active');
+    isVisible = false;
+  });
+  
+  // Click effects
+  document.addEventListener('mousedown', (e) => {
+    cursor.classList.add('click');
+  });
+  
+  document.addEventListener('mouseup', (e) => {
+    cursor.classList.remove('click');
+  });
+  
+  // Ensure cursor stays hidden on all elements
+  document.addEventListener('selectstart', (e) => {
+    e.preventDefault(); // Prevent text selection cursor
+  });
+  
+  // Start animation loop
+  updateCursor();
+}
+
 // -------- Init --------
 (async function init() {
   // size raccoon element from config and set initial src
@@ -1296,6 +1370,8 @@ function tick(ts) {
   createSuitcaseUI();
   // create touch controls for mobile
   createTouchControls();
+  // create custom floating cursor
+  createCustomCursor();
   // Recompute layout on resize to keep full image height visible
   window.addEventListener('resize', () => {
     // Re-fit current scene
