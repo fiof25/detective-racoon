@@ -362,6 +362,10 @@ async function enterOutside() {
   scene = 'outside';
   const img = await loadImage(CONFIG.outside.bgSrc);
   bgEl.src = CONFIG.outside.bgSrc;
+  
+  // Hide back button when outside
+  const backButton = document.getElementById('back-button');
+  if (backButton) backButton.classList.add('hidden');
   // After image is set, ensure sizes reflect fit-height scaling
   await img.decode?.();
   // Use cover scaling to fill entire viewport without black bars
@@ -391,6 +395,10 @@ async function enterInside() {
   scene = 'inside';
   const img = await loadImage(CONFIG.inside.bgSrc);
   bgEl.src = CONFIG.inside.bgSrc;
+  
+  // Show back button when inside
+  const backButton = document.getElementById('back-button');
+  if (backButton) backButton.classList.remove('hidden');
   await img.decode?.();
   fitBackgroundToViewportHeight(img);
 
@@ -1441,6 +1449,25 @@ function createCustomCursor() {
   requestAnimationFrame(tick);
   // build overlay UI once DOM is ready
   createSuitcaseUI();
+  // Add event listener for projects link to open briefcase
+  const projectsLink = document.getElementById('projects-link');
+  if (projectsLink) {
+    projectsLink.addEventListener('click', (e) => {
+      e.preventDefault(); // Prevent default link behavior
+      openInventory(); // Open the briefcase/suitcase
+    });
+  }
+  
+  // Add event listener for back button to exit house
+  const backButton = document.getElementById('back-button');
+  if (backButton) {
+    backButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (scene === 'inside' && !overlayOpen) {
+        tryExitHouse(); // Exit the house and place raccoon at door
+      }
+    });
+  }
   // create touch controls for mobile
   createTouchControls();
   // create custom floating cursor
