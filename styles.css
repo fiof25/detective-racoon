@@ -537,7 +537,7 @@ body {
 /* Lucy news icon link positioned on the note */
 .lucy-news-link {
   position: absolute;
-  left: 35%;
+  left: 36%;
   top: 70%;
   z-index: 30;
   transition: transform 0.2s ease;
@@ -548,7 +548,7 @@ body {
 }
 
 .lucy-news-link img {
-  width: 260px;
+  width: 250px;
   height: auto;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
