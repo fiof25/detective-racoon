@@ -715,7 +715,19 @@ window.addEventListener('keyup', (e) => {
   keys.delete(k);
 });
 
-interactBtn.addEventListener('click', () => tryEnterHouse());
+interactBtn.addEventListener('click', () => {
+  if (!canInteract) return;
+  
+  if (scene === 'outside') {
+    tryEnterHouse();
+  } else if (scene === 'inside') {
+    if (canOpenSuitcase) {
+      openInventory();
+    } else {
+      tryExitHouse();
+    }
+  }
+});
 
 // -------- Touch Controls --------
 let touchControls = null;
@@ -823,7 +835,7 @@ function createSuitcaseUI() {
   inventoryOverlay.setAttribute('aria-hidden', 'true');
   inventoryOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close></div>
-    <button class="overlay-close" data-close aria-label="Close">×</button>
+    <button class="overlay-close" data-close aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="suitcase-stage">
         <!-- Individual positioned images matching reference layout exactly -->
@@ -843,10 +855,35 @@ function createSuitcaseUI() {
     if (t instanceof Element && t.hasAttribute('data-close')) closeInventory();
   });
 
-  // Enable hover on all individual assets
+  // Enable hover on all individual assets and add image swapping
   const assets = inventoryOverlay.querySelectorAll('.inv-asset');
   assets.forEach(asset => {
     asset.style.pointerEvents = 'auto';
+    
+    // Store original src for hover effect
+    const originalSrc = asset.src;
+    const assetId = asset.id;
+    
+    // Define hover image mappings (only for assets that have #2 versions)
+    const hoverImages = {
+      'fatherfigure-asset': 'assets/fatherfigureAsset2.png',
+      'design-asset': 'assets/designAsset2.png',
+      'designto-asset': 'assets/designtoAsset2.png',
+      'lucy-asset': 'assets/lucyAsset2.png',
+      'revision-asset': 'assets/revisionAsset2.png',
+      'jam-asset': 'assets/jamAsset2.png' // Add this when jamAsset2.png is uploaded
+    };
+    
+    // Add hover effect if #2 version exists
+    if (hoverImages[assetId]) {
+      asset.addEventListener('mouseenter', () => {
+        asset.src = versionedAsset(hoverImages[assetId]);
+      });
+      
+      asset.addEventListener('mouseleave', () => {
+        asset.src = originalSrc;
+      });
+    }
   });
   
   // Add click handler for father figure asset
@@ -910,7 +947,7 @@ function createSuitcaseUI() {
   fatherFigureOverlay.setAttribute('aria-hidden', 'true');
   fatherFigureOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close-father></div>
-    <button class="overlay-close" data-close-father aria-label="Close">×</button>
+    <button class="overlay-close" data-close-father aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="notebook-stage">
         <!-- Father figure notebook content will be styled with CSS background -->
@@ -968,7 +1005,7 @@ function createSuitcaseUI() {
   designOverlay.setAttribute('aria-hidden', 'true');
   designOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close-design></div>
-    <button class="overlay-close" data-close-design aria-label="Close">×</button>
+    <button class="overlay-close" data-close-design aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="design-stage">
         <img src="${versionedAsset('assets/designNote.png')}" alt="Design Note" class="design-note-image">
@@ -989,7 +1026,7 @@ function createSuitcaseUI() {
   jamOverlay.setAttribute('aria-hidden', 'true');
   jamOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close-jam></div>
-    <button class="overlay-close" data-close-jam aria-label="Close">×</button>
+    <button class="overlay-close" data-close-jam aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="jam-notebook-stage">
         <!-- Jam notebook content will be styled with CSS background -->
@@ -1050,7 +1087,7 @@ function createSuitcaseUI() {
   designtoOverlay.setAttribute('aria-hidden', 'true');
   designtoOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close-designto></div>
-    <button class="overlay-close" data-close-designto aria-label="Close">×</button>
+    <button class="overlay-close" data-close-designto aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="designto-stage">
         <img src="${versionedAsset('assets/designtoNote.png')}" alt="DesignTO Note" class="designto-note-image">
@@ -1092,7 +1129,7 @@ function createSuitcaseUI() {
   lucyOverlay.setAttribute('aria-hidden', 'true');
   lucyOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close-lucy></div>
-    <button class="overlay-close" data-close-lucy aria-label="Close">×</button>
+    <button class="overlay-close" data-close-lucy aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="lucy-notebook-stage">
         <!-- Lucy notebook content will be styled with CSS background -->
@@ -1129,7 +1166,7 @@ function createSuitcaseUI() {
   revisionOverlay.setAttribute('aria-hidden', 'true');
   revisionOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close-revision></div>
-    <button class="overlay-close" data-close-revision aria-label="Close">×</button>
+    <button class="overlay-close" data-close-revision aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="revision-stage">
         <img src="${versionedAsset('assets/revisionNote.png')}" alt="Revision Note" class="revision-note-image">
