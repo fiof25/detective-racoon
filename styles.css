@@ -23,7 +23,7 @@ body {
   left: 0;
   width: 64px;
   height: 64px;
-  background-image: url('./assets/magnify.png');
+  background-image: url('./assets/searchIcon.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
