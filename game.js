@@ -1354,7 +1354,7 @@ function createCustomCursor() {
   document.addEventListener('mouseover', (e) => {
     const target = e.target;
     // Check if element or its parent is clickable
-    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, a, button, [onclick], .clickable');
+    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, .nav-link, a, button, [onclick], .clickable');
     
     if (clickableElement) {
       cursor.classList.add('hover');
@@ -1364,7 +1364,7 @@ function createCustomCursor() {
   document.addEventListener('mouseout', (e) => {
     const target = e.target;
     // Check if element or its parent is clickable
-    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, a, button, [onclick], .clickable');
+    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, .nav-link, a, button, [onclick], .clickable');
     
     if (clickableElement) {
       cursor.classList.remove('hover');
