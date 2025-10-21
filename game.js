@@ -1071,7 +1071,7 @@ function createSuitcaseUI() {
           </iframe>
         </div>
         <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
-          <img src="assets/lucynewsicon.png" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
+          <img src="assets/lucynewsIcon.png" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
         </a>
         <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-demo-link" id="lucyDemoLink">
           <img src="assets/lucyfulldemoIcon.png" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
