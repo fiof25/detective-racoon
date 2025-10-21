@@ -410,8 +410,8 @@ async function enterInside() {
   }
   centerCameraOn(racX, racY);
 
-  // Disable spotlight effect for inside scene
-  disableSpotlight();
+  // Enable spotlight effect for inside scene too
+  enableSpotlight();
 
   // Show chat bubble briefly when entering the house
   if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
@@ -1333,7 +1333,7 @@ function tick(ts) {
 
 // -------- Spotlight Effect --------
 function updateSpotlight() {
-  if (scene !== 'outside' || !spotlightEl || !spotlightEl.classList.contains('spotlight') || !racEl) return;
+  if (!spotlightEl || !spotlightEl.classList.contains('spotlight') || !racEl) return;
   
   // Get the actual raccoon PNG element's position on screen
   const raccoonRect = racEl.getBoundingClientRect();
@@ -1347,10 +1347,7 @@ function updateSpotlight() {
 
 function enableSpotlight() {
   if (spotlightEl) {
-    console.log('Enabling spotlight'); // Debug
     spotlightEl.classList.add('active', 'spotlight');
-  } else {
-    console.log('Spotlight element not found!'); // Debug
   }
 }
 
