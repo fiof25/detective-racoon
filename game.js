@@ -1132,6 +1132,7 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-revision aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="revision-stage">
+        <img src="${versionedAsset('assets/revisionNote.png')}" alt="Revision Note" class="revision-note-image">
         <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-project-link" id="revisionDemoLink">
           <img src="${versionedAsset('assets/revisionProjectIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
         </a>
