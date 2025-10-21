@@ -1000,8 +1000,8 @@ function createSuitcaseUI() {
             Watch Demo
           </button>
         </div>
-        <button class="jam-demo-button" id="jamDemoButton">
-          <img src="${versionedAsset('assets/jamDemo.png')}" alt="Try Demo" class="jam-demo-icon">
+        <button class="jam-launch-button" id="jamLaunchButton">
+          <img src="${versionedAsset('assets/jamLaunchIcon.png')}" alt="Try Demo" class="jam-launch-icon">
         </button>
         <a href="https://github.com/justinwuzijin/eye-tester-app" target="_blank" class="jam-github-link" id="jamGithubLink">
           <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
@@ -1034,10 +1034,10 @@ function createSuitcaseUI() {
     });
   }
   
-  // Add click handler for jam demo button
-  const jamDemoButton = jamOverlay.querySelector('#jamDemoButton');
-  if (jamDemoButton) {
-    jamDemoButton.addEventListener('click', (e) => {
+  // Add click handler for jam launch button
+  const jamLaunchButton = jamOverlay.querySelector('#jamLaunchButton');
+  if (jamLaunchButton) {
+    jamLaunchButton.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent overlay from closing
       window.open('https://eye-tester-app.vercel.app', '_blank');
     });
@@ -1109,8 +1109,8 @@ function createSuitcaseUI() {
         <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
           <img src="${versionedAsset('assets/lucyArticle.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
         </a>
-        <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-demo-link" id="lucyDemoLink">
-          <img src="${versionedAsset('assets/lucyfulldemoIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
+        <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-project-link" id="lucyDemoLink">
+          <img src="${versionedAsset('assets/lucyProjectIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
         </a>
       </div>
     </div>`;
@@ -1132,8 +1132,8 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-revision aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="revision-stage">
-        <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-demo-link" id="revisionDemoLink">
-          <img src="${versionedAsset('assets/revisionfulldemoIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
+        <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-project-link" id="revisionDemoLink">
+          <img src="${versionedAsset('assets/revisionProjectIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
         </a>
       </div>
     </div>`;
