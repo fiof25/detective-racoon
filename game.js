@@ -9,6 +9,11 @@
 
 // -------- Config (tweak as needed) --------
 const CONFIG = {
+  // Reference dimensions for consistent scaling (based on a standard laptop screen)
+  reference: {
+    width: 1440,
+    height: 900
+  },
   raccoon: {
     width: 540,            // px (mirrors styles.css)
     speed: 350,            // px per second (faster walking)
@@ -100,6 +105,15 @@ function viewportSize() {
   // Use game container's client size to honor the screenshot aspect ratio
   const rect = gameEl.getBoundingClientRect();
   return { w: rect.width, h: rect.height };
+}
+
+function getConsistentScale() {
+  const { w, h } = viewportSize();
+  // Calculate scale based on reference dimensions to maintain consistency
+  const scaleX = w / CONFIG.reference.width;
+  const scaleY = h / CONFIG.reference.height;
+  // Use the smaller scale to ensure everything fits
+  return Math.min(scaleX, scaleY);
 }
 
 function centerCameraOn(x, y) {
@@ -254,21 +268,74 @@ function fitBackgroundToViewportHeight(imgEl) {
   bgEl.style.height = `${dispH}px`;
   worldEl.style.width = `${dispW}px`;
   worldEl.style.height = `${dispH}px`;
+  
+  // Reset world position for inside scene
+  worldEl.style.left = '0px';
+  worldEl.style.top = '0px';
+  
+  // Set CSS scale factor for consistent positioning
+  document.body.style.setProperty('--scale-factor', scale);
+}
+
+function fitBackgroundToViewportContain(imgEl) {
+  const { w, h } = viewportSize();
+  const natW = imgEl.naturalWidth;
+  const natH = imgEl.naturalHeight;
+  
+  // Use contain scaling - fit entire image within viewport
+  const scaleX = w / natW;
+  const scaleY = h / natH;
+  const scale = Math.min(scaleX, scaleY); // use smaller scale to ensure entire image fits
+  
+  const dispW = Math.round(natW * scale);
+  const dispH = Math.round(natH * scale);
+  worldW = dispW;
+  worldH = dispH;
+  
+  bgEl.style.width = `${dispW}px`;
+  bgEl.style.height = `${dispH}px`;
+  worldEl.style.width = `${dispW}px`;
+  worldEl.style.height = `${dispH}px`;
+  
+  // Center the world if it's smaller than viewport
+  const offsetX = Math.max(0, (w - dispW) / 2);
+  const offsetY = Math.max(0, (h - dispH) / 2);
+  worldEl.style.left = `${offsetX}px`;
+  worldEl.style.top = `${offsetY}px`;
+  
+  // Set CSS scale factor for consistent positioning
+  document.body.style.setProperty('--scale-factor', scale);
 }
 
 function fitBackgroundToViewportCover(imgEl) {
   const { w, h } = viewportSize();
   const natW = imgEl.naturalWidth;
   const natH = imgEl.naturalHeight;
-  const scale = Math.max(w / natW, h / natH); // cover: no empty space
+  
+  // Use consistent scaling approach - always scale to fit height first
+  // This ensures consistent positioning across all devices
+  const scale = h / natH; // fit height like inside scene
   const dispW = Math.round(natW * scale);
   const dispH = Math.round(natH * scale);
-  worldW = dispW;
-  worldH = dispH;
-  bgEl.style.width = `${dispW}px`;
-  bgEl.style.height = `${dispH}px`;
-  worldEl.style.width = `${dispW}px`;
-  worldEl.style.height = `${dispH}px`;
+  
+  // If width is too small, scale to fit width instead
+  if (dispW < w) {
+    const wScale = w / natW;
+    worldW = Math.round(natW * wScale);
+    worldH = Math.round(natH * wScale);
+  } else {
+    worldW = dispW;
+    worldH = dispH;
+  }
+  
+  bgEl.style.width = `${worldW}px`;
+  bgEl.style.height = `${worldH}px`;
+  worldEl.style.width = `${worldW}px`;
+  worldEl.style.height = `${worldH}px`;
+  
+  // Set CSS scale factor for consistent positioning
+  const finalScale = worldH / imgEl.naturalHeight;
+  document.body.style.setProperty('--scale-factor', finalScale);
 }
 
 // Ground line (feet Y position)
@@ -289,8 +356,8 @@ async function enterOutside() {
   bgEl.src = CONFIG.outside.bgSrc;
   // After image is set, ensure sizes reflect fit-height scaling
   await img.decode?.();
-  // Outside uses cover to ensure no empty space and allow horizontal scroll
-  fitBackgroundToViewportCover(img);
+  // Use contain scaling to ensure entire outside house image is visible
+  fitBackgroundToViewportContain(img);
 
   updateDoorWorldFromScaled();
   spawnRaccoonOutside();
@@ -1174,7 +1241,7 @@ function tick(ts) {
     // Re-fit current scene
     if (!bgEl.naturalWidth || !bgEl.naturalHeight) return;
     if (scene === 'outside') {
-      fitBackgroundToViewportCover(bgEl);
+      fitBackgroundToViewportContain(bgEl);
       updateDoorWorldFromScaled();
       // keep outside camera frozen at new center
       centerCameraOn(racX, racY);
