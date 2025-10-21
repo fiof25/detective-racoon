@@ -1,0 +1,29 @@
+# Cache Control for Detective Raccoon Assets
+
+# Development: Disable caching for easier development
+<IfModule mod_headers.c>
+    # For development - disable caching
+    <FilesMatch "\.(html|js|css)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+    
+    # For assets - short cache with validation
+    <FilesMatch "\.(png|jpg|jpeg|gif|svg|ico)$">
+        Header set Cache-Control "public, max-age=300, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# For production, uncomment below and comment above:
+# <IfModule mod_headers.c>
+#     # Cache static assets for longer
+#     <FilesMatch "\.(png|jpg|jpeg|gif|svg|ico|css|js)$">
+#         Header set Cache-Control "public, max-age=31536000"
+#     </FilesMatch>
+#     
+#     # HTML files - short cache
+#     <FilesMatch "\.html$">
+#         Header set Cache-Control "public, max-age=3600, must-revalidate"
+#     </FilesMatch>
+# </IfModule>
