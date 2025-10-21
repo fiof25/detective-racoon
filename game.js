@@ -104,7 +104,16 @@ function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 function lerp(a, b, t) { return a + (b - a) * t; }
 function show(el) { el.classList.remove('hidden'); }
 function hide(el) { el.classList.add('hidden'); }
-function setRaccoonImage(src) { if (racEl.src.endsWith(src)) return; racEl.src = src; }
+function setRaccoonImage(src) { 
+  if (!racEl || !src) return;
+  if (racEl.src.endsWith(src)) return; 
+  racEl.onerror = () => {
+    console.warn(`Failed to load raccoon image: ${src}`);
+    // Fallback to a basic placeholder if image fails
+    racEl.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTQwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTQwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzMzMyIvPjx0ZXh0IHg9IjI3MCIgeT0iMjAwIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjI0cHgiPkZhaWxlZCB0byBsb2FkPC90ZXh0Pjwvc3ZnPg==';
+  };
+  racEl.src = src; 
+}
 
 // Helper function to add version parameter to asset URLs
 function versionedAsset(path) {
@@ -113,8 +122,12 @@ function versionedAsset(path) {
 
 function viewportSize() {
   // Use game container's client size to honor the screenshot aspect ratio
+  if (!gameEl) return { w: window.innerWidth, h: window.innerHeight };
   const rect = gameEl.getBoundingClientRect();
-  return { w: rect.width, h: rect.height };
+  return { 
+    w: rect.width || window.innerWidth, 
+    h: rect.height || window.innerHeight 
+  };
 }
 
 function getConsistentScale() {
@@ -228,7 +241,27 @@ async function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = reject;
+    img.onerror = (error) => {
+      console.error(`Failed to load image: ${src}`, error);
+      // Create a fallback colored rectangle
+      const canvas = document.createElement('canvas');
+      canvas.width = 800;
+      canvas.height = 600;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#333';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fff';
+      ctx.font = '24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Image failed to load', canvas.width/2, canvas.height/2);
+      
+      // Convert canvas to image
+      const fallbackImg = new Image();
+      fallbackImg.src = canvas.toDataURL();
+      fallbackImg.naturalWidth = canvas.width;
+      fallbackImg.naturalHeight = canvas.height;
+      resolve(fallbackImg);
+    };
     img.src = src;
   });
 }
@@ -359,78 +392,98 @@ function getCeilingY() {
 
 // -------- Scenes --------
 async function enterOutside() {
-  scene = 'outside';
-  const img = await loadImage(CONFIG.outside.bgSrc);
-  bgEl.src = CONFIG.outside.bgSrc;
-  
-  // Hide back button when outside
-  const backButton = document.getElementById('back-button');
-  if (backButton) backButton.classList.add('hidden');
-  // After image is set, ensure sizes reflect fit-height scaling
-  await img.decode?.();
-  // Use cover scaling to fill entire viewport without black bars
-  fitBackgroundToViewportCover(img);
+  try {
+    scene = 'outside';
+    const img = await loadImage(CONFIG.outside.bgSrc);
+    bgEl.src = CONFIG.outside.bgSrc;
+    
+    // Hide back button when outside
+    const backButton = document.getElementById('back-button');
+    if (backButton) backButton.classList.add('hidden');
+    // After image is set, ensure sizes reflect fit-height scaling
+    await img.decode?.();
+    // Use cover scaling to fill entire viewport without black bars
+    fitBackgroundToViewportCover(img);
 
-  updateDoorWorldFromScaled();
-  spawnRaccoonOutside();
-  // snap to ground on enter
-  racY = getGroundY(); vy = 0; onGround = true;
-  setRaccoonImage(CONFIG.raccoon.idleSrc);
-  placeRaccoon();
-  centerCameraOn(racX, racY);
-  
-  // Ensure suitcase is hidden when outside
-  mouseOverSuitcase = false;
-  canOpenSuitcase = false;
-  
-  // Enable spotlight effect for outside scene
-  enableSpotlight();
-  if (suitcaseHotspot) {
-    hide(suitcaseHotspot);
-    suitcaseHotspot.classList.remove('hover-active');
+    updateDoorWorldFromScaled();
+    spawnRaccoonOutside();
+    // snap to ground on enter
+    racY = getGroundY(); vy = 0; onGround = true;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    placeRaccoon();
+    centerCameraOn(racX, racY);
+    
+    // Ensure suitcase is hidden when outside
+    mouseOverSuitcase = false;
+    canOpenSuitcase = false;
+    
+    // Enable spotlight effect for outside scene
+    enableSpotlight();
+    if (suitcaseHotspot) {
+      hide(suitcaseHotspot);
+      suitcaseHotspot.classList.remove('hover-active');
+    }
+  } catch (error) {
+    console.error('Error entering outside scene:', error);
+    // Fallback behavior - still set up the scene with defaults
+    scene = 'outside';
+    spawnRaccoonOutside();
+    racY = getGroundY(); vy = 0; onGround = true;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    placeRaccoon();
   }
 }
 
 async function enterInside() {
-  scene = 'inside';
-  const img = await loadImage(CONFIG.inside.bgSrc);
-  bgEl.src = CONFIG.inside.bgSrc;
-  
-  // Show back button when inside
-  const backButton = document.getElementById('back-button');
-  if (backButton) backButton.classList.remove('hidden');
-  await img.decode?.();
-  fitBackgroundToViewportHeight(img);
+  try {
+    scene = 'inside';
+    const img = await loadImage(CONFIG.inside.bgSrc);
+    bgEl.src = CONFIG.inside.bgSrc;
+    
+    // Show back button when inside
+    const backButton = document.getElementById('back-button');
+    if (backButton) backButton.classList.remove('hidden');
+    await img.decode?.();
+    fitBackgroundToViewportHeight(img);
 
-  spawnRaccoonInside();
-  // snap to ground on enter
-  racY = getGroundY(); vy = 0; onGround = true;
-  setRaccoonImage(CONFIG.raccoon.idleSrc);
-  placeRaccoon();
-  updateExitWorldFromScaled();
-  updateSuitcaseWorldFromScaled();
-  // scale hotspot image width to world size
-  if (suitcaseHotspot) {
-    const s = CONFIG.inside.suitcase;
-    if (s && s.widthPct) {
-      suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+    spawnRaccoonInside();
+    // snap to ground on enter
+    racY = getGroundY(); vy = 0; onGround = true;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    placeRaccoon();
+    updateExitWorldFromScaled();
+    updateSuitcaseWorldFromScaled();
+    // scale hotspot image width to world size
+    if (suitcaseHotspot) {
+      const s = CONFIG.inside.suitcase;
+      if (s && s.widthPct) {
+        suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+      }
     }
+    centerCameraOn(racX, racY);
+
+    // Enable spotlight effect for inside scene too
+    enableSpotlight();
+
+    // Show chat bubble briefly when entering the house
+    if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
+    chatEl.textContent = 'Not too shabby.. Eh?';
+    show(chatEl);
+    // initial placement above raccoon (feet are at racY)
+    placeChatAtWorld(racX, racY - 220);
+    chatTimerId = setTimeout(() => {
+      hide(chatEl);
+      chatTimerId = null;
+    }, 2600);
+  } catch (error) {
+    console.error('Error entering inside scene:', error);
+    // Fallback behavior
+    scene = 'inside';
+    spawnRaccoonInside();
+    racY = getGroundY(); vy = 0; onGround = true;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    placeRaccoon();
   }
-  centerCameraOn(racX, racY);
-
-  // Enable spotlight effect for inside scene too
-  enableSpotlight();
-
-  // Show chat bubble briefly when entering the house
-  if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
-  chatEl.textContent = 'Not too shabby.. Eh?';
-  show(chatEl);
-  // initial placement above raccoon (feet are at racY)
-  placeChatAtWorld(racX, racY - 220);
-  chatTimerId = setTimeout(() => {
-    hide(chatEl);
-    chatTimerId = null;
-  }, 2600);
 }
 
 function tryEnterHouse() {
@@ -1133,7 +1186,7 @@ function createSuitcaseUI() {
     designtoIcon.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent overlay from closing
       // Open PDF in new tab
-      window.open(versionedAsset('assets/DesignTO Marketing Campaign-FionaFang.pdf'), '_blank');
+      window.open(versionedAsset('assets/designtoPortfolio-FionaFang.pdf'), '_blank');
     });
   }
   
@@ -1441,14 +1494,15 @@ function createCustomCursor() {
 
 // -------- Init --------
 (async function init() {
-  // size raccoon element from config and set initial src
-  racEl.style.width = `${CONFIG.raccoon.width}px`;
-  setRaccoonImage(CONFIG.raccoon.idleSrc);
+  try {
+    // size raccoon element from config and set initial src
+    racEl.style.width = `${CONFIG.raccoon.width}px`;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
 
-  await enterOutside();
-  requestAnimationFrame(tick);
-  // build overlay UI once DOM is ready
-  createSuitcaseUI();
+    await enterOutside();
+    requestAnimationFrame(tick);
+    // build overlay UI once DOM is ready
+    createSuitcaseUI();
   // Add event listener for projects link to open briefcase
   const projectsLink = document.getElementById('projects-link');
   if (projectsLink) {
@@ -1477,7 +1531,7 @@ function createCustomCursor() {
     // Re-fit current scene
     if (!bgEl.naturalWidth || !bgEl.naturalHeight) return;
     if (scene === 'outside') {
-      fitBackgroundToViewportContain(bgEl);
+      fitBackgroundToViewportCover(bgEl);
       updateDoorWorldFromScaled();
       // keep outside camera frozen at new center
       centerCameraOn(racX, racY);
@@ -1495,4 +1549,11 @@ function createCustomCursor() {
       centerCameraOn(racX, racY);
     }
   });
+  } catch (error) {
+    console.error('Error during initialization:', error);
+    // Fallback: still try to start the game with minimal functionality
+    racEl.style.width = `${CONFIG.raccoon.width}px`;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    requestAnimationFrame(tick);
+  }
 })();
