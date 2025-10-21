@@ -10,7 +10,7 @@
 // -------- Config (tweak as needed) --------
 const CONFIG = {
   // Asset version for cache busting - increment when assets change
-  assetVersion: '2',
+  assetVersion: '3',
   // Reference dimensions for consistent scaling (based on a standard laptop screen)
   reference: {
     width: 1440,
