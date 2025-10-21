@@ -325,6 +325,38 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* Revision notebook stage uses revisionNote.png as background */
+.revision-stage {
+  position: relative;
+  height: 100%;
+  background: center/contain no-repeat;
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url('assets/revisionNote.png');
+}
+
+
+/* Revision full demo icon link positioned on the note */
+.revision-demo-link {
+  position: absolute;
+  left: 31%;
+  top: 57%;
+  z-index: 10;
+  transition: transform 0.2s ease;
+}
+
+.revision-demo-link:hover {
+  transform: scale(1.05);
+}
+
+.revision-demo-link img {
+  width: 270px;
+  height: auto;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
 /* Jam notebook stage uses jamNote.png as background */
 .jam-notebook-stage {
   position: relative;
@@ -678,6 +710,12 @@ body {
     max-width: 95%;
   }
 
+  /* Mobile revision stage adjustments - no additional styling needed as background scales automatically */
+
+  .revision-demo-link img {
+    width: 200px;
+  }
+
   /* Mobile DesignTO adjustments */
   .designto-icon {
     max-width: 300px;
@@ -775,6 +813,10 @@ body {
     width: 160px;
   }
 
+  .revision-demo-link img {
+    width: 160px;
+  }
+
   .chat {
     max-width: 240px;
     font-size: 13px;
@@ -800,6 +842,7 @@ body {
   .jam-demo-button:hover,
   .lucy-news-link:hover,
   .lucy-demo-link:hover,
+  .revision-demo-link:hover,
   .jam-video-container:hover {
     transform: none;
     filter: none;
@@ -826,7 +869,8 @@ body {
   .jam-github-link:active,
   .jam-demo-button:active,
   .lucy-news-link:active,
-  .lucy-demo-link:active {
+  .lucy-demo-link:active,
+  .revision-demo-link:active {
     transform: scale(0.95);
   }
 
