@@ -205,6 +205,44 @@ body {
   height: 37.8px !important; /* 42px * 0.9 */
 }
 
+/* Top middle navigation bar */
+#top-middle-nav {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 40px;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.middle-nav-link {
+  display: block;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.middle-nav-link:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 16px rgba(255, 255, 255, 0.2));
+}
+
+.middle-nav-link:active {
+  transform: scale(0.95);
+}
+
+.middle-nav-icon {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100px; /* Set a reasonable max to prevent overly large images */
+  max-height: 100px;
+  display: block;
+  transform: none !important;
+}
+
 #interact {
   position: absolute;
   padding: 8px 12px;
@@ -835,6 +873,19 @@ body {
   #github-link .nav-icon {
     width: 31.5px !important; /* 35px * 0.9 */
     height: 31.5px !important; /* 35px * 0.9 */
+  }
+
+  /* Mobile top middle navigation */
+  #top-middle-nav {
+    top: 16px;
+    gap: 30px;
+  }
+
+  .middle-nav-icon {
+    width: auto !important;
+    height: auto !important;
+    max-width: 80px; /* Smaller max for mobile */
+    max-height: 80px;
   }
 
   /* Mobile navigation arrows */
