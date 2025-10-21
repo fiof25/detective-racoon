@@ -4,7 +4,7 @@
     - Raccoon idles by default (idle.gif). On movement, switches to walking.gif.
     - Move with WASD or Arrow keys.
     - When near the house door, show an "Enter house" prompt that can be activated by Enter or click.
-  - Inside: background = assets/static_downstairs.png (wide). Camera scrolls horizontally following the raccoon.
+  - Inside: background = assets/static_downstairs.jpg (wide). Camera scrolls horizontally following the raccoon.
 */
 
 // -------- Config (tweak as needed) --------
@@ -35,7 +35,7 @@ const CONFIG = {
     }
   },
   inside: {
-    get bgSrc() { return versionedAsset('assets/static_downstairs.png'); },
+    get bgSrc() { return versionedAsset('assets/static_downstairs.jpg'); },
     // Exit hotspot location inside (percent of image). Tweak as needed.
     exit: { xPct: 3, yPct: 72, radius: 160 },
     // Suitcase hotspot inside (under the window)
@@ -319,30 +319,28 @@ function fitBackgroundToViewportCover(imgEl) {
   const natW = imgEl.naturalWidth;
   const natH = imgEl.naturalHeight;
   
-  // Use consistent scaling approach - always scale to fit height first
-  // This ensures consistent positioning across all devices
-  const scale = h / natH; // fit height like inside scene
+  // Use cover scaling - fill entire viewport, may crop image
+  const scaleX = w / natW;
+  const scaleY = h / natH;
+  const scale = Math.max(scaleX, scaleY); // use larger scale to fill viewport completely
+  
   const dispW = Math.round(natW * scale);
   const dispH = Math.round(natH * scale);
+  worldW = dispW;
+  worldH = dispH;
   
-  // If width is too small, scale to fit width instead
-  if (dispW < w) {
-    const wScale = w / natW;
-    worldW = Math.round(natW * wScale);
-    worldH = Math.round(natH * wScale);
-  } else {
-    worldW = dispW;
-    worldH = dispH;
-  }
+  bgEl.style.width = `${dispW}px`;
+  bgEl.style.height = `${dispH}px`;
+  worldEl.style.width = `${dispW}px`;
+  worldEl.style.height = `${dispH}px`;
   
-  bgEl.style.width = `${worldW}px`;
-  bgEl.style.height = `${worldH}px`;
-  worldEl.style.width = `${worldW}px`;
-  worldEl.style.height = `${worldH}px`;
+  // Don't center - allow normal scrolling behavior
+  // Reset world position to allow camera movement
+  worldEl.style.left = '0px';
+  worldEl.style.top = '0px';
   
   // Set CSS scale factor for consistent positioning
-  const finalScale = worldH / imgEl.naturalHeight;
-  document.body.style.setProperty('--scale-factor', finalScale);
+  document.body.style.setProperty('--scale-factor', scale);
 }
 
 // Ground line (feet Y position)
@@ -363,8 +361,8 @@ async function enterOutside() {
   bgEl.src = CONFIG.outside.bgSrc;
   // After image is set, ensure sizes reflect fit-height scaling
   await img.decode?.();
-  // Use contain scaling to ensure entire outside house image is visible
-  fitBackgroundToViewportContain(img);
+  // Use cover scaling to fill entire viewport without black bars
+  fitBackgroundToViewportCover(img);
 
   updateDoorWorldFromScaled();
   spawnRaccoonOutside();
@@ -942,7 +940,7 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-design aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="design-stage">
-        <img src="${versionedAsset('assets/designNote.png')}" alt="Design Note" class="design-note-image">
+        <img src="${versionedAsset('assets/designNote.jpg')}" alt="Design Note" class="design-note-image">
       </div>
     </div>`;
   ui.appendChild(designOverlay);
