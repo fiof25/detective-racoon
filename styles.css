@@ -325,16 +325,24 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* Revision notebook stage uses revisionNote.png as background */
+/* Revision stage with img element for Safari compatibility */
 .revision-stage {
   position: relative;
   height: 100%;
-  background: center/contain no-repeat;
-  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-image: url('assets/revisionNote.png');
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}
+
+.revision-note-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
 }
 
 
@@ -710,7 +718,11 @@ body {
     max-width: 95%;
   }
 
-  /* Mobile revision stage adjustments - no additional styling needed as background scales automatically */
+  /* Mobile revision stage adjustments */
+  .revision-note-image {
+    max-width: 95%;
+    max-height: 95%;
+  }
 
   .revision-project-link img {
     width: 200px;
