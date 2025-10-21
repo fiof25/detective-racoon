@@ -940,7 +940,7 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-design aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="design-stage">
-        <img src="${versionedAsset('assets/designNote.jpg')}" alt="Design Note" class="design-note-image">
+        <img src="${versionedAsset('assets/designNote.png')}" alt="Design Note" class="design-note-image">
       </div>
     </div>`;
   ui.appendChild(designOverlay);
