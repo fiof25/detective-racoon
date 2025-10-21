@@ -21,8 +21,8 @@ const CONFIG = {
     speed: 350,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
-    // Start closer to the house so the door is reachable without scrolling outside
-    spawnOutside: { xPct: 60, yPct: 78 },   // starting point on outside image
+    // Start on the left side of the screen
+    spawnOutside: { xPct: 20, yPct: 78 },   // starting point on outside image
     spawnInside: { x: 140, yFromBottom: 40 } // starting point inside (pixels)
   },
   outside: {
@@ -87,6 +87,7 @@ const worldEl = document.getElementById('world');
 const interactBtn = document.getElementById('interact');
 const fadeEl = document.getElementById('fade');
 const chatEl = document.getElementById('chat');
+const spotlightEl = document.getElementById('spotlight-overlay');
 // dynamically created elements
 let suitcaseHotspot = null;
 let inventoryOverlay = null;
@@ -377,6 +378,9 @@ async function enterOutside() {
   // Ensure suitcase is hidden when outside
   mouseOverSuitcase = false;
   canOpenSuitcase = false;
+  
+  // Enable spotlight effect for outside scene
+  enableSpotlight();
   if (suitcaseHotspot) {
     hide(suitcaseHotspot);
     suitcaseHotspot.classList.remove('hover-active');
@@ -405,6 +409,9 @@ async function enterInside() {
     }
   }
   centerCameraOn(racX, racY);
+
+  // Disable spotlight effect for inside scene
+  disableSpotlight();
 
   // Show chat bubble briefly when entering the house
   if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
@@ -1318,7 +1325,39 @@ function tick(ts) {
     placeChatAtWorld(racX, racY - 220);
   }
 
+  // Update spotlight position to follow raccoon
+  updateSpotlight();
+
   requestAnimationFrame(tick);
+}
+
+// -------- Spotlight Effect --------
+function updateSpotlight() {
+  if (scene !== 'outside' || !spotlightEl || !spotlightEl.classList.contains('spotlight') || !racEl) return;
+  
+  // Get the actual raccoon PNG element's position on screen
+  const raccoonRect = racEl.getBoundingClientRect();
+  const raccoonCenterX = raccoonRect.left + raccoonRect.width / 2;
+  const raccoonCenterY = raccoonRect.top + raccoonRect.height / 2;
+  
+  // Update the spotlight position to follow the actual raccoon PNG
+  spotlightEl.style.setProperty('--spotlight-x', `${raccoonCenterX}px`);
+  spotlightEl.style.setProperty('--spotlight-y', `${raccoonCenterY}px`);
+}
+
+function enableSpotlight() {
+  if (spotlightEl) {
+    console.log('Enabling spotlight'); // Debug
+    spotlightEl.classList.add('active', 'spotlight');
+  } else {
+    console.log('Spotlight element not found!'); // Debug
+  }
+}
+
+function disableSpotlight() {
+  if (spotlightEl) {
+    spotlightEl.classList.remove('active', 'spotlight');
+  }
 }
 
 // -------- Custom Floating Cursor --------
