@@ -537,19 +537,19 @@ body {
 /* Lucy news icon link positioned on the note */
 .lucy-news-link {
   position: absolute;
-  left: 36%;
+  left: 35%;
   top: 70%;
-  z-index: 29;
+  z-index: 30;
   transition: transform 0.2s ease;
 }
 
 .lucy-news-link:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .lucy-news-link img {
-  width: 220px;
-  height: 160px;
+  width: 260px;
+  height: auto;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
@@ -685,8 +685,7 @@ body {
 
   /* Mobile Lucy demo and news links */
   .lucy-news-link img {
-    width: 180px;
-    height: 130px;
+    width: 200px;
   }
 
   .lucy-demo-link img {
@@ -769,8 +768,7 @@ body {
   }
 
   .lucy-news-link img {
-    width: 140px;
-    height: 100px;
+    width: 160px;
   }
 
   .lucy-demo-link img {
