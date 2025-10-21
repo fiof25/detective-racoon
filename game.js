@@ -10,7 +10,7 @@
 // -------- Config (tweak as needed) --------
 const CONFIG = {
   // Asset version for cache busting - increment when assets change
-  assetVersion: '3',
+  assetVersion: '4',
   // Reference dimensions for consistent scaling (based on a standard laptop screen)
   reference: {
     width: 1440,
@@ -1078,7 +1078,7 @@ function createSuitcaseUI() {
           </iframe>
         </div>
         <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
-          <img src="${versionedAsset('assets/lucynewsIcon.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
+          <img src="${versionedAsset('assets/lucyNewsIcon.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
         </a>
         <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-demo-link" id="lucyDemoLink">
           <img src="${versionedAsset('assets/lucyfulldemoIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
