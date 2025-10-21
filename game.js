@@ -10,7 +10,7 @@
 // -------- Config (tweak as needed) --------
 const CONFIG = {
   // Asset version for cache busting - increment when assets change
-  assetVersion: '1',
+  assetVersion: '2',
   // Reference dimensions for consistent scaling (based on a standard laptop screen)
   reference: {
     width: 1440,
@@ -19,14 +19,14 @@ const CONFIG = {
   raccoon: {
     width: 540,            // px (mirrors styles.css)
     speed: 350,            // px per second (faster walking)
-    idleSrc: 'assets/idle.gif',
-    walkSrc: 'assets/walking.gif',
+    get idleSrc() { return versionedAsset('assets/idle.gif'); },
+    get walkSrc() { return versionedAsset('assets/walking.gif'); },
     // Start closer to the house so the door is reachable without scrolling outside
     spawnOutside: { xPct: 60, yPct: 78 },   // starting point on outside image
     spawnInside: { x: 140, yFromBottom: 40 } // starting point inside (pixels)
   },
   outside: {
-    bgSrc: 'assets/outside_house.jpg',
+    get bgSrc() { return versionedAsset('assets/outside_house.jpg'); },
     // Door hotspot on the outside image (as percentages of bg natural size for easy tuning)
     door: {
       xPct: 74,     // approximate door horizontal location in percent of width
@@ -35,7 +35,7 @@ const CONFIG = {
     }
   },
   inside: {
-    bgSrc: 'assets/static_downstairs.png',
+    get bgSrc() { return versionedAsset('assets/static_downstairs.png'); },
     // Exit hotspot location inside (percent of image). Tweak as needed.
     exit: { xPct: 3, yPct: 72, radius: 160 },
     // Suitcase hotspot inside (under the window)
@@ -489,8 +489,8 @@ function updateFatherFigurePage() {
   
   if (notebookStage) {
     const backgroundImage = currentFatherFigurePage === 1 
-      ? 'assets/fatherfigureNote.png' 
-      : 'assets/fatherfigureNote2.png';
+      ? versionedAsset('assets/fatherfigureNote.png')
+      : versionedAsset('assets/fatherfigureNote2.png');
     notebookStage.style.backgroundImage = `url('${backgroundImage}')`;
   }
   
@@ -789,7 +789,7 @@ function createSuitcaseUI() {
   suitcaseHotspot = document.createElement('img');
   suitcaseHotspot.id = 'suitcaseHotspot';
   suitcaseHotspot.className = 'hotspot-img hidden';
-  suitcaseHotspot.src = 'assets/suitcaseAsset.png';
+  suitcaseHotspot.src = versionedAsset('assets/suitcaseAsset.png');
   suitcaseHotspot.alt = 'Open suitcase';
   worldEl.appendChild(suitcaseHotspot);
   suitcaseHotspot.addEventListener('click', () => openInventory());
@@ -807,12 +807,12 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="suitcase-stage">
         <!-- Individual positioned images matching reference layout exactly -->
-        <img class="inv-asset hoverable-asset" id="design-asset" src="assets/designAsset.png" style="position: absolute; left: 25%; top: 56%; width: 18%; z-index: 6;" alt="design" />
-        <img class="inv-asset hoverable-asset" id="designto-asset" src="assets/designtoAsset.png" style="position: absolute; left: 26%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
-        <img class="inv-asset hoverable-asset" id="lucy-asset" src="assets/lucyAsset.png" style="position: absolute; left: 39%; top: 55%; width: 16%; z-index: 5;" alt="lucy" />
-        <img class="inv-asset hoverable-asset" id="jam-asset" src="assets/jamAsset.png" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="jam" />
-        <img class="inv-asset hoverable-asset" id="revision-asset" src="assets/revisionAsset.png" style="position: absolute; left: 41%; top: 32%; width: 27%; z-index: 3;" alt="revision" />
-        <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="assets/fatherfigureAsset.png" style="position: absolute; left: 53%; top: 54%; width: 21%; z-index: 4;" alt="fatherfigure" />
+        <img class="inv-asset hoverable-asset" id="design-asset" src="${versionedAsset('assets/designAsset.png')}" style="position: absolute; left: 25%; top: 56%; width: 18%; z-index: 6;" alt="design" />
+        <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.png')}" style="position: absolute; left: 26%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
+        <img class="inv-asset hoverable-asset" id="lucy-asset" src="${versionedAsset('assets/lucyAsset.png')}" style="position: absolute; left: 39%; top: 55%; width: 16%; z-index: 5;" alt="lucy" />
+        <img class="inv-asset hoverable-asset" id="jam-asset" src="${versionedAsset('assets/jamAsset.png')}" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="jam" />
+        <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.png')}" style="position: absolute; left: 41%; top: 32%; width: 27%; z-index: 3;" alt="revision" />
+        <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="${versionedAsset('assets/fatherfigureAsset.png')}" style="position: absolute; left: 53%; top: 54%; width: 21%; z-index: 4;" alt="fatherfigure" />
       </div>
     </div>`;
   ui.appendChild(inventoryOverlay);
@@ -896,13 +896,13 @@ function createSuitcaseUI() {
           </iframe>
         </div>
         <a href="https://github.com/fiof25/father-figure-htn" target="_blank" class="github-link" id="githubLink">
-          <img src="assets/githubblack.png" alt="GitHub Repository" title="View on GitHub">
+          <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
         </a>
         <button class="nav-arrow prev" id="prevPageBtn" aria-label="Previous page">
-          <img src="assets/arrow.png" alt="Previous">
+          <img src="${versionedAsset('assets/arrow.png')}" alt="Previous">
         </button>
         <button class="nav-arrow next" id="nextPageBtn" aria-label="Next page">
-          <img src="assets/arrow.png" alt="Next">
+          <img src="${versionedAsset('assets/arrow.png')}" alt="Next">
         </button>
       </div>
     </div>`;
@@ -942,7 +942,7 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-design aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="design-stage">
-        <img src="assets/designNote.png" alt="Design Note" class="design-note-image">
+        <img src="${versionedAsset('assets/designNote.png')}" alt="Design Note" class="design-note-image">
       </div>
     </div>`;
   ui.appendChild(designOverlay);
@@ -965,17 +965,17 @@ function createSuitcaseUI() {
       <div class="jam-notebook-stage">
         <!-- Jam notebook content will be styled with CSS background -->
         <div class="jam-video-container" id="jamVideoContainer">
-          <img src="assets/jamVid.png" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
+          <img src="${versionedAsset('assets/jamVid.png')}" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
           <button class="jam-watch-button" id="jamWatchButton">
             <span class="play-icon">▶</span>
             Watch Demo
           </button>
         </div>
         <button class="jam-demo-button" id="jamDemoButton">
-          <img src="assets/jamDemo.png" alt="Try Demo" class="jam-demo-icon">
+          <img src="${versionedAsset('assets/jamDemo.png')}" alt="Try Demo" class="jam-demo-icon">
         </button>
         <a href="https://github.com/justinwuzijin/eye-tester-app" target="_blank" class="jam-github-link" id="jamGithubLink">
-          <img src="assets/githubblack.png" alt="GitHub Repository" title="View on GitHub">
+          <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
         </a>
       </div>
     </div>`;
@@ -1024,8 +1024,8 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-designto aria-label="Close">×</button>
     <div class="overlay-panel">
       <div class="designto-stage">
-        <img src="assets/designtoNote.png" alt="DesignTO Note" class="designto-note-image">
-        <img src="assets/designtoIcon.png" alt="DesignTO Icon" class="designto-icon">
+        <img src="${versionedAsset('assets/designtoNote.png')}" alt="DesignTO Note" class="designto-note-image">
+        <img src="${versionedAsset('assets/designtoIcon.png')}" alt="DesignTO Icon" class="designto-icon">
       </div>
     </div>`;
   ui.appendChild(designtoOverlay);
@@ -1041,18 +1041,18 @@ function createSuitcaseUI() {
   if (designtoIcon) {
     designtoIcon.addEventListener('mouseenter', () => {
       // Change to pressed state on hover
-      designtoIcon.src = 'assets/designtoIconPressed.png';
+      designtoIcon.src = versionedAsset('assets/designtoIconPressed.png');
     });
     
     designtoIcon.addEventListener('mouseleave', () => {
       // Change back to normal state when not hovering
-      designtoIcon.src = 'assets/designtoIcon.png';
+      designtoIcon.src = versionedAsset('assets/designtoIcon.png');
     });
     
     designtoIcon.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent overlay from closing
       // Open PDF in new tab
-      window.open('assets/DesignTO Marketing Campaign-FionaFang.pdf', '_blank');
+      window.open(versionedAsset('assets/DesignTO Marketing Campaign-FionaFang.pdf'), '_blank');
     });
   }
   
@@ -1078,10 +1078,10 @@ function createSuitcaseUI() {
           </iframe>
         </div>
         <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
-          <img src="assets/lucynewsIcon.png?v=2" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
+          <img src="${versionedAsset('assets/lucynewsIcon.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
         </a>
         <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-demo-link" id="lucyDemoLink">
-          <img src="assets/lucyfulldemoIcon.png" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
+          <img src="${versionedAsset('assets/lucyfulldemoIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
         </a>
       </div>
     </div>`;
