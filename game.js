@@ -344,19 +344,19 @@ function fadeOutIn(cb) {
   show(fadeEl);
   
   // Use CSS transitions with event listeners for better performance
-  const handleFadeIn = () => {
+  const handleFadeIn = async () => {
     fadeEl.removeEventListener('transitionend', handleFadeIn);
     
-    // Execute callback during peak fade
+    // Execute callback during peak fade and wait for it to complete
     if (cb) {
       try {
-        cb();
+        await cb();
       } catch (error) {
         console.error('Error during scene transition:', error);
       }
     }
     
-    // Start fade out immediately
+    // Only start fade out after callback is completely finished
     requestAnimationFrame(() => {
       fadeEl.classList.remove('show');
       fadeEl.addEventListener('transitionend', handleFadeOut, { once: true });
@@ -367,7 +367,7 @@ function fadeOutIn(cb) {
     hide(fadeEl);
   };
   
-  // Start fade in
+  // Start fade in immediately to show black screen
   requestAnimationFrame(() => {
     fadeEl.classList.add('show');
     fadeEl.addEventListener('transitionend', handleFadeIn, { once: true });
