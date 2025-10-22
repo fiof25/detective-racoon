@@ -45,6 +45,8 @@ html, body { height: 100%; }
   color: #f5e6d3;
   font-weight: 400;
   font-style: normal;
+  opacity: 0.65;
+  text-shadow: 0 0 30px rgba(245, 230, 211, 0.9), 0 0 60px rgba(245, 230, 211, 0.5);
 }
 
 .loading-progress {
@@ -67,6 +69,7 @@ html, body { height: 100%; }
   width: 0%;
   transition: width 0.3s ease;
   box-shadow: 0 0 10px rgba(245, 230, 211, 0.5);
+  opacity: 0.65;
 }
 
 .progress-text {
@@ -74,6 +77,7 @@ html, body { height: 100%; }
   font-size: 1.1rem;
   color: #f5e6d3;
   font-weight: 400;
+  opacity: 0.65;
 }
 
 /* Mobile loading screen adjustments */
@@ -188,6 +192,10 @@ body {
   height: 100vh; /* ensure full image height is visible */
   overflow: hidden; /* camera effect via translate of #world */
   background: transparent;
+}
+
+#game.hidden {
+  visibility: hidden;
 }
 
 /* Spotlight overlay for both outside and inside scenes */
