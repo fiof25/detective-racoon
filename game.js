@@ -541,6 +541,13 @@ async function enterOutside() {
 async function enterInside() {
   try {
     scene = 'inside';
+    
+    // Hide suitcase immediately to prevent glitch during transition
+    if (suitcaseHotspot) {
+      hide(suitcaseHotspot);
+      suitcaseHotspot.classList.remove('hover-active');
+    }
+    
     const img = await loadImage(CONFIG.inside.bgSrc);
     bgEl.src = CONFIG.inside.bgSrc;
     
@@ -557,11 +564,15 @@ async function enterInside() {
     placeRaccoon();
     updateExitWorldFromScaled();
     updateSuitcaseWorldFromScaled();
-    // scale hotspot image width to world size
+    
+    // Scale and position suitcase after world is properly sized
     if (suitcaseHotspot) {
       const s = CONFIG.inside.suitcase;
       if (s && s.widthPct) {
+        // Set width based on new world dimensions
         suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+        // Reset height to auto to maintain aspect ratio
+        suitcaseHotspot.style.height = 'auto';
       }
     }
     centerCameraOn(racX, racY);
@@ -1681,6 +1692,7 @@ async function startGame() {
           const s = CONFIG.inside.suitcase;
           if (s && s.widthPct) {
             suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+            suitcaseHotspot.style.height = 'auto'; // maintain aspect ratio
           }
         }
         centerCameraOn(racX, racY);
