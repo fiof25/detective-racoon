@@ -919,14 +919,12 @@ function createTouchControls() {
   touchControls.id = 'touch-controls';
   touchControls.innerHTML = `
     <div class="touch-dpad">
-      <button class="touch-btn touch-up" data-key="up">↑</button>
       <div class="touch-middle">
         <button class="touch-btn touch-left" data-key="left">←</button>
         <button class="touch-btn touch-right" data-key="right">→</button>
       </div>
       <button class="touch-btn touch-down" data-key="down">↓</button>
     </div>
-    <button class="touch-btn touch-interact" data-key="interact">⏎</button>
   `;
   
   document.body.appendChild(touchControls);
