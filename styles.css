@@ -429,8 +429,10 @@ body {
   background: #000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 500ms ease;
+  transition: opacity 300ms ease-out;
   z-index: 20;
+  will-change: opacity;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 #fade.show { opacity: 1; }
 
