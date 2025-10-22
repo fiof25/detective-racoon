@@ -51,7 +51,7 @@ const CONFIG = {
     ceilingOffsetOutside: 10,
     ceilingOffsetInside: 10
   },
-  transitionMs: 500
+  transitionMs: 300
 };
 
 // -------- State --------
@@ -342,17 +342,35 @@ function distance(a, b) {
 
 function fadeOutIn(cb) {
   show(fadeEl);
-  // Force reflow then fade in
+  
+  // Use CSS transitions with event listeners for better performance
+  const handleFadeIn = () => {
+    fadeEl.removeEventListener('transitionend', handleFadeIn);
+    
+    // Execute callback during peak fade
+    if (cb) {
+      try {
+        cb();
+      } catch (error) {
+        console.error('Error during scene transition:', error);
+      }
+    }
+    
+    // Start fade out immediately
+    requestAnimationFrame(() => {
+      fadeEl.classList.remove('show');
+      fadeEl.addEventListener('transitionend', handleFadeOut, { once: true });
+    });
+  };
+  
+  const handleFadeOut = () => {
+    hide(fadeEl);
+  };
+  
+  // Start fade in
   requestAnimationFrame(() => {
     fadeEl.classList.add('show');
-    setTimeout(() => {
-      cb?.();
-      // Fade out back
-      requestAnimationFrame(() => {
-        fadeEl.classList.remove('show');
-        setTimeout(() => hide(fadeEl), CONFIG.transitionMs);
-      });
-    }, CONFIG.transitionMs);
+    fadeEl.addEventListener('transitionend', handleFadeIn, { once: true });
   });
 }
 
