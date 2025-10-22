@@ -17,7 +17,25 @@
   <link rel="preload" as="image" href="assets/static_downstairs.jpg?v=4">
 </head>
 <body>
-  <div id="game">
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-container">
+      <div class="loading-pusheen">
+        <img src="assets/loadpusheen.gif" alt="Loading..." class="loading-gif">
+      </div>
+      <div class="loading-text">
+        <p>pushing pixels...</p>
+      </div>
+      <div class="loading-progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="game" class="hidden">
     <!-- World layer holds background and raccoon -->
     <div id="world">
       <img id="bg" alt="background" />
