@@ -107,23 +107,6 @@ function hide(el) { el.classList.add('hidden'); }
 function setRaccoonImage(src) { 
   if (!racEl || !src) return;
   if (racEl.src.endsWith(src)) return; 
-  
-  // Try to get preloaded asset first
-  const baseAssetPath = src.split('?')[0]; // Remove version parameter
-  const preloadedImg = getPreloadedAsset(baseAssetPath);
-  
-  if (preloadedImg) {
-    // Use the preloaded image source (which might be optimized)
-    const finalSrc = preloadedImg.src;
-    if (!racEl.src.endsWith(finalSrc)) {
-      console.log(`Setting raccoon to preloaded asset: ${baseAssetPath} -> ${finalSrc}`);
-      racEl.src = finalSrc;
-    }
-    return;
-  }
-  
-  // Fallback to direct loading with error handling
-  console.log(`Preloaded asset not found for ${baseAssetPath}, loading directly: ${src}`);
   racEl.onerror = () => {
     console.warn(`Failed to load raccoon image: ${src}`);
     // Fallback to a basic placeholder if image fails
@@ -137,18 +120,108 @@ function versionedAsset(path) {
   return `${path}?v=${CONFIG.assetVersion}`;
 }
 
-// Use the global AssetLoader instead of local preloader
-function getAssetLoader() {
-  return window.assetLoader || null;
-}
-
-// Get preloaded asset from the global loader
-function getPreloadedAsset(src) {
-  const loader = getAssetLoader();
-  if (loader) {
-    return loader.getAsset(src);
+// Asset Preloader System
+class AssetPreloader {
+  constructor() {
+    this.assets = [];
+    this.loaded = 0;
+    this.total = 0;
+    this.onProgress = null;
+    this.onComplete = null;
   }
-  return null;
+
+  // Define all assets that need to be preloaded (essential only)
+  getAssetList() {
+    return [
+      // Loading screen asset
+      'assets/loadpusheen.gif',
+      
+      // Core game assets (essential for basic functionality)
+      'assets/idle.gif',
+      'assets/walking.gif', 
+      'assets/outside_house.jpg',
+      'assets/static_downstairs.jpg',
+      
+      // Navigation icons (visible immediately)
+      'assets/email.png',
+      'assets/linkedin.png',
+      'assets/github.png',
+      'assets/projects.png',
+      'assets/aboutme.png',
+      'assets/backbutton.png',
+      'assets/searchIcon.png',
+      
+      // Essential UI assets
+      'assets/suitcaseAsset.png'
+      
+      // Note: Project detail assets will lazy-load when needed
+      // This reduces initial loading time while ensuring core functionality works
+    ];
+  }
+
+  preloadAssets() {
+    const assetPaths = this.getAssetList();
+    this.total = assetPaths.length;
+    this.loaded = 0;
+
+    return new Promise((resolve, reject) => {
+      this.onComplete = resolve;
+      
+      assetPaths.forEach((path, index) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          this.loaded++;
+          this.updateProgress();
+          
+          if (this.loaded === this.total) {
+            setTimeout(() => {
+              this.onComplete();
+            }, 500); // Small delay to show 100% completion
+          }
+        };
+        
+        img.onerror = () => {
+          console.warn(`Failed to load asset: ${path}`);
+          this.loaded++;
+          this.updateProgress();
+          
+          if (this.loaded === this.total) {
+            setTimeout(() => {
+              this.onComplete();
+            }, 500);
+          }
+        };
+        
+        // Use versioned asset URL
+        img.src = versionedAsset(path);
+      });
+    });
+  }
+
+  updateProgress() {
+    const percentage = Math.round((this.loaded / this.total) * 100);
+    
+    if (this.onProgress) {
+      this.onProgress(percentage, this.loaded, this.total);
+    }
+    
+    // Update loading screen
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    
+    if (progressFill) {
+      progressFill.style.width = `${percentage}%`;
+    }
+    
+    if (progressText) {
+      progressText.textContent = `${percentage}%`;
+    }
+  }
+
+  setProgressCallback(callback) {
+    this.onProgress = callback;
+  }
 }
 
 function viewportSize() {
@@ -269,14 +342,6 @@ function fadeOutIn(cb) {
 }
 
 async function loadImage(src) {
-  // First try to get preloaded asset
-  const preloadedImg = getPreloadedAsset(src);
-  if (preloadedImg) {
-    console.log(`Using preloaded asset: ${src}`);
-    return preloadedImg;
-  }
-  
-  // Fallback to loading the image if not preloaded
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -301,11 +366,7 @@ async function loadImage(src) {
       fallbackImg.naturalHeight = canvas.height;
       resolve(fallbackImg);
     };
-    
-    // Use optimized version if available
-    const loader = getAssetLoader();
-    const finalSrc = loader ? loader.getOptimizedPath(src) : src;
-    img.src = finalSrc;
+    img.src = src;
   });
 }
 
@@ -1635,18 +1696,30 @@ async function startGame() {
   }
 }
 
-// Main initialization - now handled by AssetLoader in index.html
-// Game will start automatically when assets are loaded
-async function startGameWhenReady() {
+// Main initialization with loading screen
+(async function init() {
   try {
-    console.log('Starting Detective Raccoon game...');
+    // Initialize the asset preloader
+    const preloader = new AssetPreloader();
+    
+    // Set up progress callback
+    preloader.setProgressCallback((percentage, loaded, total) => {
+      console.log(`Loading progress: ${percentage}% (${loaded}/${total})`);
+    });
+    
+    // Start preloading assets
+    console.log('Starting asset preload...');
+    await preloader.preloadAssets();
+    console.log('All assets loaded successfully!');
+    
+    // Hide loading screen and start the game
+    await hideLoadingScreen();
     await startGame();
+    
   } catch (error) {
-    console.error('Error during game initialization:', error);
-    // Try to start anyway with fallbacks
+    console.error('Error during initialization:', error);
+    // Even if preloading fails, try to start the game
+    await hideLoadingScreen();
     await startGame();
   }
-}
-
-// Make startGameWhenReady globally available for the asset loader
-window.startGameWhenReady = startGameWhenReady;
+})();
