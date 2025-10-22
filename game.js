@@ -107,6 +107,23 @@ function hide(el) { el.classList.add('hidden'); }
 function setRaccoonImage(src) { 
   if (!racEl || !src) return;
   if (racEl.src.endsWith(src)) return; 
+  
+  // Try to get preloaded asset first
+  const baseAssetPath = src.split('?')[0]; // Remove version parameter
+  const preloadedImg = getPreloadedAsset(baseAssetPath);
+  
+  if (preloadedImg) {
+    // Use the preloaded image source (which might be optimized)
+    const finalSrc = preloadedImg.src;
+    if (!racEl.src.endsWith(finalSrc)) {
+      console.log(`Setting raccoon to preloaded asset: ${baseAssetPath} -> ${finalSrc}`);
+      racEl.src = finalSrc;
+    }
+    return;
+  }
+  
+  // Fallback to direct loading with error handling
+  console.log(`Preloaded asset not found for ${baseAssetPath}, loading directly: ${src}`);
   racEl.onerror = () => {
     console.warn(`Failed to load raccoon image: ${src}`);
     // Fallback to a basic placeholder if image fails
