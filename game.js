@@ -120,6 +120,110 @@ function versionedAsset(path) {
   return `${path}?v=${CONFIG.assetVersion}`;
 }
 
+// Asset Preloader System
+class AssetPreloader {
+  constructor() {
+    this.assets = [];
+    this.loaded = 0;
+    this.total = 0;
+    this.onProgress = null;
+    this.onComplete = null;
+  }
+
+  // Define all assets that need to be preloaded (essential only)
+  getAssetList() {
+    return [
+      // Loading screen asset
+      'assets/loadpusheen.gif',
+      
+      // Core game assets (essential for basic functionality)
+      'assets/idle.gif',
+      'assets/walking.gif', 
+      'assets/outside_house.jpg',
+      'assets/static_downstairs.jpg',
+      
+      // Navigation icons (visible immediately)
+      'assets/email.png',
+      'assets/linkedin.png',
+      'assets/github.png',
+      'assets/projects.png',
+      'assets/aboutme.png',
+      'assets/backbutton.png',
+      'assets/searchIcon.png',
+      
+      // Essential UI assets
+      'assets/suitcaseAsset.png'
+      
+      // Note: Project detail assets will lazy-load when needed
+      // This reduces initial loading time while ensuring core functionality works
+    ];
+  }
+
+  preloadAssets() {
+    const assetPaths = this.getAssetList();
+    this.total = assetPaths.length;
+    this.loaded = 0;
+
+    return new Promise((resolve, reject) => {
+      this.onComplete = resolve;
+      
+      assetPaths.forEach((path, index) => {
+        const img = new Image();
+        
+        img.onload = () => {
+          this.loaded++;
+          this.updateProgress();
+          
+          if (this.loaded === this.total) {
+            setTimeout(() => {
+              this.onComplete();
+            }, 500); // Small delay to show 100% completion
+          }
+        };
+        
+        img.onerror = () => {
+          console.warn(`Failed to load asset: ${path}`);
+          this.loaded++;
+          this.updateProgress();
+          
+          if (this.loaded === this.total) {
+            setTimeout(() => {
+              this.onComplete();
+            }, 500);
+          }
+        };
+        
+        // Use versioned asset URL
+        img.src = versionedAsset(path);
+      });
+    });
+  }
+
+  updateProgress() {
+    const percentage = Math.round((this.loaded / this.total) * 100);
+    
+    if (this.onProgress) {
+      this.onProgress(percentage, this.loaded, this.total);
+    }
+    
+    // Update loading screen
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    
+    if (progressFill) {
+      progressFill.style.width = `${percentage}%`;
+    }
+    
+    if (progressText) {
+      progressText.textContent = `${percentage}%`;
+    }
+  }
+
+  setProgressCallback(callback) {
+    this.onProgress = callback;
+  }
+}
+
 function viewportSize() {
   // Use game container's client size to honor the screenshot aspect ratio
   if (!gameEl) return { w: window.innerWidth, h: window.innerHeight };
@@ -1492,8 +1596,20 @@ function createCustomCursor() {
   updateCursor();
 }
 
-// -------- Init --------
-(async function init() {
+// -------- Loading and Init --------
+async function hideLoadingScreen() {
+  const loadingScreen = document.getElementById('loading-screen');
+  const gameEl = document.getElementById('game');
+  
+  if (loadingScreen) {
+    loadingScreen.style.display = 'none';
+    if (gameEl) {
+      gameEl.classList.remove('hidden');
+    }
+  }
+}
+
+async function startGame() {
   try {
     // size raccoon element from config and set initial src
     racEl.style.width = `${CONFIG.raccoon.width}px`;
@@ -1501,59 +1617,92 @@ function createCustomCursor() {
 
     await enterOutside();
     requestAnimationFrame(tick);
+    
     // build overlay UI once DOM is ready
     createSuitcaseUI();
-  // Add event listener for projects link to open briefcase
-  const projectsLink = document.getElementById('projects-link');
-  if (projectsLink) {
-    projectsLink.addEventListener('click', (e) => {
-      e.preventDefault(); // Prevent default link behavior
-      openInventory(); // Open the briefcase/suitcase
-    });
-  }
-  
-  // Add event listener for back button to exit house
-  const backButton = document.getElementById('back-button');
-  if (backButton) {
-    backButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (scene === 'inside' && !overlayOpen) {
-        tryExitHouse(); // Exit the house and place raccoon at door
-      }
-    });
-  }
-  // create touch controls for mobile
-  createTouchControls();
-  // create custom floating cursor
-  createCustomCursor();
-  // Recompute layout on resize to keep full image height visible
-  window.addEventListener('resize', () => {
-    // Re-fit current scene
-    if (!bgEl.naturalWidth || !bgEl.naturalHeight) return;
-    if (scene === 'outside') {
-      fitBackgroundToViewportCover(bgEl);
-      updateDoorWorldFromScaled();
-      // keep outside camera frozen at new center
-      centerCameraOn(racX, racY);
-    } else {
-      fitBackgroundToViewportHeight(bgEl);
-      updateExitWorldFromScaled();
-      updateSuitcaseWorldFromScaled();
-      // rescale hotspot size on viewport changes
-      if (suitcaseHotspot) {
-        const s = CONFIG.inside.suitcase;
-        if (s && s.widthPct) {
-          suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
-        }
-      }
-      centerCameraOn(racX, racY);
+    
+    // Add event listener for projects link to open briefcase
+    const projectsLink = document.getElementById('projects-link');
+    if (projectsLink) {
+      projectsLink.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        openInventory(); // Open the briefcase/suitcase
+      });
     }
-  });
+    
+    // Add event listener for back button to exit house
+    const backButton = document.getElementById('back-button');
+    if (backButton) {
+      backButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (scene === 'inside' && !overlayOpen) {
+          tryExitHouse(); // Exit the house and place raccoon at door
+        }
+      });
+    }
+    
+    // create touch controls for mobile
+    createTouchControls();
+    // create custom floating cursor
+    createCustomCursor();
+    
+    // Recompute layout on resize to keep full image height visible
+    window.addEventListener('resize', () => {
+      // Re-fit current scene
+      if (!bgEl.naturalWidth || !bgEl.naturalHeight) return;
+      if (scene === 'outside') {
+        fitBackgroundToViewportCover(bgEl);
+        updateDoorWorldFromScaled();
+        // keep outside camera frozen at new center
+        centerCameraOn(racX, racY);
+      } else {
+        fitBackgroundToViewportHeight(bgEl);
+        updateExitWorldFromScaled();
+        updateSuitcaseWorldFromScaled();
+        // rescale hotspot size on viewport changes
+        if (suitcaseHotspot) {
+          const s = CONFIG.inside.suitcase;
+          if (s && s.widthPct) {
+            suitcaseHotspot.style.width = `${(s.widthPct / 100) * worldW}px`;
+          }
+        }
+        centerCameraOn(racX, racY);
+      }
+    });
+    
   } catch (error) {
-    console.error('Error during initialization:', error);
+    console.error('Error during game initialization:', error);
     // Fallback: still try to start the game with minimal functionality
     racEl.style.width = `${CONFIG.raccoon.width}px`;
     setRaccoonImage(CONFIG.raccoon.idleSrc);
     requestAnimationFrame(tick);
+  }
+}
+
+// Main initialization with loading screen
+(async function init() {
+  try {
+    // Initialize the asset preloader
+    const preloader = new AssetPreloader();
+    
+    // Set up progress callback
+    preloader.setProgressCallback((percentage, loaded, total) => {
+      console.log(`Loading progress: ${percentage}% (${loaded}/${total})`);
+    });
+    
+    // Start preloading assets
+    console.log('Starting asset preload...');
+    await preloader.preloadAssets();
+    console.log('All assets loaded successfully!');
+    
+    // Hide loading screen and start the game
+    await hideLoadingScreen();
+    await startGame();
+    
+  } catch (error) {
+    console.error('Error during initialization:', error);
+    // Even if preloading fails, try to start the game
+    await hideLoadingScreen();
+    await startGame();
   }
 })();
