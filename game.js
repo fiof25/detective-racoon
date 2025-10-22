@@ -71,6 +71,7 @@ let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
+let sceneTransitioning = false; // flag to prevent suitcase showing during transitions
 let designOverlayOpen = false; // design overlay state
 let designtoOverlayOpen = false; // designto overlay state
 let jamOverlayOpen = false; // jam overlay state
@@ -603,14 +604,28 @@ async function enterInside() {
 
 function tryEnterHouse() {
   if (scene !== 'outside' || !canInteract) return;
+  
+  // Set transition flag and hide suitcase before starting transition
+  sceneTransitioning = true;
+  if (suitcaseHotspot) {
+    hide(suitcaseHotspot);
+    suitcaseHotspot.classList.remove('hover-active');
+  }
+  
   fadeOutIn(async () => {
     await enterInside();
+    // Clear transition flag after scene is fully loaded
+    sceneTransitioning = false;
   });
 }
 
 function tryExitHouse() {
   if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen) return; // ignore while any overlay is open
   if (scene !== 'inside' || !canInteract) return;
+  
+  // Set transition flag to prevent suitcase glitches
+  sceneTransitioning = true;
+  
   fadeOutIn(async () => {
     await enterOutside();
     // Place raccoon just outside the door on ground
@@ -618,6 +633,8 @@ function tryExitHouse() {
     racY = getGroundY();
     placeRaccoon();
     centerCameraOn(racX, racY);
+    // Clear transition flag after scene is fully loaded
+    sceneTransitioning = false;
   });
 }
 
@@ -1471,10 +1488,10 @@ function tick(ts) {
     const s = CONFIG.inside.suitcase;
     const sDist = distance({ x: racX, y: racY }, suitcaseWorld);
     const sNear = s ? sDist <= s.radius : false;
-    if (overlayOpen) {
+    if (overlayOpen || sceneTransitioning) {
       suitcaseHotspot && hide(suitcaseHotspot);
     } else {
-      // Always show suitcase when inside and not in overlay
+      // Always show suitcase when inside and not in overlay or transitioning
       if (suitcaseHotspot) {
         show(suitcaseHotspot);
         placeSuitcaseAtFixedWorld(suitcaseHotspot, suitcaseWorld.x, suitcaseWorld.y);
