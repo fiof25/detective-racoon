@@ -15,7 +15,6 @@
   <link rel="preload" as="image" href="assets/walking.gif?v=4">
   <link rel="preload" as="image" href="assets/outside_house.jpg?v=4">
   <link rel="preload" as="image" href="assets/static_downstairs.jpg?v=4">
-  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="game">
@@ -66,6 +65,45 @@
     <div id="fade" class="hidden"></div>
   </div>
 
-  <script src="game.js" defer></script>
+  <script>
+    // Register service worker for aggressive cache management
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered:', registration);
+          // Force update on each page load
+          registration.update();
+        })
+        .catch(error => {
+          console.log('SW registration failed:', error);
+        });
+    }
+    
+    // Dynamic cache busting for main resources
+    const timestamp = Date.now();
+    
+    // Load CSS with cache busting
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    cssLink.href = `styles.css?t=${timestamp}`;
+    document.head.appendChild(cssLink);
+    
+    // Add cache busting to all images after DOM loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('img[src^="assets/"]');
+      images.forEach(img => {
+        const originalSrc = img.src;
+        if (!originalSrc.includes('?')) {
+          img.src = `${originalSrc}?t=${timestamp}`;
+        }
+      });
+    });
+    
+    // Load JavaScript with cache busting
+    const script = document.createElement('script');
+    script.src = `game.js?t=${timestamp}`;
+    script.defer = true;
+    document.head.appendChild(script);
+  </script>
 </body>
 </html>
