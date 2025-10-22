@@ -153,9 +153,23 @@ class AssetPreloader {
       'assets/searchIcon.png',
       
       // Essential UI assets
-      'assets/suitcaseAsset.png'
+      'assets/suitcaseAsset.png',
       
-      // Note: Project detail assets will lazy-load when needed
+      // Inventory assets (main and hover states for smooth transitions)
+      'assets/designAsset.png',
+      'assets/designAsset2.png',
+      'assets/designtoAsset.png', 
+      'assets/designtoAsset2.png',
+      'assets/jamAsset.png',
+      'assets/jamAsset2.png',
+      'assets/lucyAsset.png',
+      'assets/lucyAsset2.png',
+      'assets/revisionAsset.png',
+      'assets/revisionAsset2.png',
+      'assets/fatherfigureAsset.png',
+      'assets/fatherfigureAsset2.png'
+      
+      // Note: Project detail assets (notes, etc.) will lazy-load when needed
       // This reduces initial loading time while ensuring core functionality works
     ];
   }
