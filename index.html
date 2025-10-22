@@ -11,7 +11,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
-  <!-- Asset loader will handle preloading with optimized versions -->
+  <link rel="preload" as="image" href="assets/idle.gif?v=4">
+  <link rel="preload" as="image" href="assets/walking.gif?v=4">
+  <link rel="preload" as="image" href="assets/outside_house.jpg?v=4">
+  <link rel="preload" as="image" href="assets/static_downstairs.jpg?v=4">
 </head>
 <body style="margin: 0; background: #000000; overflow: hidden;">
   <!-- Loading Screen -->
@@ -113,50 +116,6 @@
         }
       });
     });
-    
-    // Load asset loader first
-    const assetLoaderScript = document.createElement('script');
-    assetLoaderScript.src = `assetLoader.js?t=${timestamp}`;
-    assetLoaderScript.onload = () => {
-      // Initialize asset loading with progress tracking
-      const loader = new AssetLoader();
-      
-      // Update progress bar
-      loader.onProgress = (progress, loaded, total) => {
-        const progressFill = document.getElementById('progress-fill');
-        const progressText = document.getElementById('progress-text');
-        if (progressFill) progressFill.style.width = `${progress}%`;
-        if (progressText) progressText.textContent = `${progress}%`;
-      };
-      
-      // Hide loading screen when complete
-      loader.onComplete = () => {
-        console.log('All assets preloaded!');
-        setTimeout(() => {
-          const loadingScreen = document.getElementById('loading-screen');
-          if (loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            loadingScreen.style.transition = 'opacity 0.5s ease';
-            setTimeout(() => {
-              loadingScreen.style.display = 'none';
-              document.getElementById('game').classList.remove('hidden');
-              
-              // Start the game after assets are loaded
-              if (window.startGameWhenReady) {
-                window.startGameWhenReady();
-              }
-            }, 500);
-          }
-        }, 500); // Small delay to show 100%
-      };
-      
-      // Start loading assets
-      loader.loadAssetsByPriority();
-      
-      // Make loader globally available
-      window.assetLoader = loader;
-    };
-    document.head.appendChild(assetLoaderScript);
     
     // Load JavaScript with cache busting
     const script = document.createElement('script');
