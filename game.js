@@ -911,6 +911,8 @@ let touchState = {
   interact: false
 };
 
+let touchJumpTriggered = false; // Prevent continuous jumping on touch
+
 function createTouchControls() {
   // Only create touch controls on mobile devices
   if (!('ontouchstart' in window)) return;
@@ -919,11 +921,11 @@ function createTouchControls() {
   touchControls.id = 'touch-controls';
   touchControls.innerHTML = `
     <div class="touch-dpad">
+      <button class="touch-btn touch-up" data-key="up">↑</button>
       <div class="touch-middle">
         <button class="touch-btn touch-left" data-key="left">←</button>
         <button class="touch-btn touch-right" data-key="right">→</button>
       </div>
-      <button class="touch-btn touch-down" data-key="down">↓</button>
     </div>
   `;
   
@@ -939,6 +941,13 @@ function createTouchControls() {
       e.preventDefault();
       touchState[key] = true;
       btn.classList.add('active');
+      
+      // Handle jump button - only jump once per press
+      if (key === 'up' && onGround && !touchJumpTriggered) {
+        vy = -CONFIG.physics.jumpSpeed;
+        onGround = false;
+        touchJumpTriggered = true;
+      }
       
       if (key === 'interact') {
         if (canInteract) {
@@ -956,6 +965,11 @@ function createTouchControls() {
       e.preventDefault();
       touchState[key] = false;
       btn.classList.remove('active');
+      
+      // Reset jump flag when up button is released
+      if (key === 'up') {
+        touchJumpTriggered = false;
+      }
     });
     
     // Touch cancel (when finger moves off button)
@@ -963,6 +977,11 @@ function createTouchControls() {
       e.preventDefault();
       touchState[key] = false;
       btn.classList.remove('active');
+      
+      // Reset jump flag when up button is cancelled
+      if (key === 'up') {
+        touchJumpTriggered = false;
+      }
     });
     
     // Prevent context menu on long press
@@ -1372,8 +1391,8 @@ function tick(ts) {
     // Touch controls
     if (touchState.left) vx -= 1;
     if (touchState.right) vx += 1;
-    if (touchState.up) vControl -= 1;
-    if (touchState.down) vControl += 1;
+    // Note: touchState.up is handled directly in touch events for single jump
+    // Note: touchState.down removed (down button no longer exists)
   }
 
   const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
