@@ -502,7 +502,7 @@ body {
 /* Message me icon positioned on the profile */
 .msg-me-link {
   position: absolute;
-  right: 18%;
+  right: 17%;
   bottom: 10%;
   z-index: 30;
   transition: transform 0.2s ease, filter 0.2s ease;
