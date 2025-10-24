@@ -70,6 +70,7 @@ let vy = 0;         // vertical velocity for jump/gravity
 let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
 let constructionMessageShown = false; // track if construction message has been shown
+let hasStartedMoving = false; // track if user has started moving
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
 let sceneTransitioning = false; // flag to prevent suitcase showing during transitions
@@ -91,6 +92,7 @@ const interactBtn = document.getElementById('interact');
 const fadeEl = document.getElementById('fade');
 const chatEl = document.getElementById('chat');
 const spotlightEl = document.getElementById('spotlight-overlay');
+const movementInstructionsEl = document.getElementById('movement-instructions');
 // dynamically created elements
 let suitcaseHotspot = null;
 let inventoryOverlay = null;
@@ -1505,6 +1507,17 @@ function tick(ts) {
 
   const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
+
+  // Hide movement instructions when user starts moving
+  if (moving && !hasStartedMoving) {
+    hasStartedMoving = true;
+    if (movementInstructionsEl) {
+      movementInstructionsEl.style.opacity = '0';
+      setTimeout(() => {
+        movementInstructionsEl.style.display = 'none';
+      }, 500); // Wait for fade transition to complete
+    }
+  }
 
   if (moving) {
     const inv = 1 / Math.hypot(vx || 1, 1);

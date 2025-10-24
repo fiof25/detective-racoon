@@ -1035,6 +1035,23 @@ body {
   white-space: pre-line;
 }
 
+/* Movement instructions */
+.movement-instructions {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Love Ya Like A Sister';
+  font-size: 16px;
+  font-weight: 400;
+  color: #ffe9b3;
+  opacity: 0.5;
+  text-align: center;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.5s ease;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
   /* Adjust raccoon size for mobile - use calc to maintain proportions */
@@ -1198,6 +1215,12 @@ body {
     width: 280px;
   }
 
+  /* Mobile movement instructions */
+  .movement-instructions {
+    font-size: 14px;
+    bottom: 16px;
+  }
+
   /* Mobile jam video container - maintain consistent positioning */
   .jam-video-container {
     left: 19%;
@@ -1296,6 +1319,12 @@ body {
   /* Small mobile construction message */
   .chat.construction-message {
     width: 240px;
+  }
+
+  /* Small mobile movement instructions */
+  .movement-instructions {
+    font-size: 13px;
+    bottom: 14px;
   }
 
   .jam-video-container {
