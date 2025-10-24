@@ -1634,7 +1634,7 @@ function tick(ts) {
       constructionMessageShown = true;
       // Clear any existing chat timer
       if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
-      chatEl.innerHTML = 'Hmm looks like this place is still under construction.. Maybe i\'ll check back later.';
+      chatEl.innerHTML = 'Hmm looks like this place is still under construction.. Maybe I\'ll check back later.';
       chatEl.classList.add('construction-message');
       show(chatEl);
       placeChatAtWorld(racX, racY - 220);
