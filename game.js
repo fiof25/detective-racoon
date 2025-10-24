@@ -93,6 +93,29 @@ const fadeEl = document.getElementById('fade');
 const chatEl = document.getElementById('chat');
 const spotlightEl = document.getElementById('spotlight-overlay');
 const movementInstructionsEl = document.getElementById('movement-instructions');
+
+// Audio elements
+const bookSound = new Audio('assets/book.mp3');
+const doorSound = new Audio('assets/door.mp3');
+const boxSound = new Audio('assets/box.wav');
+
+// Set volume levels
+bookSound.volume = 1.0; // Maximum volume
+doorSound.volume = 0.2; // Quieter
+boxSound.volume = 0.3; // Medium volume for box opening
+
+// Function to play sound with error handling
+function playSound(audio) {
+  try {
+    audio.currentTime = 0; // Reset to beginning
+    audio.play().catch(error => {
+      console.log('Audio play failed:', error);
+    });
+  } catch (error) {
+    console.log('Audio error:', error);
+  }
+}
+
 // dynamically created elements
 let suitcaseHotspot = null;
 let inventoryOverlay = null;
@@ -656,6 +679,9 @@ async function enterInside() {
 function tryEnterHouse() {
   if (scene !== 'outside' || !canInteract) return;
   
+  // Play door sound when entering house
+  playSound(doorSound);
+  
   // Set transition flag and hide suitcase before starting transition
   sceneTransitioning = true;
   if (suitcaseHotspot) {
@@ -685,6 +711,9 @@ function tryExitHouse() {
   }
   
   console.log('Starting house exit transition...');
+  // Play door sound when exiting house
+  playSound(doorSound);
+  
   // Set transition flag to prevent suitcase glitches
   sceneTransitioning = true;
   
@@ -704,6 +733,7 @@ function tryExitHouse() {
 
 function openInventory() {
   if (overlayOpen) return;
+  playSound(boxSound);
   overlayOpen = true;
   inventoryOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
@@ -813,6 +843,7 @@ function goToPrevPage() {
 
 function openFatherFigureOverlay() {
   if (fatherFigureOverlayOpen) return;
+  playSound(bookSound);
   fatherFigureOverlayOpen = true;
   currentFatherFigurePage = 1; // Reset to first page when opening
   fatherFigureOverlay?.classList.remove('hidden');
@@ -839,6 +870,7 @@ function closeFatherFigureOverlay() {
 
 function openDesignOverlay() {
   if (designOverlayOpen) return;
+  playSound(bookSound);
   designOverlayOpen = true;
   designOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
@@ -855,6 +887,7 @@ function closeDesignOverlay() {
 
 function openJamOverlay() {
   if (jamOverlayOpen) return;
+  playSound(bookSound);
   jamOverlayOpen = true;
   jamOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
@@ -871,6 +904,7 @@ function closeJamOverlay() {
 
 function openDesigntoOverlay() {
   if (designtoOverlayOpen) return;
+  playSound(bookSound);
   designtoOverlayOpen = true;
   designtoOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
@@ -887,6 +921,7 @@ function closeDesigntoOverlay() {
 
 function openLucyOverlay() {
   if (lucyOverlayOpen) return;
+  playSound(bookSound);
   lucyOverlayOpen = true;
   lucyOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
@@ -911,6 +946,7 @@ function closeLucyOverlay() {
 
 function openRevisionOverlay() {
   if (revisionOverlayOpen) return;
+  playSound(bookSound);
   revisionOverlayOpen = true;
   revisionOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
@@ -927,6 +963,7 @@ function closeRevisionOverlay() {
 
 function openAboutMeOverlay() {
   if (aboutMeOverlayOpen) return;
+  playSound(bookSound);
   aboutMeOverlayOpen = true;
   aboutMeOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
