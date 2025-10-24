@@ -69,6 +69,7 @@ let lastFacing = 1; // 1 = facing right, -1 = facing left
 let vy = 0;         // vertical velocity for jump/gravity
 let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
+let constructionMessageShown = false; // track if construction message has been shown
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
 let sceneTransitioning = false; // flag to prevent suitcase showing during transitions
@@ -587,6 +588,9 @@ async function enterOutside() {
 async function enterInside() {
   try {
     scene = 'inside';
+    
+    // Reset construction message flag when entering inside
+    constructionMessageShown = false;
     
     // Hide suitcase immediately to prevent glitch during transition
     if (suitcaseHotspot) {
@@ -1609,6 +1613,27 @@ function tick(ts) {
   // Keep chat bubble following the raccoon while visible
   if (!chatEl.classList.contains('hidden')) {
     placeChatAtWorld(racX, racY - 220);
+  }
+
+  // Check if raccoon reached far right of downstairs and show construction message
+  if (scene === 'inside') {
+    if (!constructionMessageShown && racX >= worldW - 150) {
+      constructionMessageShown = true;
+      // Clear any existing chat timer
+      if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
+      chatEl.innerHTML = 'Hmm looks like this place is still under construction.. Maybe i\'ll check back later.';
+      chatEl.classList.add('construction-message');
+      show(chatEl);
+      placeChatAtWorld(racX, racY - 220);
+      chatTimerId = setTimeout(() => {
+        hide(chatEl);
+        chatEl.classList.remove('construction-message');
+        chatTimerId = null;
+      }, 4000); // Show for 4 seconds
+    } else if (constructionMessageShown && racX < worldW - 200) {
+      // Reset flag when raccoon moves away from the far right
+      constructionMessageShown = false;
+    }
   }
 
   // Update spotlight position to follow raccoon
