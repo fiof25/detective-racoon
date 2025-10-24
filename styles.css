@@ -465,6 +465,63 @@ body {
   background: center/cover no-repeat url('assets/suitcase.png');
 }
 
+/* About me profile stage uses profile.png as background */
+.about-me-stage {
+  position: relative;
+  height: 100%;
+  background: center/contain no-repeat url('assets/profile.png');
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Mail me icon positioned on the profile */
+.mail-me-link {
+  position: absolute;
+  right: 27%;
+  bottom: 10%;
+  z-index: 30;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.mail-me-link:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1) drop-shadow(0 0 12px rgba(255, 213, 130, 0.5));
+}
+
+.mail-me-icon {
+  width: 125px;
+  height: auto;
+  max-width: 200px;
+  max-height: 200px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Message me icon positioned on the profile */
+.msg-me-link {
+  position: absolute;
+  right: 18%;
+  bottom: 10%;
+  z-index: 30;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.msg-me-link:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1) drop-shadow(0 0 12px rgba(255, 213, 130, 0.5));
+}
+
+.msg-me-icon {
+  width: 125px;
+  height: auto;
+  max-width: 200px;
+  max-height: 200px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
 /* Father figure notebook stage uses fatherfigureNote.png as background */
 .notebook-stage {
   position: relative;
@@ -1109,6 +1166,18 @@ body {
     width: 200px;
   }
 
+  /* Mobile mail me icon */
+  .mail-me-icon {
+    max-width: 150px;
+    max-height: 150px;
+  }
+
+  /* Mobile message me icon */
+  .msg-me-icon {
+    max-width: 150px;
+    max-height: 150px;
+  }
+
   /* Mobile chat bubble */
   .chat {
     max-width: 280px;
@@ -1196,6 +1265,16 @@ body {
     width: 160px;
   }
 
+  .mail-me-icon {
+    max-width: 120px;
+    max-height: 120px;
+  }
+
+  .msg-me-icon {
+    max-width: 120px;
+    max-height: 120px;
+  }
+
   .chat {
     max-width: 240px;
     font-size: 13px;
@@ -1222,7 +1301,9 @@ body {
   .lucy-news-link:hover,
   .lucy-project-link:hover,
   .revision-project-link:hover,
-  .jam-video-container:hover {
+  .jam-video-container:hover,
+  .mail-me-link:hover,
+  .msg-me-link:hover {
     transform: none;
     filter: none;
     background: inherit;
@@ -1250,7 +1331,9 @@ body {
   .jam-launch-button:active,
   .lucy-news-link:active,
   .lucy-project-link:active,
-  .revision-project-link:active {
+  .revision-project-link:active,
+  .mail-me-link:active,
+  .msg-me-link:active {
     transform: scale(0.95);
   }
 

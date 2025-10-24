@@ -77,6 +77,7 @@ let designtoOverlayOpen = false; // designto overlay state
 let jamOverlayOpen = false; // jam overlay state
 let lucyOverlayOpen = false; // lucy overlay state
 let revisionOverlayOpen = false; // revision overlay state
+let aboutMeOverlayOpen = false; // about me overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 
@@ -98,6 +99,7 @@ let designtoOverlay = null;
 let jamOverlay = null;
 let lucyOverlay = null;
 let revisionOverlay = null;
+let aboutMeOverlay = null;
 let mouseOverSuitcase = false;
 
 // -------- Utilities --------
@@ -154,6 +156,9 @@ class AssetPreloader {
       
       // Essential UI assets
       'assets/suitcaseAsset.png',
+      'assets/profile.png',
+      'assets/mailme.png',
+      'assets/msgme.png',
       
       // Inventory assets (main and hover states for smooth transitions)
       'assets/designAsset.png',
@@ -652,7 +657,7 @@ function tryEnterHouse() {
 }
 
 function tryExitHouse() {
-  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen) return; // ignore while any overlay is open
+  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen || aboutMeOverlayOpen) return; // ignore while any overlay is open
   if (scene !== 'inside' || !canInteract) return;
   
   // Set transition flag to prevent suitcase glitches
@@ -893,6 +898,20 @@ function closeRevisionOverlay() {
   openInventory();
 }
 
+function openAboutMeOverlay() {
+  if (aboutMeOverlayOpen) return;
+  aboutMeOverlayOpen = true;
+  aboutMeOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
+}
+
+function closeAboutMeOverlay() {
+  if (!aboutMeOverlayOpen) return;
+  aboutMeOverlayOpen = false;
+  aboutMeOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
+}
+
 // -------- Input --------
 window.addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
@@ -924,6 +943,10 @@ window.addEventListener('keydown', (e) => {
   }
   if (revisionOverlayOpen) {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeRevisionOverlay(); }
+    return;
+  }
+  if (aboutMeOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeAboutMeOverlay(); }
     return;
   }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
@@ -1441,7 +1464,7 @@ function tick(ts) {
   // Movement intent (keyboard + touch)
   let vx = 0;
   let vControl = 0; // -1 up, +1 down
-  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen) {
+  if (!overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen) {
     // Keyboard controls
     if (keys.has('arrowleft') || keys.has('a')) vx -= 1;
     if (keys.has('arrowright') || keys.has('d')) vx += 1;
@@ -1455,7 +1478,7 @@ function tick(ts) {
     // Note: touchState.down removed (down button no longer exists)
   }
 
-  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
+  const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
 
   if (moving) {
@@ -1599,6 +1622,38 @@ function disableSpotlight() {
   }
 }
 
+// Create about me overlay
+function createAboutMeOverlay() {
+  const ui = document.getElementById('ui');
+  
+  // Create about me overlay
+  aboutMeOverlay = document.createElement('div');
+  aboutMeOverlay.id = 'aboutMeOverlay';
+  aboutMeOverlay.className = 'overlay hidden';
+  aboutMeOverlay.setAttribute('aria-hidden', 'true');
+  aboutMeOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-about></div>
+    <button class="overlay-close" data-close-about aria-label="Close"></button>
+    <div class="overlay-panel">
+      <div class="about-me-stage">
+        <!-- Profile image will be displayed as CSS background -->
+        <a href="mailto:fxfang@uwaterloo.ca?subject=Your%20next%20case%3A%20JOIN%20OUR%20TEAM" class="mail-me-link" title="Send me an email">
+          <img src="${versionedAsset('assets/mailme.png')}" alt="Email Me" class="mail-me-icon">
+        </a>
+        <a href="https://www.linkedin.com/in/fiona-fangg/" target="_blank" class="msg-me-link" title="Message me on LinkedIn">
+          <img src="${versionedAsset('assets/msgme.png')}" alt="Message Me" class="msg-me-icon">
+        </a>
+      </div>
+    </div>`;
+  ui.appendChild(aboutMeOverlay);
+
+  // Close on backdrop click
+  aboutMeOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-about')) closeAboutMeOverlay();
+  });
+}
+
 // -------- Custom Floating Cursor --------
 function createCustomCursor() {
   // Create cursor element
@@ -1632,7 +1687,7 @@ function createCustomCursor() {
   document.addEventListener('mouseover', (e) => {
     const target = e.target;
     // Check if element or its parent is clickable
-    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, .nav-link, a, button, [onclick], .clickable');
+    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .mail-me-link, .msg-me-link, .touch-btn, .nav-link, a, button, [onclick], .clickable');
     
     if (clickableElement) {
       cursor.classList.add('hover');
@@ -1642,7 +1697,7 @@ function createCustomCursor() {
   document.addEventListener('mouseout', (e) => {
     const target = e.target;
     // Check if element or its parent is clickable
-    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .touch-btn, .nav-link, a, button, [onclick], .clickable');
+    const clickableElement = target.closest('.inv-asset, .hotspot-img, #interact, .overlay-close, .nav-arrow, .github-link, .jam-github-link, .jam-launch-button, .jam-watch-button, .jam-video-container, .lucy-news-link, .lucy-project-link, .revision-project-link, .designto-icon, .mail-me-link, .msg-me-link, .touch-btn, .nav-link, a, button, [onclick], .clickable');
     
     if (clickableElement) {
       cursor.classList.remove('hover');
@@ -1697,6 +1752,7 @@ async function startGame() {
     
     // build overlay UI once DOM is ready
     createSuitcaseUI();
+    createAboutMeOverlay();
     
     // Add event listener for projects link to open briefcase
     const projectsLink = document.getElementById('projects-link');
@@ -1704,6 +1760,15 @@ async function startGame() {
       projectsLink.addEventListener('click', (e) => {
         e.preventDefault(); // Prevent default link behavior
         openInventory(); // Open the briefcase/suitcase
+      });
+    }
+    
+    // Add event listener for about link to open about me overlay
+    const aboutLink = document.getElementById('about-link');
+    if (aboutLink) {
+      aboutLink.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        openAboutMeOverlay(); // Open the about me profile overlay
       });
     }
     
