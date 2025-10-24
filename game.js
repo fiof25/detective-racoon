@@ -346,16 +346,20 @@ function distance(a, b) {
 }
 
 function fadeOutIn(cb) {
+  console.log('fadeOutIn called with callback:', !!cb);
   show(fadeEl);
   
   // Use CSS transitions with event listeners for better performance
   const handleFadeIn = async () => {
+    console.log('fadeOutIn - handleFadeIn triggered');
     fadeEl.removeEventListener('transitionend', handleFadeIn);
     
     // Execute callback during peak fade and wait for it to complete
     if (cb) {
       try {
+        console.log('fadeOutIn - executing callback...');
         await cb();
+        console.log('fadeOutIn - callback completed');
       } catch (error) {
         console.error('Error during scene transition:', error);
       }
@@ -363,6 +367,7 @@ function fadeOutIn(cb) {
     
     // Only start fade out after callback is completely finished
     requestAnimationFrame(() => {
+      console.log('fadeOutIn - starting fade out');
       fadeEl.classList.remove('show');
       fadeEl.addEventListener('transitionend', handleFadeOut, { once: true });
     });
@@ -534,8 +539,11 @@ function getCeilingY() {
 
 // -------- Scenes --------
 async function enterOutside() {
+  console.log('enterOutside function called');
   try {
+    console.log('enterOutside - setting scene to outside');
     scene = 'outside';
+    console.log('enterOutside - loading background image');
     const img = await loadImage(CONFIG.outside.bgSrc);
     bgEl.src = CONFIG.outside.bgSrc;
     
@@ -657,13 +665,25 @@ function tryEnterHouse() {
 }
 
 function tryExitHouse() {
-  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen || aboutMeOverlayOpen) return; // ignore while any overlay is open
-  if (scene !== 'inside' || !canInteract) return;
+  console.log('tryExitHouse called - Scene:', scene, 'canInteract:', canInteract, 'Overlays:', {
+    overlayOpen, fatherFigureOverlayOpen, designtoOverlayOpen, revisionOverlayOpen, aboutMeOverlayOpen
+  });
   
+  if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen || aboutMeOverlayOpen) {
+    console.log('Exiting early - overlay is open');
+    return; // ignore while any overlay is open
+  }
+  if (scene !== 'inside') {
+    console.log('Exiting early - scene is not inside');
+    return;
+  }
+  
+  console.log('Starting house exit transition...');
   // Set transition flag to prevent suitcase glitches
   sceneTransitioning = true;
   
   fadeOutIn(async () => {
+    console.log('Fade transition - calling enterOutside...');
     await enterOutside();
     // Place raccoon just outside the door on ground
     racX = doorWorld.x;
@@ -672,6 +692,7 @@ function tryExitHouse() {
     centerCameraOn(racX, racY);
     // Clear transition flag after scene is fully loaded
     sceneTransitioning = false;
+    console.log('House exit complete');
   });
 }
 
@@ -1777,8 +1798,15 @@ async function startGame() {
     if (backButton) {
       backButton.addEventListener('click', (e) => {
         e.preventDefault();
-        if (scene === 'inside' && !overlayOpen) {
+        console.log('Back button clicked - Scene:', scene, 'Overlays:', {
+          overlayOpen, fatherFigureOverlayOpen, designOverlayOpen, designtoOverlayOpen, 
+          jamOverlayOpen, lucyOverlayOpen, revisionOverlayOpen, aboutMeOverlayOpen
+        });
+        if (scene === 'inside' && !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen) {
+          console.log('Attempting to exit house...');
           tryExitHouse(); // Exit the house and place raccoon at door
+        } else {
+          console.log('Cannot exit house - conditions not met');
         }
       });
     }

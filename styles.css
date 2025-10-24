@@ -360,7 +360,7 @@ body {
   transition: all 0.3s ease;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
   pointer-events: auto;
-  z-index: 10;
+  z-index: 50;
 }
 
 #back-button:hover {
