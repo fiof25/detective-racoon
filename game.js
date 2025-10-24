@@ -82,6 +82,7 @@ let revisionOverlayOpen = false; // revision overlay state
 let aboutMeOverlayOpen = false; // about me overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
+let globalPreloader = null; // Global reference to asset preloader
 
 // DOM elements
 const gameEl = document.getElementById('game');
@@ -135,12 +136,32 @@ function show(el) { el.classList.remove('hidden'); }
 function hide(el) { el.classList.add('hidden'); }
 function setRaccoonImage(src) { 
   if (!racEl || !src) return;
-  if (racEl.src.endsWith(src)) return; 
+  
+  // Check if we're already showing this image (avoid unnecessary reloads)
+  const currentSrc = racEl.src;
+  if (currentSrc && (currentSrc === src || currentSrc.includes(src))) return;
+  
+  // Try to use cached image first for instant loading
+  if (globalPreloader && globalPreloader.isImageCached(src)) {
+    const cachedImg = globalPreloader.getCachedImage(src);
+    if (cachedImg && cachedImg.complete) {
+      racEl.src = src;
+      return;
+    }
+  }
+  
+  // Set up error handler before changing src
   racEl.onerror = () => {
     console.warn(`Failed to load raccoon image: ${src}`);
     // Fallback to a basic placeholder if image fails
     racEl.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTQwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTQwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzMzMyIvPjx0ZXh0IHg9IjI3MCIgeT0iMjAwIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjI0cHgiPkZhaWxlZCB0byBsb2FkPC90ZXh0Pjwvc3ZnPg==';
   };
+  
+  // Clear any previous error handler on successful load
+  racEl.onload = () => {
+    racEl.onerror = null;
+  };
+  
   racEl.src = src; 
 }
 
@@ -157,6 +178,7 @@ class AssetPreloader {
     this.total = 0;
     this.onProgress = null;
     this.onComplete = null;
+    this.imageCache = new Map(); // Cache for preloaded images
   }
 
   // Define all assets that need to be preloaded (essential only)
@@ -217,6 +239,8 @@ class AssetPreloader {
         const img = new Image();
         
         img.onload = () => {
+          // Cache the loaded image for immediate access
+          this.imageCache.set(versionedAsset(path), img);
           this.loaded++;
           this.updateProgress();
           
@@ -267,6 +291,16 @@ class AssetPreloader {
 
   setProgressCallback(callback) {
     this.onProgress = callback;
+  }
+
+  // Get a cached image if available
+  getCachedImage(src) {
+    return this.imageCache.get(src);
+  }
+
+  // Check if an image is cached
+  isImageCached(src) {
+    return this.imageCache.has(src);
   }
 }
 
@@ -737,6 +771,12 @@ function openInventory() {
   overlayOpen = true;
   inventoryOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when inventory is open to prevent confusion with close button
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeInventory() {
@@ -744,6 +784,12 @@ function closeInventory() {
   overlayOpen = false;
   inventoryOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing inventory (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
   
   // Reset interaction state and check if we should show exit prompt
   canInteract = false;
@@ -967,6 +1013,12 @@ function openAboutMeOverlay() {
   aboutMeOverlayOpen = true;
   aboutMeOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when about me overlay is open to prevent confusion with close button
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeAboutMeOverlay() {
@@ -974,6 +1026,12 @@ function closeAboutMeOverlay() {
   aboutMeOverlayOpen = false;
   aboutMeOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing about me overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
 }
 
 // -------- Input --------
@@ -1825,6 +1883,36 @@ function createCustomCursor() {
 }
 
 // -------- Loading and Init --------
+async function ensureRaccoonImagesLoaded() {
+  const raccoonImages = [CONFIG.raccoon.idleSrc, CONFIG.raccoon.walkSrc];
+  const promises = raccoonImages.map(src => {
+    return new Promise((resolve) => {
+      // Check if already cached
+      if (globalPreloader && globalPreloader.isImageCached(src)) {
+        resolve();
+        return;
+      }
+      
+      // Load the image if not cached
+      const img = new Image();
+      img.onload = () => {
+        if (globalPreloader) {
+          globalPreloader.imageCache.set(src, img);
+        }
+        resolve();
+      };
+      img.onerror = () => {
+        console.warn(`Failed to preload raccoon image: ${src}`);
+        resolve(); // Don't block startup on failed image
+      };
+      img.src = src;
+    });
+  });
+  
+  await Promise.all(promises);
+  console.log('Raccoon images preloaded successfully');
+}
+
 async function hideLoadingScreen() {
   const loadingScreen = document.getElementById('loading-screen');
   const gameEl = document.getElementById('game');
@@ -1841,6 +1929,9 @@ async function startGame() {
   try {
     // size raccoon element from config and set initial src
     racEl.style.width = `${CONFIG.raccoon.width}px`;
+    
+    // Ensure raccoon images are preloaded before setting
+    await ensureRaccoonImagesLoaded();
     setRaccoonImage(CONFIG.raccoon.idleSrc);
 
     await enterOutside();
@@ -1930,6 +2021,7 @@ async function startGame() {
   try {
     // Initialize the asset preloader
     const preloader = new AssetPreloader();
+    globalPreloader = preloader; // Store global reference
     
     // Set up progress callback
     preloader.setProgressCallback((percentage, loaded, total) => {
