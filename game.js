@@ -1078,7 +1078,7 @@ window.addEventListener('keydown', (e) => {
     if (scene === 'outside') tryEnterHouse();
     else if (scene === 'inside') {
       if (canOpenSuitcase) openInventory();
-      else tryExitHouse();
+      else if (canInteract) tryExitHouse(); // Only exit when near the door
     }
   }
   // Jump: spacebar or up arrow
