@@ -79,6 +79,7 @@ let designtoOverlayOpen = false; // designto overlay state
 let jamOverlayOpen = false; // jam overlay state
 let lucyOverlayOpen = false; // lucy overlay state
 let revisionOverlayOpen = false; // revision overlay state
+let uiOverlayOpen = false; // ui overlay state
 let aboutMeOverlayOpen = false; // about me overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
@@ -126,6 +127,7 @@ let designtoOverlay = null;
 let jamOverlay = null;
 let lucyOverlay = null;
 let revisionOverlay = null;
+let uiOverlay = null;
 let aboutMeOverlay = null;
 let mouseOverSuitcase = false;
 
@@ -920,6 +922,12 @@ function openDesignOverlay() {
   designOverlayOpen = true;
   designOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when design overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeDesignOverlay() {
@@ -927,7 +935,44 @@ function closeDesignOverlay() {
   designOverlayOpen = false;
   designOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing design overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
+  
   // Return to inventory when closing design overlay
+  openInventory();
+}
+
+function openUiOverlay() {
+  if (uiOverlayOpen) return;
+  playSound(bookSound);
+  uiOverlayOpen = true;
+  uiOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
+  
+  // Hide back button when ui overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
+}
+
+function closeUiOverlay() {
+  if (!uiOverlayOpen) return;
+  uiOverlayOpen = false;
+  uiOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing ui overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
+  
+  // Return to inventory when closing ui overlay
   openInventory();
 }
 
@@ -937,6 +982,12 @@ function openJamOverlay() {
   jamOverlayOpen = true;
   jamOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when jam overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeJamOverlay() {
@@ -944,6 +995,13 @@ function closeJamOverlay() {
   jamOverlayOpen = false;
   jamOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing jam overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
+  
   // Return to inventory when closing jam overlay
   openInventory();
 }
@@ -954,6 +1012,12 @@ function openDesigntoOverlay() {
   designtoOverlayOpen = true;
   designtoOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when designto overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeDesigntoOverlay() {
@@ -961,6 +1025,13 @@ function closeDesigntoOverlay() {
   designtoOverlayOpen = false;
   designtoOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing designto overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
+  
   // Return to inventory when closing designto overlay
   openInventory();
 }
@@ -971,6 +1042,12 @@ function openLucyOverlay() {
   lucyOverlayOpen = true;
   lucyOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when lucy overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeLucyOverlay() {
@@ -986,6 +1063,13 @@ function closeLucyOverlay() {
   lucyOverlayOpen = false;
   lucyOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing lucy overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
+  
   // Return to inventory when closing lucy overlay
   openInventory();
 }
@@ -996,6 +1080,12 @@ function openRevisionOverlay() {
   revisionOverlayOpen = true;
   revisionOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when revision overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
 }
 
 function closeRevisionOverlay() {
@@ -1003,6 +1093,13 @@ function closeRevisionOverlay() {
   revisionOverlayOpen = false;
   revisionOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing revision overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
+  
   // Return to inventory when closing revision overlay
   openInventory();
 }
@@ -1336,6 +1433,15 @@ function createSuitcaseUI() {
     });
   }
   
+  // Add click handler for ui asset
+  const uiAsset = inventoryOverlay.querySelector('#ui-asset');
+  if (uiAsset) {
+    uiAsset.addEventListener('click', () => {
+      closeInventory();
+      openUiOverlay();
+    });
+  }
+  
   // Create father figure overlay
   fatherFigureOverlay = document.createElement('div');
   fatherFigureOverlay.id = 'fatherFigureOverlay';
@@ -1413,6 +1519,27 @@ function createSuitcaseUI() {
   designOverlay.addEventListener('click', (e) => {
     const t = e.target;
     if (t instanceof Element && t.hasAttribute('data-close-design')) closeDesignOverlay();
+  });
+  
+  // Create ui overlay
+  uiOverlay = document.createElement('div');
+  uiOverlay.id = 'uiOverlay';
+  uiOverlay.className = 'overlay hidden';
+  uiOverlay.setAttribute('aria-hidden', 'true');
+  uiOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close-ui></div>
+    <button class="overlay-close" data-close-ui aria-label="Close"></button>
+    <div class="overlay-panel">
+      <div class="ui-stage">
+        <img src="${versionedAsset('assets/uiNote.png')}" alt="UI Note" class="ui-note-image">
+      </div>
+    </div>`;
+  ui.appendChild(uiOverlay);
+  
+  // Close on backdrop click
+  uiOverlay.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t instanceof Element && t.hasAttribute('data-close-ui')) closeUiOverlay();
   });
   
   // Create jam overlay
