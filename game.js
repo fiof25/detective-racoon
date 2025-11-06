@@ -1234,10 +1234,11 @@ function createSuitcaseUI() {
       <div class="suitcase-stage">
         <!-- Individual positioned images matching reference layout exactly -->
         <img class="inv-asset hoverable-asset" id="design-asset" src="${versionedAsset('assets/designAsset.png')}" style="position: absolute; left: 25%; top: 56%; width: 18%; z-index: 6;" alt="design" />
-        <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.png')}" style="position: absolute; left: 26%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
+        <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.png')}" style="position: absolute; left: 24%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
         <img class="inv-asset hoverable-asset" id="lucy-asset" src="${versionedAsset('assets/lucyAsset.png')}" style="position: absolute; left: 39%; top: 55%; width: 16%; z-index: 5;" alt="lucy" />
         <img class="inv-asset hoverable-asset" id="jam-asset" src="${versionedAsset('assets/jamAsset.png')}" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="jam" />
-        <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.png')}" style="position: absolute; left: 41%; top: 32%; width: 27%; z-index: 3;" alt="revision" />
+        <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.png')}" style="position: absolute; left: 50%; top: 40%; width: 20%; z-index: 8;" alt="revision" />
+        <img class="inv-asset hoverable-asset" id="ui-asset" src="${versionedAsset('assets/uiAsset.png')}" style="position: absolute; left: 35%; top: 33%; width: 22%; z-index: 7;" alt="ui" />
         <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="${versionedAsset('assets/fatherfigureAsset.png')}" style="position: absolute; left: 53%; top: 54%; width: 21%; z-index: 4;" alt="fatherfigure" />
       </div>
     </div>`;
@@ -1265,7 +1266,8 @@ function createSuitcaseUI() {
       'designto-asset': 'assets/designtoAsset2.png',
       'lucy-asset': 'assets/lucyAsset2.png',
       'revision-asset': 'assets/revisionAsset2.png',
-      'jam-asset': 'assets/jamAsset2.png' // Add this when jamAsset2.png is uploaded
+      'jam-asset': 'assets/jamAsset2.png', // Add this when jamAsset2.png is uploaded
+      'ui-asset': 'assets/uiAsset2.png' // Add this when uiAsset2.png is uploaded
     };
     
     // Add hover effect if #2 version exists
