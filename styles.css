@@ -716,6 +716,52 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* UI overlay with vertical scrolling */
+.ui-stage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  padding-left: 20px; /* Move content much more to the left */
+  will-change: scroll-position;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.ui-note-image {
+  max-width: 70%;
+  height: auto;
+  display: block;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Custom scrollbar for ui overlay */
+.ui-stage::-webkit-scrollbar {
+  width: 12px;
+}
+
+.ui-stage::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.ui-stage::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+}
+
+.ui-stage::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
 /* Revision stage with img element for Safari compatibility */
 .revision-stage {
   position: relative;
