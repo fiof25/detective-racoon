@@ -1919,13 +1919,15 @@ function createAboutMeOverlay() {
     <button class="overlay-close" data-close-about aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="about-me-stage">
-        <!-- Profile image will be displayed as CSS background -->
-        <a href="mailto:fxfang@uwaterloo.ca?subject=Your%20next%20case%3A%20JOIN%20OUR%20TEAM" class="mail-me-link" title="Send me an email">
-          <img src="${versionedAsset('assets/mailme.png')}" alt="Email Me" class="mail-me-icon">
-        </a>
-        <a href="https://www.linkedin.com/in/fiona-fangg/" target="_blank" class="msg-me-link" title="Message me on LinkedIn">
-          <img src="${versionedAsset('assets/msgme.png')}" alt="Message Me" class="msg-me-icon">
-        </a>
+        <div class="about-me-container">
+          <img src="${versionedAsset('assets/profile.png')}" alt="Profile" class="about-me-image">
+          <a href="mailto:fxfang@uwaterloo.ca?subject=Your%20next%20case%3A%20JOIN%20OUR%20TEAM" class="mail-me-link" title="Send me an email">
+            <img src="${versionedAsset('assets/mailme.png')}" alt="Email Me" class="mail-me-icon">
+          </a>
+          <a href="https://www.linkedin.com/in/fiona-fangg/" target="_blank" class="msg-me-link" title="Message me on LinkedIn">
+            <img src="${versionedAsset('assets/msgme.png')}" alt="Message Me" class="msg-me-icon">
+          </a>
+        </div>
       </div>
     </div>`;
   ui.appendChild(aboutMeOverlay);
