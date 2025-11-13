@@ -478,8 +478,8 @@ body {
 /* Suitcase image */
 .suitcase-image {
   display: block;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 100vw;
+  max-height: 100vh;
   height: auto;
   width: auto;
 }
