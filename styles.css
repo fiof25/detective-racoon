@@ -458,11 +458,87 @@ body {
   background: transparent;
 }
 
-/* Suitcase stage uses suitcase.png as background */
+/* Suitcase stage - centers the container */
 .suitcase-stage {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background: center/cover no-repeat url('assets/suitcase.png');
+  width: 100%;
+}
+
+/* Parent container - holds suitcase image and project assets */
+.suitcase-container {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* Suitcase image */
+.suitcase-image {
+  display: block;
+  max-width: 90vw;
+  max-height: 90vh;
+  height: auto;
+  width: auto;
+}
+
+/* Position all inv-assets absolutely within suitcase container */
+#design-asset {
+  position: absolute;
+  left: 25%;
+  top: 56%;
+  width: 18%;
+  z-index: 6;
+}
+
+#designto-asset {
+  position: absolute;
+  left: 24%;
+  top: 30%;
+  width: 18%;
+  z-index: 2;
+}
+
+#lucy-asset {
+  position: absolute;
+  left: 39%;
+  top: 55%;
+  width: 16%;
+  z-index: 5;
+}
+
+#jam-asset {
+  position: absolute;
+  left: 63%;
+  top: 30%;
+  width: 11%;
+  z-index: 1;
+}
+
+#revision-asset {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 20%;
+  z-index: 8;
+}
+
+#ui-asset {
+  position: absolute;
+  left: 35%;
+  top: 33%;
+  width: 22%;
+  z-index: 7;
+}
+
+#fatherfigure-asset {
+  position: absolute;
+  left: 53%;
+  top: 54%;
+  width: 21%;
+  z-index: 4;
 }
 
 /* About me profile stage - centers everything */

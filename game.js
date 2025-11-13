@@ -1329,14 +1329,17 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="suitcase-stage">
-        <!-- Individual positioned images matching reference layout exactly -->
-        <img class="inv-asset hoverable-asset" id="design-asset" src="${versionedAsset('assets/designAsset.png')}" style="position: absolute; left: 25%; top: 56%; width: 18%; z-index: 6;" alt="design" />
-        <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.png')}" style="position: absolute; left: 24%; top: 30%; width: 18%; z-index: 2;" alt="designto" />
-        <img class="inv-asset hoverable-asset" id="lucy-asset" src="${versionedAsset('assets/lucyAsset.png')}" style="position: absolute; left: 39%; top: 55%; width: 16%; z-index: 5;" alt="lucy" />
-        <img class="inv-asset hoverable-asset" id="jam-asset" src="${versionedAsset('assets/jamAsset.png')}" style="position: absolute; left: 63%; top: 30%; width: 11%; z-index: 1;" alt="jam" />
-        <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.png')}" style="position: absolute; left: 50%; top: 40%; width: 20%; z-index: 8;" alt="revision" />
-        <img class="inv-asset hoverable-asset" id="ui-asset" src="${versionedAsset('assets/uiAsset.png')}" style="position: absolute; left: 35%; top: 33%; width: 22%; z-index: 7;" alt="ui" />
-        <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="${versionedAsset('assets/fatherfigureAsset.png')}" style="position: absolute; left: 53%; top: 54%; width: 21%; z-index: 4;" alt="fatherfigure" />
+        <div class="suitcase-container">
+          <img src="${versionedAsset('assets/suitcase.png')}" alt="Suitcase" class="suitcase-image">
+          <!-- Individual positioned images matching reference layout exactly -->
+          <img class="inv-asset hoverable-asset" id="design-asset" src="${versionedAsset('assets/designAsset.png')}" alt="design" />
+          <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.png')}" alt="designto" />
+          <img class="inv-asset hoverable-asset" id="lucy-asset" src="${versionedAsset('assets/lucyAsset.png')}" alt="lucy" />
+          <img class="inv-asset hoverable-asset" id="jam-asset" src="${versionedAsset('assets/jamAsset.png')}" alt="jam" />
+          <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.png')}" alt="revision" />
+          <img class="inv-asset hoverable-asset" id="ui-asset" src="${versionedAsset('assets/uiAsset.png')}" alt="ui" />
+          <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="${versionedAsset('assets/fatherfigureAsset.png')}" alt="fatherfigure" />
+        </div>
       </div>
     </div>`;
   ui.appendChild(inventoryOverlay);
