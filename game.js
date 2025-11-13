@@ -812,14 +812,13 @@ function closeInventory() {
   }
 }
 
-// Cache DOM elements to avoid repeated queries
 let cachedFatherFigureElements = null;
 
 function updateFatherFigurePage() {
   // Cache elements on first call
   if (!cachedFatherFigureElements) {
     cachedFatherFigureElements = {
-      notebookStage: fatherFigureOverlay?.querySelector('.notebook-stage'),
+      notebookImage: fatherFigureOverlay?.querySelector('#notebookImage'),
       prevBtn: fatherFigureOverlay?.querySelector('#prevPageBtn'),
       nextBtn: fatherFigureOverlay?.querySelector('#nextPageBtn'),
       youtubeContainer: fatherFigureOverlay?.querySelector('#youtubeContainer'),
@@ -827,13 +826,13 @@ function updateFatherFigurePage() {
     };
   }
   
-  const { notebookStage, prevBtn, nextBtn, youtubeContainer, githubLink } = cachedFatherFigureElements;
+  const { notebookImage, prevBtn, nextBtn, youtubeContainer, githubLink } = cachedFatherFigureElements;
   
-  if (notebookStage) {
-    const backgroundImage = currentFatherFigurePage === 1 
+  if (notebookImage) {
+    const imageSrc = currentFatherFigurePage === 1 
       ? versionedAsset('assets/fatherfigureNote.png')
       : versionedAsset('assets/fatherfigureNote2.png');
-    notebookStage.style.backgroundImage = `url('${backgroundImage}')`;
+    notebookImage.src = imageSrc;
   }
   
   // Show/hide navigation buttons based on current page
@@ -863,13 +862,13 @@ function updateFatherFigurePage() {
     githubLink.style.display = 'block'; // Show on both pages
     if (currentFatherFigurePage === 1) {
       // Page 1: Next to "father figure" title
-      githubLink.style.left = '45%';
+      githubLink.style.left = '43%';
       githubLink.style.top = '9%';
       githubLink.style.right = 'auto';
     } else {
       // Page 2: Top right corner
       githubLink.style.left = 'auto';
-      githubLink.style.right = '17%';
+      githubLink.style.right = '7%';
       githubLink.style.top = '8%';
     }
   }
@@ -1455,26 +1454,28 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-father aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="notebook-stage">
-        <!-- Father figure notebook content will be styled with CSS background -->
-        <div class="youtube-embed-container" id="youtubeContainer">
-          <iframe 
-            id="youtubeVideo"
-            src="https://www.youtube.com/embed/rnDSdft8QbM?enablejsapi=1&rel=0&modestbranding=1" 
-            title="Father Figure Demo Video" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen>
-          </iframe>
+        <div class="notebook-container">
+          <img src="${versionedAsset('assets/fatherfigureNote.png')}" alt="Father Figure Note" class="notebook-image" id="notebookImage">
+          <div class="youtube-embed-container" id="youtubeContainer">
+            <iframe 
+              id="youtubeVideo"
+              src="https://www.youtube.com/embed/rnDSdft8QbM?enablejsapi=1&rel=0&modestbranding=1" 
+              title="Father Figure Demo Video" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen>
+            </iframe>
+          </div>
+          <a href="https://github.com/fiof25/father-figure-htn" target="_blank" class="github-link" id="githubLink">
+            <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
+          </a>
+          <button class="nav-arrow prev" id="prevPageBtn" aria-label="Previous page">
+            <img src="${versionedAsset('assets/arrow.png')}" alt="Previous">
+          </button>
+          <button class="nav-arrow next" id="nextPageBtn" aria-label="Next page">
+            <img src="${versionedAsset('assets/arrow.png')}" alt="Next">
+          </button>
         </div>
-        <a href="https://github.com/fiof25/father-figure-htn" target="_blank" class="github-link" id="githubLink">
-          <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
-        </a>
-        <button class="nav-arrow prev" id="prevPageBtn" aria-label="Previous page">
-          <img src="${versionedAsset('assets/arrow.png')}" alt="Previous">
-        </button>
-        <button class="nav-arrow next" id="nextPageBtn" aria-label="Next page">
-          <img src="${versionedAsset('assets/arrow.png')}" alt="Next">
-        </button>
       </div>
     </div>`;
   ui.appendChild(fatherFigureOverlay);
@@ -1555,20 +1556,22 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-jam aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="jam-notebook-stage">
-        <!-- Jam notebook content will be styled with CSS background -->
-        <div class="jam-video-container" id="jamVideoContainer">
-          <img src="${versionedAsset('assets/jamVid.png')}" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
-          <button class="jam-watch-button" id="jamWatchButton">
-            <span class="play-icon">▶</span>
-            Watch Demo
+        <div class="jam-notebook-container">
+          <img src="${versionedAsset('assets/jamNote.png')}" alt="Jam Note" class="jam-notebook-image">
+          <div class="jam-video-container" id="jamVideoContainer">
+            <img src="${versionedAsset('assets/jamVid.png')}" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
+            <button class="jam-watch-button" id="jamWatchButton">
+              <span class="play-icon">▶</span>
+              Watch Demo
+            </button>
+          </div>
+          <button class="jam-launch-button" id="jamLaunchButton">
+            <img src="${versionedAsset('assets/jamLaunchIcon.png')}" alt="Try Demo" class="jam-launch-icon">
           </button>
+          <a href="https://github.com/justinwuzijin/eye-tester-app" target="_blank" class="jam-github-link" id="jamGithubLink">
+            <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
+          </a>
         </div>
-        <button class="jam-launch-button" id="jamLaunchButton">
-          <img src="${versionedAsset('assets/jamLaunchIcon.png')}" alt="Try Demo" class="jam-launch-icon">
-        </button>
-        <a href="https://github.com/justinwuzijin/eye-tester-app" target="_blank" class="jam-github-link" id="jamGithubLink">
-          <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
-        </a>
       </div>
     </div>`;
   ui.appendChild(jamOverlay);
@@ -1616,8 +1619,10 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-designto aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="designto-stage">
-        <img src="${versionedAsset('assets/designtoNote.png')}" alt="DesignTO Note" class="designto-note-image">
-        <img src="${versionedAsset('assets/designtoIcon.png')}" alt="DesignTO Icon" class="designto-icon">
+        <div class="designto-container">
+          <img src="${versionedAsset('assets/designtoNote.png')}" alt="DesignTO Note" class="designto-note-image">
+          <img src="${versionedAsset('assets/designtoIcon.png')}" alt="DesignTO Icon" class="designto-icon">
+        </div>
       </div>
     </div>`;
   ui.appendChild(designtoOverlay);
@@ -1658,23 +1663,25 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-lucy aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="lucy-notebook-stage">
-        <!-- Lucy notebook content will be styled with CSS background -->
-        <div class="lucy-youtube-embed-container" id="lucyYoutubeContainer">
-          <iframe 
-            id="lucyYoutubeVideo"
-            src="https://www.youtube.com/embed/GRENRaAo0oI?start=1&enablejsapi=1&rel=0&modestbranding=1" 
-            title="Lucy Demo Video" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen>
-          </iframe>
+        <div class="lucy-notebook-container">
+          <img src="${versionedAsset('assets/lucyNote.png')}" alt="Lucy Note" class="lucy-notebook-image">
+          <div class="lucy-youtube-embed-container" id="lucyYoutubeContainer">
+            <iframe 
+              id="lucyYoutubeVideo"
+              src="https://www.youtube.com/embed/GRENRaAo0oI?start=1&enablejsapi=1&rel=0&modestbranding=1" 
+              title="Lucy Demo Video" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen>
+            </iframe>
+          </div>
+          <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
+            <img src="${versionedAsset('assets/lucyArticle.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
+          </a>
+          <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-project-link" id="lucyDemoLink">
+            <img src="${versionedAsset('assets/lucyProjectIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
+          </a>
         </div>
-        <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
-          <img src="${versionedAsset('assets/lucyArticle.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
-        </a>
-        <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-project-link" id="lucyDemoLink">
-          <img src="${versionedAsset('assets/lucyProjectIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
-        </a>
       </div>
     </div>`;
   ui.appendChild(lucyOverlay);
@@ -1695,10 +1702,12 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-revision aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="revision-stage">
-        <img src="${versionedAsset('assets/revisionNote.png')}" alt="Revision Note" class="revision-note-image">
-        <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-project-link" id="revisionDemoLink">
-          <img src="${versionedAsset('assets/revisionProjectIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
-        </a>
+        <div class="revision-container">
+          <img src="${versionedAsset('assets/revisionNote.png')}" alt="Revision Note" class="revision-note-image">
+          <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-project-link" id="revisionDemoLink">
+            <img src="${versionedAsset('assets/revisionProjectIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
+          </a>
+        </div>
       </div>
     </div>`;
   ui.appendChild(revisionOverlay);

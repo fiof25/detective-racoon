@@ -615,15 +615,30 @@ body {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* Father figure notebook stage uses fatherfigureNote.png as background */
+/* Father figure notebook stage - centers the container */
 .notebook-stage {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background: center/contain no-repeat;
-  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+  width: 100%;
+}
+
+/* Parent container - holds notebook image and buttons */
+.notebook-container {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* Notebook image */
+.notebook-image {
+  display: block;
+  max-width: 100vw;
+  max-height: 100vh;
+  height: auto;
+  width: auto;
 }
 
 /* Individual inventory assets */
@@ -712,7 +727,7 @@ body {
 }
 
 .nav-arrow.prev {
-  left: 2%;
+  left: -8%;
 }
 
 .nav-arrow.prev img {
@@ -720,15 +735,15 @@ body {
 }
 
 .nav-arrow.next {
-  right: 2%;
+  right: -8%;
 }
 
 /* YouTube video embed positioned over the dad's photo area */
 .youtube-embed-container {
   position: absolute;
-  left: 18%;
+  left: 9%;
   top: 26%;
-  width: 30%;
+  width: 38%;
   height: 38%;
   z-index: 28;
   border-radius: 8px;
@@ -747,7 +762,7 @@ body {
 /* GitHub link positioned next to "father figure" title */
 .github-link {
   position: absolute;
-  left: 45%;
+  left: 43%;
   top: 9%;
   z-index: 29;
   transition: transform 0.2s ease;
@@ -758,8 +773,10 @@ body {
 }
 
 .github-link img {
-  width: 50px;
-  height: 50px;
+  width: 3.2%; /* Scales with container */
+  height: auto;
+  min-width: 50px;
+  max-width: 50px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
@@ -855,31 +872,36 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* Revision stage with img element for Safari compatibility */
+/* Revision stage - centers the container */
 .revision-stage {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
 }
 
+/* Parent container - holds revision note image and buttons */
+.revision-container {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* Revision note image */
 .revision-note-image {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
   display: block;
+  max-width: 100vw;
+  max-height: 100vh;
+  height: auto;
+  width: auto;
 }
-
 
 /* Revision full demo icon link positioned on the note */
 .revision-project-link {
   position: absolute;
-  left: 31%;
+  left: 27%;
   top: 57%;
   z-index: 10;
   transition: transform 0.2s ease;
@@ -890,29 +912,45 @@ body {
 }
 
 .revision-project-link img {
-  width: 270px;
+  width: 17%; /* Scales with container */
   height: auto;
+  min-width: 250px;
+  max-width: 270px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* Jam notebook stage uses jamNote.png as background */
+/* Jam notebook stage - centers the container */
 .jam-notebook-stage {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background: center/contain no-repeat;
-  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-image: url('assets/jamNote.png');
+  width: 100%;
+}
+
+/* Parent container - holds jam notebook image and buttons */
+.jam-notebook-container {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* Jam notebook image */
+.jam-notebook-image {
+  display: block;
+  max-width: 100vw;
+  max-height: 100vh;
+  height: auto;
+  width: auto;
 }
 
 /* Video thumbnail container for jam note*/
 .jam-video-container {
   position: absolute;
-  left: 19%;
+  left: 10%;
   top: 37%;
-  width: 25%;
+  width: 31%;
   height: 34%;
   z-index: 28;
   border-radius: 8px;
@@ -979,8 +1017,8 @@ body {
 /* Jam demo button with jamDemo.png icon */
 .jam-launch-button {
   position: absolute;
-  left: 58%;
-  top: 66%;
+  left: 62%;
+  top: 68%;
   background: none;
   border: none;
   transition: transform 0.2s ease;
@@ -995,8 +1033,10 @@ body {
 }
 
 .jam-launch-icon {
-  width: 312px; /* 240px * 1.3 = 312px */
+  width: 20%; /* Scales with container */
   height: auto; /* Maintain aspect ratio */
+  min-width: 280px;
+  max-width: 312px;
   display: block;
   border-radius: 8px;
   object-fit: contain; /* Preserve original image proportions */
@@ -1005,7 +1045,7 @@ body {
 /* Jam GitHub link positioned near demo button */
 .jam-github-link {
   position: absolute;
-  left: 80%;
+  left: 90%;
   top: 8%;
   z-index: 30;
   transition: transform 0.2s ease;
@@ -1016,47 +1056,47 @@ body {
 }
 
 .jam-github-link img {
-  width: 50px;
-  height: 50px;
+  width: 3.2%; /* Scales with container */
+  height: auto;
+  min-width: 50px;
+  max-width: 50px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-/* DesignTO overlay - fit to screen without scrolling */
+/* DesignTO stage - centers the container */
 .designto-stage {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
   width: 100%;
-  overflow: hidden; /* Remove scrolling */
-  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
-  display: flex;
-  justify-content: center;
-  align-items: center; /* Center vertically */
-  padding: 20px;
-  will-change: transform;
-  transform: translateZ(0); /* Force hardware acceleration */
 }
 
+/* Parent container - holds designto note image and button */
+.designto-container {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* DesignTO note image */
 .designto-note-image {
-  max-width: 100%;
-  max-height: 100%; /* Full size within container */
-  width: auto;
-  height: auto;
   display: block;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  outline: none;
-  object-fit: contain; /* Maintain aspect ratio while fitting */
+  max-width: 100vw;
+  max-height: 100vh;
+  height: auto;
+  width: auto;
 }
 
 .designto-icon {
   position: absolute;
   top: 53%; /* Starting position - adjust as needed */
-  left: 67%; /* Starting position - adjust as needed */
+  left: 73%; /* Starting position - adjust as needed */
   transform: translate(-50%, -50%); /* Center the icon at the position */
   width: auto;
   height: auto;
-  max-width: 400px; /* Reasonable default size - maintains aspect ratio */
+  max-width: 440px; /* Reasonable default size - maintains aspect ratio */
   z-index: 10; /* Above the background note */
   pointer-events: auto;
   transition: transform 0.2s ease, filter 0.2s ease;
@@ -1067,25 +1107,39 @@ body {
   filter: brightness(1.1) drop-shadow(0 0 12px rgba(255, 213, 130, 0.5));
 }
 
-/* Lucy notebook stage uses lucyNote.png as background */
+/* Lucy notebook stage - centers the container */
 .lucy-notebook-stage {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 100%;
-  background: center/contain no-repeat;
-  background-color: transparent; /* transparent so the dark overlay backdrop shows through */
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-image: url('assets/lucyNote.png');
+  width: 100%;
+}
+
+/* Parent container - holds lucy notebook image and buttons */
+.lucy-notebook-container {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  height: fit-content;
+}
+
+/* Lucy notebook image */
+.lucy-notebook-image {
+  display: block;
+  max-width: 100vw;
+  max-height: 100vh;
+  height: auto;
+  width: auto;
 }
 
 /* YouTube video embed positioned over Lucy's note */
 .lucy-youtube-embed-container {
   position: absolute;
-  left: 58%;
+  left: 60%;
   top: 16%;
-  width: 21%;
-  height: 28%;
+  width: 28%;
+  height: 27%;
   z-index: 28;
   border-radius: 8px;
   overflow: hidden;
@@ -1103,7 +1157,7 @@ body {
 /* Lucy news icon link positioned on the note */
 .lucy-news-link {
   position: absolute;
-  left: 36%;
+  left: 33%;
   top: 70%;
   z-index: 30;
   transition: transform 0.2s ease;
@@ -1114,15 +1168,17 @@ body {
 }
 
 .lucy-news-link img {
-  width: 250px;
+  width: 16%; /* Scales with container */
   height: auto;
+  min-width: 200px;
+  max-width: 300px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* Lucy full demo icon link positioned on the note */
 .lucy-project-link {
   position: absolute;
-  left: 31%;
+  left: 27%;
   top: 42%;
   z-index: 29;
   transition: transform 0.2s ease;
@@ -1133,8 +1189,10 @@ body {
 }
 
 .lucy-project-link img {
-  width: 260px;
+  width: 17%; /* Scales with container */
   height: auto;
+  min-width: 250px;
+  max-width: 360px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
@@ -1284,17 +1342,7 @@ body {
     height: 26%;
   }
 
-  /* Mobile GitHub links */
-  .github-link img,
-  .jam-github-link img {
-    width: 40px;
-    height: 40px;
-  }
-
-  /* Mobile jam demo button */
-  .jam-launch-icon {
-    width: 200px;
-  }
+  /* Mobile styles - buttons/icons now scale with container automatically */
 
   /* Mobile design stage adjustments */
   .design-stage {
@@ -1306,29 +1354,14 @@ body {
     max-width: 95%;
   }
 
-  /* Mobile revision stage adjustments */
-  .revision-note-image {
-    max-width: 95%;
-    max-height: 95%;
-  }
-
-  .revision-project-link img {
-    width: 200px;
-  }
+  /* Mobile revision stage adjustments - scales automatically */
 
   /* Mobile DesignTO adjustments */
   .designto-icon {
     max-width: 300px;
   }
 
-  /* Mobile Lucy demo and news links */
-  .lucy-news-link img {
-    width: 200px;
-  }
-
-  .lucy-project-link img {
-    width: 200px;
-  }
+  /* Mobile Lucy demo and news links - scale automatically */
 
   /* Mobile mail me icon - keep same percentage sizing */
   .mail-me-icon {
@@ -1414,31 +1447,7 @@ body {
     height: 28%;
   }
 
-  .github-link img,
-  .jam-github-link img {
-    width: 32px;
-    height: 32px;
-  }
-
-  .jam-launch-icon {
-    width: 160px;
-  }
-
-  .designto-icon {
-    max-width: 250px;
-  }
-
-  .lucy-news-link img {
-    width: 160px;
-  }
-
-  .lucy-project-link img {
-    width: 160px;
-  }
-
-  .revision-project-link img {
-    width: 160px;
-  }
+  /* Extra small mobile - buttons/icons scale automatically with container */
 
   .mail-me-icon {
     width: 12%;
