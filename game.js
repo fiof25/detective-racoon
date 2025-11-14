@@ -895,6 +895,12 @@ function openFatherFigureOverlay() {
   currentFatherFigurePage = 1; // Reset to first page when opening
   fatherFigureOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+  
+  // Hide back button when father figure overlay is open
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.add('hidden');
+  }
   updateFatherFigurePage();
 }
 
@@ -911,6 +917,12 @@ function closeFatherFigureOverlay() {
   fatherFigureOverlayOpen = false;
   fatherFigureOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
+  
+  // Show back button again when closing father figure overlay (if inside)
+  const backButton = document.getElementById('back-button');
+  if (backButton && scene === 'inside') {
+    backButton.classList.remove('hidden');
+  }
   // Return to inventory when closing father figure overlay
   openInventory();
 }
