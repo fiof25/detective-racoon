@@ -246,8 +246,10 @@ body {
 #raccoon {
   position: absolute;
   width: 540px; /* 3x previous size */
-  height: auto;
-  transform: translate(-50%, -90%) scaleX(var(--facing, 1)); /* anchor feet + directional flip */
+  height: 540px; /* Fixed height to prevent position jumping between idle/walking */
+  object-fit: contain; /* Keep image proportions within fixed container */
+  object-position: center bottom; /* Align feet to bottom */
+  transform: translate(-50%, -90%) scaleX(var(--facing, 1)); /* anchor feet - lowered position */
   transform-origin: 50% 90%;
   image-rendering: auto;
   pointer-events: none;
@@ -575,8 +577,8 @@ body {
 /* Book image */
 .about-me-image {
   display: block;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 100vw;
+  max-height: 100vh;
   height: auto;
   width: auto;
 }
@@ -597,10 +599,8 @@ body {
 }
 
 .mail-me-icon {
-  width: 10vw; /* Scales with viewport */
+  width: 120px;
   height: auto;
-  min-width: 60px;
-  max-width: 120px;
   display: block;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
@@ -621,10 +621,8 @@ body {
 }
 
 .msg-me-icon {
-  width: 10vw; /* Scales with viewport */
+  width: 120px;
   height: auto;
-  min-width: 60px;
-  max-width: 120px;
   display: block;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
@@ -1253,7 +1251,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Love Ya Like A Sister';
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 400;
   color: #ffe9b3;
   opacity: 0.5;
@@ -1268,6 +1266,7 @@ body {
   /* Adjust raccoon size for mobile - use calc to maintain proportions */
   #raccoon {
     width: calc(540px * var(--scale-factor, 0.5)); /* Scale proportionally */
+    height: calc(540px * var(--scale-factor, 0.5)); /* Scale height proportionally */
   }
 
   /* Mobile-friendly interact button */
@@ -1377,16 +1376,14 @@ body {
 
   /* Mobile Lucy demo and news links - scale automatically */
 
-  /* Mobile mail me icon - keep same percentage sizing */
+  /* Mobile mail me icon - maintain fixed size */
   .mail-me-icon {
-    width: 12%;
-    min-width: 50px;
+    width: 110px;
   }
 
-  /* Mobile message me icon - keep same percentage sizing */
+  /* Mobile message me icon - maintain fixed size */
   .msg-me-icon {
-    width: 12%;
-    min-width: 50px;
+    width: 110px;
   }
 
   /* Mobile chat bubble */
@@ -1403,7 +1400,7 @@ body {
 
   /* Mobile movement instructions */
   .movement-instructions {
-    font-size: 14px;
+    font-size: 18px;
     bottom: 16px;
   }
 
@@ -1425,6 +1422,7 @@ body {
   /* Extra small mobile devices */
   #raccoon {
     width: calc(540px * var(--scale-factor, 0.37)); /* Scale proportionally for small screens */
+    height: calc(540px * var(--scale-factor, 0.37)); /* Scale height proportionally for small screens */
   }
 
   #interact,
@@ -1464,13 +1462,11 @@ body {
   /* Extra small mobile - buttons/icons scale automatically with container */
 
   .mail-me-icon {
-    width: 12%;
-    min-width: 45px;
+    width: 100px;
   }
 
   .msg-me-icon {
-    width: 12%;
-    min-width: 45px;
+    width: 100px;
   }
 
   .chat {
@@ -1485,7 +1481,7 @@ body {
 
   /* Small mobile movement instructions */
   .movement-instructions {
-    font-size: 13px;
+    font-size: 16px;
     bottom: 14px;
   }
 
