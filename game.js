@@ -18,6 +18,7 @@ const CONFIG = {
   },
   raccoon: {
     width: 540,            // px (mirrors styles.css)
+    height: 540,           // px (fixed height to prevent position jumping)
     speed: 350,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
@@ -40,7 +41,7 @@ const CONFIG = {
     exit: { xPct: 3, yPct: 72, radius: 160 },
     // Suitcase hotspot inside (under the window)
     // widthPct controls how wide the hotspot image is relative to world width
-    suitcase: { xPct: 22, yPct: 96, radius: 220, widthPct: 27 }
+    suitcase: { xPct: 21.5, yPct: 94, radius: 220, widthPct: 27 }
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -352,20 +353,15 @@ function placeBtnAtWorld(el, x, y, yOffset = -40) {
 }
 
 function placeSuitcaseAtFixedWorld(el, x, y) {
-  // Place suitcase at static viewport position (doesn't move with camera)
+  // Place suitcase at world position (scales with background, doesn't move with camera)
   const wasHidden = el.classList.contains('hidden');
   if (wasHidden) el.classList.remove('hidden');
   const w = el.offsetWidth || 0;
   const h = el.offsetHeight || 0;
   
-  // Calculate static position as percentage of viewport
-  const viewportW = window.innerWidth;
-  const viewportH = window.innerHeight;
-  const staticX = viewportW * 0.22 + 100; // 22% from left edge + 100px right
-  const staticY = viewportH * 0.85 + 60;  // 85% from top + 60px down
-  
-  el.style.left = `${staticX - w / 2}px`;
-  el.style.top = `${staticY - h}px`;
+  // Use world coordinates passed in from CONFIG (x, y are already in world pixels)
+  el.style.left = `${x - w / 2}px`;
+  el.style.top = `${y - h}px`;
   if (wasHidden) el.classList.add('hidden');
 }
 
@@ -507,11 +503,12 @@ function spawnRaccoonInside() {
   racY = worldH - CONFIG.raccoon.spawnInside.yFromBottom;
 }
 
-function fitBackgroundToViewportHeight(imgEl) {
+function fitBackgroundToViewportHeight(imgEl, zoomFactor = 1.05) {
   const { h } = viewportSize();
   const natW = imgEl.naturalWidth;
   const natH = imgEl.naturalHeight;
-  const scale = h / natH; // fit height
+  const baseScale = h / natH; // fit height
+  const scale = baseScale * zoomFactor; // Apply zoom for more immersive feel
   const dispW = Math.round(natW * scale);
   const dispH = Math.round(natH * scale);
   worldW = dispW;
@@ -559,7 +556,7 @@ function fitBackgroundToViewportContain(imgEl) {
   document.body.style.setProperty('--scale-factor', scale);
 }
 
-function fitBackgroundToViewportCover(imgEl) {
+function fitBackgroundToViewportCover(imgEl, zoomFactor = 1.03) {
   const { w, h } = viewportSize();
   const natW = imgEl.naturalWidth;
   const natH = imgEl.naturalHeight;
@@ -567,7 +564,8 @@ function fitBackgroundToViewportCover(imgEl) {
   // Use cover scaling - fill entire viewport, may crop image
   const scaleX = w / natW;
   const scaleY = h / natH;
-  const scale = Math.max(scaleX, scaleY); // use larger scale to fill viewport completely
+  const baseScale = Math.max(scaleX, scaleY); // use larger scale to fill viewport completely
+  const scale = baseScale * zoomFactor; // Apply zoom for more immersive feel
   
   const dispW = Math.round(natW * scale);
   const dispH = Math.round(natH * scale);
@@ -2084,6 +2082,7 @@ async function startGame() {
   try {
     // size raccoon element from config and set initial src
     racEl.style.width = `${CONFIG.raccoon.width}px`;
+    racEl.style.height = `${CONFIG.raccoon.height}px`;
     
     // Ensure raccoon images are preloaded before setting
     await ensureRaccoonImagesLoaded();
@@ -2166,6 +2165,7 @@ async function startGame() {
     console.error('Error during game initialization:', error);
     // Fallback: still try to start the game with minimal functionality
     racEl.style.width = `${CONFIG.raccoon.width}px`;
+    racEl.style.height = `${CONFIG.raccoon.height}px`;
     setRaccoonImage(CONFIG.raccoon.idleSrc);
     requestAnimationFrame(tick);
   }
