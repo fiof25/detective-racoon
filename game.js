@@ -2064,12 +2064,9 @@ async function ensureRaccoonImagesLoaded() {
 async function hideLoadingScreen() {
   const loadingScreen = document.getElementById('loading-screen');
   const gameEl = document.getElementById('game');
-  
+
   if (loadingScreen) {
     loadingScreen.style.display = 'none';
-    if (gameEl) {
-      gameEl.classList.remove('hidden');
-    }
   }
 }
 
@@ -2182,15 +2179,21 @@ async function startGame() {
     console.log('Starting asset preload...');
     await preloader.preloadAssets();
     console.log('All assets loaded successfully!');
-    
+
     // Hide loading screen and start the game
     await hideLoadingScreen();
     await startGame();
-    
+    document.body.classList.remove('loading');
+    const gameEl = document.getElementById('game');
+    if (gameEl) gameEl.classList.remove('hidden');
+
   } catch (error) {
     console.error('Error during initialization:', error);
     // Even if preloading fails, try to start the game
     await hideLoadingScreen();
     await startGame();
+    document.body.classList.remove('loading');
+    const gameEl = document.getElementById('game');
+    if (gameEl) gameEl.classList.remove('hidden');
   }
 })();

@@ -115,13 +115,17 @@ html, body { height: 100%; }
 
 body {
   margin: 0;
-  background: #111;
+  background: #2E2822;
   color: #fff;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden; /* the game handles its own scrolling/camera */
   /* CSS custom property for consistent scaling */
   --scale-factor: 1;
   cursor: none !important; /* Hide default cursor everywhere */
+}
+
+body.loading #game {
+  visibility: hidden;
 }
 
 /* Ensure cursor is hidden on all elements */
