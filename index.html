@@ -16,13 +16,16 @@
   <link rel="preload" as="image" href="assets/outside_house.jpg?v=4">
   <link rel="preload" as="image" href="assets/static_downstairs.jpg?v=4">
 </head>
-<body style="margin: 0; background: #000000; overflow: hidden;">
+<body style="margin: 0; background: #2E2822; overflow: hidden;">
   <!-- Loading Screen -->
-  <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000; display: flex; align-items: center; justify-content: center; z-index: 10000;">
+  <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0F0A0A; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
+    <!-- Raccoon GIF - separate from loading bar -->
+    <div class="loading-pusheen">
+      <img src="assets/loadingracoon.gif" alt="Loading..." class="loading-gif">
+    </div>
+    
+    <!-- Loading text and progress bar container -->
     <div class="loading-container">
-      <div class="loading-pusheen">
-        <img src="assets/loadpusheen.gif" alt="Loading..." class="loading-gif">
-      </div>
       <div class="loading-text">
         <p>pushing pixels...</p>
       </div>

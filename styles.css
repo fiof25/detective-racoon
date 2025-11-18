@@ -9,7 +9,7 @@ html, body { height: 100%; }
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #000000;
+  background: #0F0A0A;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,54 +26,59 @@ html, body { height: 100%; }
   text-align: center;
   max-width: 400px;
   padding: 2rem;
+  transform: translateY(-20%);
 }
 
 .loading-pusheen {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
+  transform: translateY(1%);
 }
 
 .loading-gif {
-  width: 150px;
+  width: 375px;
   height: auto;
-  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 0 20px rgba(255, 226, 181, 0.4)) drop-shadow(0 0 40px rgba(255, 226, 181, 0.2));
 }
 
 .loading-text p {
   font-family: 'Love Ya Like A Sister', cursive;
   font-size: 2rem;
-  margin: 0 0 2rem 0;
-  color: #FFC975;
+  margin: 0 0 1rem 0;
+  color: #FFE2B5;
   font-weight: 400;
   font-style: normal;
+  text-shadow: 0 0 20px rgba(255, 226, 181, 0.5), 0 0 40px rgba(255, 226, 181, 0.4), 0 0 60px rgba(255, 226, 181, 0.3);
 }
 
 .loading-progress {
-  margin-top: 2rem;
+  margin-top: 0.5rem;
 }
 
 .progress-bar {
   width: 100%;
   height: 8px;
-  background: rgba(245, 230, 211, 0.3);
+  background: rgba(255, 226, 181, 0.2);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 1rem;
+  box-shadow: 0 0 30px rgba(255, 226, 181, 0.4), 0 0 50px rgba(255, 226, 181, 0.3), 0 0 70px rgba(255, 226, 181, 0.2);
 }
 
 .progress-fill {
   height: 100%;
-  background: #FFC975;
+  background: #FFE2B5;
   border-radius: 4px;
   width: 0%;
   transition: width 0.3s ease;
-  box-shadow: 0 0 10px rgba(255, 201, 117, 0.5);
+  box-shadow: 0 0 25px rgba(255, 226, 181, 0.4), 0 0 45px rgba(255, 226, 181, 0.3), 0 0 65px rgba(255, 226, 181, 0.2);
 }
 
 .progress-text {
   font-family: 'Love Ya Like A Sister', cursive;
   font-size: 1.1rem;
-  color: #FFC975;
+  color: #FFE2B5;
   font-weight: 400;
+  text-shadow: 0 0 25px rgba(255, 226, 181, 0.3), 0 0 45px rgba(255, 226, 181, 0.2);
 }
 
 /* Mobile loading screen adjustments */
@@ -84,7 +89,7 @@ html, body { height: 100%; }
   }
   
   .loading-gif {
-    width: 100px;
+    width: 250px;
   }
   
   .loading-text p {
