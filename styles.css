@@ -47,7 +47,7 @@ html, body { height: 100%; }
   width: 375px;
   height: 375px;
   object-fit: contain;
-  filter: drop-shadow(0 0 20px rgba(255, 226, 181, 0.4)) drop-shadow(0 0 40px rgba(255, 226, 181, 0.2));
+  filter: drop-shadow(0 0 20px rgba(255, 226, 181, 0.2)) drop-shadow(0 0 40px rgba(255, 226, 181, 0.1));
   image-rendering: crisp-edges;
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
