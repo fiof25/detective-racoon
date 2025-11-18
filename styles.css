@@ -36,7 +36,8 @@ html, body { height: 100%; }
 
 .loading-gif {
   width: 375px;
-  height: auto;
+  height: 375px;
+  object-fit: contain;
   filter: drop-shadow(0 0 20px rgba(255, 226, 181, 0.4)) drop-shadow(0 0 40px rgba(255, 226, 181, 0.2));
   image-rendering: crisp-edges;
   backface-visibility: hidden;
@@ -90,10 +91,12 @@ html, body { height: 100%; }
   .loading-container {
     padding: 1rem;
     max-width: 300px;
+    font-size: 1.5rem;
   }
   
   .loading-gif {
     width: 250px;
+    height: 250px; /* Add fixed height to mobile GIF */
   }
   
   .loading-text p {
@@ -448,7 +451,7 @@ body {
   background: #000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 300ms ease-out;
+  transition: opacity 150ms ease-out;
   z-index: 20;
   will-change: opacity;
   transform: translateZ(0); /* Force hardware acceleration */

@@ -745,22 +745,17 @@ function tryExitHouse() {
   }
   
   console.log('Starting house exit transition...');
-  // Play door sound when exiting house
   playSound(doorSound);
-  
-  // Set transition flag to prevent suitcase glitches
   sceneTransitioning = true;
-  
   fadeOutIn(async () => {
     console.log('Fade transition - calling enterOutside...');
     await enterOutside();
+    sceneTransitioning = false;
     // Place raccoon just outside the door on ground
     racX = doorWorld.x;
     racY = getGroundY();
     placeRaccoon();
     centerCameraOn(racX, racY);
-    // Clear transition flag after scene is fully loaded
-    sceneTransitioning = false;
     console.log('House exit complete');
   });
 }
