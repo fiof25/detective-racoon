@@ -17,8 +17,8 @@ const CONFIG = {
     height: 900
   },
   raccoon: {
-    width: 540,            // px (mirrors styles.css)
-    height: 540,           // px (fixed height to prevent position jumping)
+    width: 675,            // px (mirrors styles.css)
+    height: 675,           // px (fixed height to prevent position jumping)
     speed: 350,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
