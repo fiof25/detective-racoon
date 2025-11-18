@@ -271,8 +271,8 @@ body.loading #game {
 
 #raccoon {
   position: absolute;
-  width: 540px; /* 3x previous size */
-  height: 540px; /* Fixed height to prevent position jumping between idle/walking */
+  width: 675px; /* 1.25x previous size */
+  height: 675px; /* Fixed height to prevent position jumping between idle/walking */
   object-fit: contain; /* Keep image proportions within fixed container */
   object-position: center bottom; /* Align feet to bottom */
   transform: translate(-50%, -90%) scaleX(var(--facing, 1)); /* anchor feet - lowered position */
@@ -1299,8 +1299,8 @@ body.loading #game {
 @media (max-width: 768px) {
   /* Adjust raccoon size for mobile - use calc to maintain proportions */
   #raccoon {
-    width: calc(540px * var(--scale-factor, 0.5)); /* Scale proportionally */
-    height: calc(540px * var(--scale-factor, 0.5)); /* Scale height proportionally */
+    width: calc(675px * var(--scale-factor, 0.5)); /* Scale proportionally */
+    height: calc(675px * var(--scale-factor, 0.5)); /* Scale height proportionally */
   }
 
   /* Mobile-friendly interact button */
@@ -1464,8 +1464,8 @@ body.loading #game {
 @media (max-width: 480px) {
   /* Extra small mobile devices */
   #raccoon {
-    width: calc(540px * var(--scale-factor, 0.37)); /* Scale proportionally for small screens */
-    height: calc(540px * var(--scale-factor, 0.37)); /* Scale height proportionally for small screens */
+    width: calc(675px * var(--scale-factor, 0.37)); /* Scale proportionally for small screens */
+    height: calc(675px * var(--scale-factor, 0.37)); /* Scale height proportionally for small screens */
   }
 
   #interact,
