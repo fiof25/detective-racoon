@@ -38,6 +38,10 @@ html, body { height: 100%; }
   width: 375px;
   height: auto;
   filter: drop-shadow(0 0 20px rgba(255, 226, 181, 0.4)) drop-shadow(0 0 40px rgba(255, 226, 181, 0.2));
+  image-rendering: crisp-edges;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  will-change: auto;
 }
 
 .loading-text p {
