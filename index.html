@@ -21,28 +21,31 @@
 <body class="loading" style="margin: 0; background: #0F0A0A; overflow: hidden;">
   <!-- Loading Screen -->
   <div id="loading-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0F0A0A; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10000;">
-    <!-- Raccoon GIF - separate from loading bar -->
-    <div class="loading-pusheen" style="margin-bottom: 0.5rem; transform: translateY(1%);">
-      <img
-        src="assets/loadingracoon.gif"
-        alt="Loading..."
-        class="loading-gif"
-        width="375"
-        height="375"
-        style="display: block; width: 375px; height: 375px; object-fit: contain;"
-      >
-    </div>
-    
-    <!-- Loading text and progress bar container -->
-    <div class="loading-container" style="transform: translateY(-8%);">
-      <div class="loading-text">
-        <p>pushing pixels...</p>
+    <div id="loading-visuals" class="loading-visuals">
+      <!-- Raccoon GIF - separate from loading bar -->
+      <div class="loading-pusheen" style="margin-bottom: 0.5rem; transform: translateY(1%);">
+        <img
+          id="loading-gif"
+          src="assets/loadingracoon.gif"
+          alt="Loading..."
+          class="loading-gif"
+          width="375"
+          height="375"
+          style="display: block; width: 375px; height: 375px; object-fit: contain;"
+        >
       </div>
-      <div class="loading-progress">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
+      
+      <!-- Loading text and progress bar container -->
+      <div class="loading-container" style="transform: translateY(-8%);">
+        <div class="loading-text">
+          <p>pushing pixels...</p>
         </div>
-        <div class="progress-text" id="progress-text">0%</div>
+        <div class="loading-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-text" id="progress-text">0%</div>
+        </div>
       </div>
     </div>
   </div>
@@ -101,6 +104,22 @@
   </div>
 
   <script>
+    // Ensure loading visuals (GIF + text/bar) only appear once GIF is ready
+    const loadingVisuals = document.getElementById('loading-visuals');
+    const loadingGif = document.getElementById('loading-gif');
+
+    function revealLoadingVisuals() {
+      loadingVisuals?.classList.add('ready');
+    }
+
+    if (loadingGif) {
+      if (loadingGif.complete) {
+        requestAnimationFrame(revealLoadingVisuals);
+      } else {
+        loadingGif.addEventListener('load', revealLoadingVisuals, { once: true });
+      }
+    }
+
     // Register service worker for aggressive cache management
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')

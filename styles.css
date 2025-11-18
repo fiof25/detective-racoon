@@ -17,6 +17,15 @@ html, body { height: 100%; }
   transition: opacity 0.5s ease-out;
 }
 
+.loading-visuals {
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+
+.loading-visuals.ready {
+  opacity: 1;
+}
+
 #loading-screen.fade-out {
   opacity: 0;
   pointer-events: none;
