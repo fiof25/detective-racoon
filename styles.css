@@ -26,7 +26,7 @@ html, body { height: 100%; }
   text-align: center;
   max-width: 400px;
   padding: 2rem;
-  transform: translateY(-15%);
+  transform: translateY(-8%);
 }
 
 .loading-pusheen {
