@@ -17,8 +17,8 @@ const CONFIG = {
     height: 900
   },
   raccoon: {
-    width: 675,            // px (mirrors styles.css)
-    height: 675,           // px (fixed height to prevent position jumping)
+    width: 641,            // px (mirrors styles.css)
+    height: 641,           // px (fixed height to prevent position jumping)
     speed: 450,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
@@ -811,6 +811,7 @@ function updateFatherFigurePage() {
   // Cache elements on first call
   if (!cachedFatherFigureElements) {
     cachedFatherFigureElements = {
+      notebookContainer: fatherFigureOverlay?.querySelector('.notebook-container'),
       notebookImage: fatherFigureOverlay?.querySelector('#notebookImage'),
       prevBtn: fatherFigureOverlay?.querySelector('#prevPageBtn'),
       nextBtn: fatherFigureOverlay?.querySelector('#nextPageBtn'),
@@ -819,7 +820,11 @@ function updateFatherFigurePage() {
     };
   }
   
-  const { notebookImage, prevBtn, nextBtn, youtubeContainer, githubLink } = cachedFatherFigureElements;
+  const { notebookContainer, notebookImage, prevBtn, nextBtn, youtubeContainer, githubLink } = cachedFatherFigureElements;
+
+  if (notebookContainer) {
+    notebookContainer.classList.toggle('page-2', currentFatherFigurePage === 2);
+  }
   
   if (notebookImage) {
     const imageSrc = currentFatherFigurePage === 1 
@@ -870,6 +875,7 @@ function updateFatherFigurePage() {
 function goToNextPage() {
   if (currentFatherFigurePage < 2) {
     currentFatherFigurePage++;
+    playSound(bookSound);
     updateFatherFigurePage();
   }
 }
@@ -877,6 +883,7 @@ function goToNextPage() {
 function goToPrevPage() {
   if (currentFatherFigurePage > 1) {
     currentFatherFigurePage--;
+    playSound(bookSound);
     updateFatherFigurePage();
   }
 }
