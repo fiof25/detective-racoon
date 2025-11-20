@@ -271,8 +271,8 @@ body.loading #game {
 
 #raccoon {
   position: absolute;
-  width: 675px; /* 1.25x previous size */
-  height: 675px; /* Fixed height to prevent position jumping between idle/walking */
+  width: 641px; /* ~5% smaller to soften scale */
+  height: 641px; /* Fixed height to prevent position jumping between idle/walking */
   object-fit: contain; /* Keep image proportions within fixed container */
   object-position: center bottom; /* Align feet to bottom */
   transform: translate(-50%, -90%) scaleX(var(--facing, 1)); /* anchor feet - lowered position */
@@ -676,6 +676,11 @@ body.loading #game {
   display: inline-block;
   width: fit-content;
   height: fit-content;
+  transition: transform 0.25s ease;
+}
+
+.notebook-container.page-2 {
+  transform: translateX(0.6vw);
 }
 
 /* Notebook image */
