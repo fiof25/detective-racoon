@@ -17,8 +17,8 @@ const CONFIG = {
     height: 900
   },
   raccoon: {
-    width: 641,            // px (mirrors styles.css)
-    height: 641,           // px (fixed height to prevent position jumping)
+    width: 609,            // px (5% smaller than 641px)
+    height: 609,           // px (5% smaller than 641px)
     speed: 450,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
@@ -38,7 +38,7 @@ const CONFIG = {
   inside: {
     get bgSrc() { return versionedAsset('assets/static_downstairs.jpg'); },
     // Exit hotspot location inside (percent of image). Tweak as needed.
-    exit: { xPct: 3, yPct: 72, radius: 160 },
+    exit: { xPct: 3, yPct: 68, radius: 240 },
     // Suitcase hotspot inside (under the window)
     // widthPct controls how wide the hotspot image is relative to world width
     suitcase: { xPct: 21.5, yPct: 94, radius: 220, widthPct: 27 }
