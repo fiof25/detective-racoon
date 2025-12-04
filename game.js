@@ -1986,10 +1986,9 @@ function createCustomCursor() {
     mouseX = e.clientX;
     mouseY = e.clientY;
     
-    if (!isVisible) {
-      cursor.classList.add('active');
-      isVisible = true;
-    }
+    // Always ensure cursor is visible
+    cursor.classList.add('active');
+    isVisible = true;
   });
   
   // Mouse enter/leave handlers for hover effects
@@ -2032,6 +2031,31 @@ function createCustomCursor() {
   document.addEventListener('selectstart', (e) => {
     e.preventDefault(); // Prevent text selection cursor
   });
+  
+  // Chrome/Edge fullscreen specific: cursor resets in fullscreen mode
+  // Listen for fullscreen changes and enforce cursor hiding
+  const enforceFullscreenCursor = () => {
+    if (document.fullscreenElement) {
+      // In fullscreen - enforce cursor more aggressively
+      document.documentElement.style.cursor = 'none';
+      document.body.style.cursor = 'none';
+    }
+  };
+  
+  document.addEventListener('fullscreenchange', enforceFullscreenCursor);
+  
+  // Also enforce on click in fullscreen
+  if (/Chrome|Edge/.test(navigator.userAgent)) {
+    document.addEventListener('click', (e) => {
+      if (document.fullscreenElement) {
+        // In fullscreen, reset cursor after click
+        setTimeout(() => {
+          document.documentElement.style.cursor = 'none';
+          document.body.style.cursor = 'none';
+        }, 0);
+      }
+    }, true);
+  }
   
   // Start animation loop
   updateCursor();
