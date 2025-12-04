@@ -131,7 +131,7 @@ body {
   overflow: hidden; /* the game handles its own scrolling/camera */
   /* CSS custom property for consistent scaling */
   --scale-factor: 1;
-  cursor: none !important; /* Hide default cursor everywhere */
+  cursor: none;
 }
 
 body.loading #game {
@@ -140,7 +140,7 @@ body.loading #game {
 
 /* Ensure cursor is hidden on all elements */
 *, *::before, *::after {
-  cursor: none !important;
+  cursor: none;
 }
 
 #custom-cursor {
@@ -157,11 +157,13 @@ body.loading #game {
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: opacity 0.1s ease, transform 0.08s ease;
-  opacity: 0;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 #custom-cursor.active {
-  opacity: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 #custom-cursor.hover {
@@ -391,7 +393,7 @@ body.loading #game {
   background: none;
   border: none;
   padding: 0;
-  cursor: none !important;
+  cursor: none;
   opacity: 0.8;
   transition: all 0.3s ease;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
@@ -676,11 +678,11 @@ body.loading #game {
   display: inline-block;
   width: fit-content;
   height: fit-content;
-  transition: transform 0.25s ease;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .notebook-container.page-2 {
-  transform: translateX(0.6vw);
+  transform: translateX(0);
 }
 
 /* Notebook image */
