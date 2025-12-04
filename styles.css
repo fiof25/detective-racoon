@@ -391,7 +391,7 @@ body.loading #game {
   background: none;
   border: none;
   padding: 0;
-  cursor: pointer;
+  cursor: none !important;
   opacity: 0.8;
   transition: all 0.3s ease;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
