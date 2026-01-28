@@ -685,13 +685,16 @@ body.loading #game {
   transform: translateX(0);
 }
 
-/* Notebook image */
+/* Notebook image - ensure consistent sizing for both pages */
 .notebook-image {
   display: block;
   max-width: 100vw;
   max-height: 100vh;
-  height: auto;
   width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Maintain consistent dimensions when switching pages */
+  vertical-align: top;
 }
 
 /* Individual inventory assets */
