@@ -806,6 +806,7 @@ function closeInventory() {
 }
 
 let cachedFatherFigureElements = null;
+let notebookImageDimensions = null;
 
 function updateFatherFigurePage() {
   // Cache elements on first call
@@ -830,7 +831,39 @@ function updateFatherFigurePage() {
     const imageSrc = currentFatherFigurePage === 1 
       ? versionedAsset('assets/fatherfigureNote.png')
       : versionedAsset('assets/fatherfigureNote2.png');
+    
+    // Store and maintain consistent image dimensions
+    const handleImageLoad = function() {
+      // Wait a frame to ensure image is rendered
+      requestAnimationFrame(() => {
+        // Store dimensions on first load (page 1)
+        if (!notebookImageDimensions) {
+          const rect = notebookImage.getBoundingClientRect();
+          notebookImageDimensions = {
+            width: rect.width || notebookImage.offsetWidth,
+            height: rect.height || notebookImage.offsetHeight
+          };
+        }
+        
+        // Apply stored dimensions to maintain alignment
+        if (notebookImageDimensions) {
+          notebookImage.style.width = notebookImageDimensions.width + 'px';
+          notebookImage.style.height = notebookImageDimensions.height + 'px';
+        }
+      });
+    };
+    
+    // Remove previous handler to avoid duplicates
+    notebookImage.onload = null;
+    notebookImage.onload = handleImageLoad;
+    
+    // Change src
     notebookImage.src = imageSrc;
+    
+    // If image is already cached/loaded, trigger handler after a short delay
+    if (notebookImage.complete && notebookImage.naturalWidth > 0) {
+      handleImageLoad();
+    }
   }
   
   // Show/hide navigation buttons based on current page
