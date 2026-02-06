@@ -2227,18 +2227,61 @@ async function startGame() {
   }
 }
 
+// Mobile detection function
+function isMobileDevice() {
+  // Check for mobile user agents
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i;
+
+  // Check user agent
+  if (mobileRegex.test(userAgent.toLowerCase())) {
+    return true;
+  }
+
+  // Check for touch support and small screen size
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isSmallScreen = window.innerWidth <= 1024;
+
+  return hasTouch && isSmallScreen;
+}
+
+// Show mobile warning instead of game
+function showMobileWarning() {
+  const loadingScreen = document.getElementById('loading-screen');
+  const mobileWarning = document.getElementById('mobile-warning');
+
+  // Hide loading screen
+  if (loadingScreen) {
+    loadingScreen.style.display = 'none';
+  }
+
+  // Show mobile warning
+  if (mobileWarning) {
+    mobileWarning.style.display = 'flex';
+  }
+
+  document.body.classList.remove('loading');
+}
+
 // Main initialization with loading screen
 (async function init() {
+  // Check if user is on mobile device
+  if (isMobileDevice()) {
+    console.log('Mobile device detected, showing mobile warning');
+    showMobileWarning();
+    return; // Exit initialization, don't load the game
+  }
+
   try {
     // Initialize the asset preloader
     const preloader = new AssetPreloader();
     globalPreloader = preloader; // Store global reference
-    
+
     // Set up progress callback
     preloader.setProgressCallback((percentage, loaded, total) => {
       console.log(`Loading progress: ${percentage}% (${loaded}/${total})`);
     });
-    
+
     // Start preloading assets
     console.log('Starting asset preload...');
     await preloader.preloadAssets();
