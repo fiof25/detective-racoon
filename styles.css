@@ -149,7 +149,7 @@ body.loading #game {
   left: 0;
   width: 64px;
   height: 64px;
-  background-image: url('./assets/searchIcon.png');
+  background-image: url('./assets/searchIcon.webp');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -733,7 +733,7 @@ body.loading #game {
   height: 128px;
   border: 0;
   border-radius: 24px;
-  background: url('./assets/exitButton.png') center/contain no-repeat;
+  background: url('./assets/exitButton.webp') center/contain no-repeat;
   background-size: 80%;
   color: transparent; /* Hide any text */
   font-size: 0; /* Hide any text */

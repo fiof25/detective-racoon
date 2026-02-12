@@ -197,33 +197,33 @@ class AssetPreloader {
       'assets/static_downstairs.jpg',
       
       // Navigation icons (visible immediately)
-      'assets/email.png',
-      'assets/linkedin.png',
-      'assets/github.png',
-      'assets/projects.png',
-      'assets/aboutme.png',
-      'assets/backbutton.png',
-      'assets/searchIcon.png',
+      'assets/email.webp',
+      'assets/linkedin.webp',
+      'assets/github.webp',
+      'assets/projects.webp',
+      'assets/aboutme.webp',
+      'assets/backbutton.webp',
+      'assets/searchIcon.webp',
       
       // Essential UI assets
-      'assets/suitcaseAsset.png',
-      'assets/profile.png',
-      'assets/mailme.png',
-      'assets/msgme.png',
+      'assets/suitcaseAsset.webp',
+      'assets/profile.webp',
+      'assets/mailme.webp',
+      'assets/msgme.webp',
       
       // Inventory assets (main and hover states for smooth transitions)
-      'assets/designAsset.png',
-      'assets/designAsset2.png',
-      'assets/designtoAsset.png', 
-      'assets/designtoAsset2.png',
-      'assets/jamAsset.png',
-      'assets/jamAsset2.png',
-      'assets/lucyAsset.png',
-      'assets/lucyAsset2.png',
-      'assets/revisionAsset.png',
-      'assets/revisionAsset2.png',
-      'assets/fatherfigureAsset.png',
-      'assets/fatherfigureAsset2.png'
+      'assets/designAsset.webp',
+      'assets/designAsset2.webp',
+      'assets/designtoAsset.webp', 
+      'assets/designtoAsset2.webp',
+      'assets/jamAsset.webp',
+      'assets/jamAsset2.webp',
+      'assets/lucyAsset.webp',
+      'assets/lucyAsset2.webp',
+      'assets/revisionAsset.webp',
+      'assets/revisionAsset2.webp',
+      'assets/fatherfigureAsset.webp',
+      'assets/fatherfigureAsset2.webp'
       
       // Note: Project detail assets (notes, etc.) will lazy-load when needed
       // This reduces initial loading time while ensuring core functionality works
@@ -829,8 +829,8 @@ function updateFatherFigurePage() {
   
   if (notebookImage) {
     const imageSrc = currentFatherFigurePage === 1 
-      ? versionedAsset('assets/fatherfigureNote.png')
-      : versionedAsset('assets/fatherfigureNote2.png');
+      ? versionedAsset('assets/fatherfigureNote.webp')
+      : versionedAsset('assets/fatherfigureNote2.webp');
     
     // Store and maintain consistent image dimensions
     const handleImageLoad = function() {
@@ -1356,7 +1356,7 @@ function createSuitcaseUI() {
   suitcaseHotspot = document.createElement('img');
   suitcaseHotspot.id = 'suitcaseHotspot';
   suitcaseHotspot.className = 'hotspot-img hidden';
-  suitcaseHotspot.src = versionedAsset('assets/suitcaseAsset.png');
+  suitcaseHotspot.src = versionedAsset('assets/suitcaseAsset.webp');
   suitcaseHotspot.alt = 'Open suitcase';
   worldEl.appendChild(suitcaseHotspot);
   suitcaseHotspot.addEventListener('click', () => openInventory());
@@ -1374,15 +1374,15 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="suitcase-stage">
         <div class="suitcase-container">
-          <img src="${versionedAsset('assets/suitcase.png')}" alt="Suitcase" class="suitcase-image">
+          <img src="${versionedAsset('assets/suitcase.webp')}" alt="Suitcase" class="suitcase-image">
           <!-- Individual positioned images matching reference layout exactly -->
-          <img class="inv-asset hoverable-asset" id="design-asset" src="${versionedAsset('assets/designAsset.png')}" alt="design" />
-          <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.png')}" alt="designto" />
-          <img class="inv-asset hoverable-asset" id="lucy-asset" src="${versionedAsset('assets/lucyAsset.png')}" alt="lucy" />
-          <img class="inv-asset hoverable-asset" id="jam-asset" src="${versionedAsset('assets/jamAsset.png')}" alt="jam" />
-          <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.png')}" alt="revision" />
-          <img class="inv-asset hoverable-asset" id="ui-asset" src="${versionedAsset('assets/uiAsset.png')}" alt="ui" />
-          <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="${versionedAsset('assets/fatherfigureAsset.png')}" alt="fatherfigure" />
+          <img class="inv-asset hoverable-asset" id="design-asset" src="${versionedAsset('assets/designAsset.webp')}" alt="design" />
+          <img class="inv-asset hoverable-asset" id="designto-asset" src="${versionedAsset('assets/designtoAsset.webp')}" alt="designto" />
+          <img class="inv-asset hoverable-asset" id="lucy-asset" src="${versionedAsset('assets/lucyAsset.webp')}" alt="lucy" />
+          <img class="inv-asset hoverable-asset" id="jam-asset" src="${versionedAsset('assets/jamAsset.webp')}" alt="jam" />
+          <img class="inv-asset hoverable-asset" id="revision-asset" src="${versionedAsset('assets/revisionAsset.webp')}" alt="revision" />
+          <img class="inv-asset hoverable-asset" id="ui-asset" src="${versionedAsset('assets/uiAsset.webp')}" alt="ui" />
+          <img class="inv-asset hoverable-asset" id="fatherfigure-asset" src="${versionedAsset('assets/fatherfigureAsset.webp')}" alt="fatherfigure" />
         </div>
       </div>
     </div>`;
@@ -1405,13 +1405,13 @@ function createSuitcaseUI() {
     
     // Define hover image mappings (only for assets that have #2 versions)
     const hoverImages = {
-      'fatherfigure-asset': 'assets/fatherfigureAsset2.png',
-      'design-asset': 'assets/designAsset2.png',
-      'designto-asset': 'assets/designtoAsset2.png',
-      'lucy-asset': 'assets/lucyAsset2.png',
-      'revision-asset': 'assets/revisionAsset2.png',
-      'jam-asset': 'assets/jamAsset2.png', // Add this when jamAsset2.png is uploaded
-      'ui-asset': 'assets/uiAsset2.png' // Add this when uiAsset2.png is uploaded
+      'fatherfigure-asset': 'assets/fatherfigureAsset2.webp',
+      'design-asset': 'assets/designAsset2.webp',
+      'designto-asset': 'assets/designtoAsset2.webp',
+      'lucy-asset': 'assets/lucyAsset2.webp',
+      'revision-asset': 'assets/revisionAsset2.webp',
+      'jam-asset': 'assets/jamAsset2.webp', // Add this when jamAsset2.png is uploaded
+      'ui-asset': 'assets/uiAsset2.webp' // Add this when uiAsset2.png is uploaded
     };
     
     // Add hover effect if #2 version exists
@@ -1500,7 +1500,7 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="notebook-stage">
         <div class="notebook-container">
-          <img src="${versionedAsset('assets/fatherfigureNote.png')}" alt="Father Figure Note" class="notebook-image" id="notebookImage">
+          <img src="${versionedAsset('assets/fatherfigureNote.webp')}" alt="Father Figure Note" class="notebook-image" id="notebookImage">
           <div class="youtube-embed-container" id="youtubeContainer">
             <iframe 
               id="youtubeVideo"
@@ -1512,13 +1512,13 @@ function createSuitcaseUI() {
             </iframe>
           </div>
           <a href="https://github.com/fiof25/father-figure-htn" target="_blank" class="github-link" id="githubLink">
-            <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
+            <img src="${versionedAsset('assets/githubblack.webp')}" alt="GitHub Repository" title="View on GitHub">
           </a>
           <button class="nav-arrow prev" id="prevPageBtn" aria-label="Previous page">
-            <img src="${versionedAsset('assets/arrow.png')}" alt="Previous">
+            <img src="${versionedAsset('assets/arrow.webp')}" alt="Previous">
           </button>
           <button class="nav-arrow next" id="nextPageBtn" aria-label="Next page">
-            <img src="${versionedAsset('assets/arrow.png')}" alt="Next">
+            <img src="${versionedAsset('assets/arrow.webp')}" alt="Next">
           </button>
         </div>
       </div>
@@ -1559,7 +1559,7 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-design aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="design-stage">
-        <img src="${versionedAsset('assets/designNote.png')}" alt="Design Note" class="design-note-image">
+        <img src="${versionedAsset('assets/designNote.webp')}" alt="Design Note" class="design-note-image">
       </div>
     </div>`;
   ui.appendChild(designOverlay);
@@ -1580,7 +1580,7 @@ function createSuitcaseUI() {
     <button class="overlay-close" data-close-ui aria-label="Close"></button>
     <div class="overlay-panel">
       <div class="ui-stage">
-        <img src="${versionedAsset('assets/uiNote.png')}" alt="UI Note" class="ui-note-image">
+        <img src="${versionedAsset('assets/uiNote.webp')}" alt="UI Note" class="ui-note-image">
       </div>
     </div>`;
   ui.appendChild(uiOverlay);
@@ -1602,19 +1602,19 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="jam-notebook-stage">
         <div class="jam-notebook-container">
-          <img src="${versionedAsset('assets/jamNote.png')}" alt="Jam Note" class="jam-notebook-image">
+          <img src="${versionedAsset('assets/jamNote.webp')}" alt="Jam Note" class="jam-notebook-image">
           <div class="jam-video-container" id="jamVideoContainer">
-            <img src="${versionedAsset('assets/jamVid.png')}" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
+            <img src="${versionedAsset('assets/jamVid.webp')}" alt="Jam Demo Thumbnail" class="jam-video-thumbnail">
             <button class="jam-watch-button" id="jamWatchButton">
               <span class="play-icon">▶</span>
               Watch Demo
             </button>
           </div>
           <button class="jam-launch-button" id="jamLaunchButton">
-            <img src="${versionedAsset('assets/jamLaunchIcon.png')}" alt="Try Demo" class="jam-launch-icon">
+            <img src="${versionedAsset('assets/jamLaunchIcon.webp')}" alt="Try Demo" class="jam-launch-icon">
           </button>
           <a href="https://github.com/justinwuzijin/eye-tester-app" target="_blank" class="jam-github-link" id="jamGithubLink">
-            <img src="${versionedAsset('assets/githubblack.png')}" alt="GitHub Repository" title="View on GitHub">
+            <img src="${versionedAsset('assets/githubblack.webp')}" alt="GitHub Repository" title="View on GitHub">
           </a>
         </div>
       </div>
@@ -1665,8 +1665,8 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="designto-stage">
         <div class="designto-container">
-          <img src="${versionedAsset('assets/designtoNote.png')}" alt="DesignTO Note" class="designto-note-image">
-          <img src="${versionedAsset('assets/designtoIcon.png')}" alt="DesignTO Icon" class="designto-icon">
+          <img src="${versionedAsset('assets/designtoNote.webp')}" alt="DesignTO Note" class="designto-note-image">
+          <img src="${versionedAsset('assets/designtoIcon.webp')}" alt="DesignTO Icon" class="designto-icon">
         </div>
       </div>
     </div>`;
@@ -1683,12 +1683,12 @@ function createSuitcaseUI() {
   if (designtoIcon) {
     designtoIcon.addEventListener('mouseenter', () => {
       // Change to pressed state on hover
-      designtoIcon.src = versionedAsset('assets/designtoIconPressed.png');
+      designtoIcon.src = versionedAsset('assets/designtoIconPressed.webp');
     });
     
     designtoIcon.addEventListener('mouseleave', () => {
       // Change back to normal state when not hovering
-      designtoIcon.src = versionedAsset('assets/designtoIcon.png');
+      designtoIcon.src = versionedAsset('assets/designtoIcon.webp');
     });
     
     designtoIcon.addEventListener('click', (e) => {
@@ -1709,7 +1709,7 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="lucy-notebook-stage">
         <div class="lucy-notebook-container">
-          <img src="${versionedAsset('assets/lucyNote.png')}" alt="Lucy Note" class="lucy-notebook-image">
+          <img src="${versionedAsset('assets/lucyNote.webp')}" alt="Lucy Note" class="lucy-notebook-image">
           <div class="lucy-youtube-embed-container" id="lucyYoutubeContainer">
             <iframe 
               id="lucyYoutubeVideo"
@@ -1721,10 +1721,10 @@ function createSuitcaseUI() {
             </iframe>
           </div>
           <a href="https://refreshmiami.com/news/miami-hack-week-2024-parties-meetups-and-innovative-tech-that-won-over-the-judges/" target="_blank" class="lucy-news-link" id="lucyNewsLink">
-            <img src="${versionedAsset('assets/lucyArticle.png')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
+            <img src="${versionedAsset('assets/lucyArticle.webp')}" alt="Miami Hack Week News Article" title="Read Miami Hack Week Article">
           </a>
           <a href="https://devpost.com/software/lucy-0v6lpm" target="_blank" class="lucy-project-link" id="lucyDemoLink">
-            <img src="${versionedAsset('assets/lucyProjectIcon.png')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
+            <img src="${versionedAsset('assets/lucyProjectIcon.webp')}" alt="Lucy Full Demo on Devpost" title="View Lucy Project on Devpost">
           </a>
         </div>
       </div>
@@ -1748,9 +1748,9 @@ function createSuitcaseUI() {
     <div class="overlay-panel">
       <div class="revision-stage">
         <div class="revision-container">
-          <img src="${versionedAsset('assets/revisionNote.png')}" alt="Revision Note" class="revision-note-image">
+          <img src="${versionedAsset('assets/revisionNote.webp')}" alt="Revision Note" class="revision-note-image">
           <a href="https://devpost.com/software/revision-v9y65g" target="_blank" class="revision-project-link" id="revisionDemoLink">
-            <img src="${versionedAsset('assets/revisionProjectIcon.png')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
+            <img src="${versionedAsset('assets/revisionProjectIcon.webp')}" alt="Revision Full Demo on Devpost" title="View Revision Project on Devpost">
           </a>
         </div>
       </div>
@@ -1977,12 +1977,12 @@ function createAboutMeOverlay() {
     <div class="overlay-panel">
       <div class="about-me-stage">
         <div class="about-me-container">
-          <img src="${versionedAsset('assets/profile.png')}" alt="Profile" class="about-me-image">
+          <img src="${versionedAsset('assets/profile.webp')}" alt="Profile" class="about-me-image">
           <a href="mailto:fxfang@uwaterloo.ca?subject=Your%20next%20case%3A%20JOIN%20OUR%20TEAM" class="mail-me-link" title="Send me an email">
-            <img src="${versionedAsset('assets/mailme.png')}" alt="Email Me" class="mail-me-icon">
+            <img src="${versionedAsset('assets/mailme.webp')}" alt="Email Me" class="mail-me-icon">
           </a>
           <a href="https://www.linkedin.com/in/fiona-fangg/" target="_blank" class="msg-me-link" title="Message me on LinkedIn">
-            <img src="${versionedAsset('assets/msgme.png')}" alt="Message Me" class="msg-me-icon">
+            <img src="${versionedAsset('assets/msgme.webp')}" alt="Message Me" class="msg-me-icon">
           </a>
         </div>
       </div>
