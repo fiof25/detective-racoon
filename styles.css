@@ -1377,8 +1377,8 @@ body.loading #game {
     top: 16px;
     left: 16px;
     transform: none;
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    gap: 16px;
   }
 
   .middle-nav-icon {
@@ -1388,9 +1388,9 @@ body.loading #game {
     max-height: 72px;
   }
 
-  /* Mobile back button — sits below the two nav icons (2 × 72px + 2 × 12px gap + 16px top + 12px margin) */
+  /* Mobile back button — directly below nav row (16px top + ~72px icons + 8px gap) */
   #back-button {
-    top: 184px;
+    top: 96px;
     left: 16px;
   }
 
