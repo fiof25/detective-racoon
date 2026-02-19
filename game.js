@@ -503,7 +503,13 @@ function spawnRaccoonInside() {
   racY = worldH - CONFIG.raccoon.spawnInside.yFromBottom;
 }
 
-function fitBackgroundToViewportHeight(imgEl, zoomFactor = 1.05) {
+function fitBackgroundToViewportHeight(imgEl, zoomFactor) {
+  // On mobile portrait, use a larger zoom so worldH > viewport height,
+  // giving the camera enough range to hide the ceiling (capped at 1.2 to keep
+  // the exit hotspot within its 240px radius: 0.32*worldH-90 < 240).
+  if (zoomFactor === undefined) {
+    zoomFactor = ('ontouchstart' in window && window.innerWidth < 768) ? 1.15 : 1.05;
+  }
   const { h } = viewportSize();
   const natW = imgEl.naturalWidth;
   const natH = imgEl.naturalHeight;
