@@ -1375,25 +1375,28 @@ body.loading #game {
   /* Mobile top middle navigation */
   #top-middle-nav {
     top: 16px;
-    gap: 30px;
+    left: 16px;
+    transform: none;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .middle-nav-icon {
     width: auto !important;
     height: auto !important;
-    max-width: 80px; /* Smaller max for mobile */
-    max-height: 80px;
+    max-width: 72px;
+    max-height: 72px;
   }
 
-  /* Mobile back button */
+  /* Mobile back button — sits below the two nav icons (2 × 72px + 2 × 12px gap + 16px top + 12px margin) */
   #back-button {
-    top: 16px;
+    top: 184px;
     left: 16px;
   }
 
   .back-button-icon {
-    max-width: 90px;
-    max-height: 90px;
+    max-width: 72px;
+    max-height: 72px;
   }
 
   /* Mobile navigation arrows — pull inside so they don't clip off-screen */
@@ -1485,10 +1488,10 @@ body.loading #game {
     max-width: 32vw;
   }
 
-  /* Mail/msg icons: scale proportionally with the about-me container */
+  /* Mail/msg icons: fit side-by-side within the 14% gap between right: 7% and right: 21% */
   .mail-me-icon,
   .msg-me-icon {
-    width: 22vw;
+    width: 12vw;
   }
 
   /* Mobile chat bubble */
