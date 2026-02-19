@@ -1396,15 +1396,22 @@ body.loading #game {
     max-height: 90px;
   }
 
-  /* Mobile navigation arrows */
+  /* Mobile navigation arrows — pull inside so they don't clip off-screen */
   .nav-arrow img {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .nav-arrow.prev {
+    left: 0;
+  }
+
+  .nav-arrow.next {
+    right: 0;
   }
 
   /* Mobile YouTube embed adjustments - maintain relative positioning */
   .youtube-embed-container {
-    /* Keep same relative position but adjust size slightly */
     left: 18%;
     top: 26%;
     width: 32%;
@@ -1412,18 +1419,16 @@ body.loading #game {
   }
 
   .lucy-youtube-embed-container {
-    /* Keep same relative position but adjust size slightly */
     left: 58%;
     top: 16%;
     width: 22%;
     height: 26%;
   }
 
-  /* Mobile suitcase: constrain height and let assets scale by % only */
+  /* Mobile suitcase: fill most of the screen, let assets scale by % only */
   .suitcase-image {
-    max-height: 70vh;
-    max-width: 95vw;
-    width: auto;
+    width: 98vw;
+    max-height: 85vh;
     height: auto;
   }
 
@@ -1437,6 +1442,17 @@ body.loading #game {
     min-width: 0;
   }
 
+  /* All note/notebook images: leave room for the nav bar */
+  .notebook-image,
+  .jam-notebook-image,
+  .lucy-notebook-image,
+  .revision-note-image,
+  .designto-note-image {
+    width: 98vw;
+    max-height: 82vh;
+    height: auto;
+  }
+
   /* Mobile design stage adjustments */
   .design-stage {
     padding: 10px;
@@ -1447,14 +1463,25 @@ body.loading #game {
     max-width: 95%;
   }
 
-  /* Mobile revision stage adjustments - scales automatically */
-
-  /* Mobile DesignTO adjustments */
+  /* DesignTO: scale the overlay icon way down and keep it within the note */
   .designto-icon {
-    max-width: 300px;
+    max-width: 38vw;
+    left: 68%;
   }
 
-  /* Mobile Lucy demo and news links - scale automatically */
+  /* Lucy/revision project links: remove fixed min-width */
+  .lucy-news-link img,
+  .lucy-project-link img,
+  .revision-project-link img {
+    min-width: 0;
+    max-width: 30vw;
+  }
+
+  /* Jam launch icon: remove fixed min-width */
+  .jam-launch-icon {
+    min-width: 0;
+    max-width: 32vw;
+  }
 
   /* Mobile mail me icon - maintain fixed size */
   .mail-me-icon {
