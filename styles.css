@@ -1388,9 +1388,9 @@ body.loading #game {
     max-height: 72px;
   }
 
-  /* Mobile back button — directly below nav row (16px top + ~72px icons + 8px gap) */
+  /* Mobile back button — directly below nav row */
   #back-button {
-    top: 96px;
+    top: 76px;
     left: 16px;
   }
 
@@ -1486,6 +1486,19 @@ body.loading #game {
   .jam-launch-icon {
     min-width: 0;
     max-width: 32vw;
+  }
+
+  /* GitHub icons: remove fixed min-width so they scale with container */
+  .github-link img,
+  .jam-github-link img {
+    min-width: 0;
+    max-width: 10vw;
+  }
+
+  /* Jam github was at left: 90% which overflows on mobile */
+  .jam-github-link {
+    left: auto;
+    right: 2%;
   }
 
   /* Mail/msg icons: fit side-by-side within the 14% gap between right: 7% and right: 21% */
