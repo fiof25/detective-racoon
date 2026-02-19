@@ -98,21 +98,32 @@ html, body { height: 100%; }
 
 /* Mobile loading screen adjustments */
 @media (max-width: 768px) {
+  .loading-visuals {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .loading-pusheen {
+    transform: none;
+  }
+
   .loading-container {
     padding: 1rem;
     max-width: 300px;
     font-size: 1.5rem;
+    transform: none; /* override the desktop translateY(-8%) */
   }
-  
+
   .loading-gif {
     width: 250px;
-    height: 250px; /* Add fixed height to mobile GIF */
+    height: 250px;
   }
-  
+
   .loading-text p {
     font-size: 1.5rem;
   }
-  
+
   .progress-bar {
     height: 6px;
   }
@@ -1408,7 +1419,23 @@ body.loading #game {
     height: 26%;
   }
 
-  /* Mobile styles - buttons/icons now scale with container automatically */
+  /* Mobile suitcase: constrain height and let assets scale by % only */
+  .suitcase-image {
+    max-height: 70vh;
+    max-width: 95vw;
+    width: auto;
+    height: auto;
+  }
+
+  #design-asset,
+  #designto-asset,
+  #lucy-asset,
+  #jam-asset,
+  #revision-asset,
+  #ui-asset,
+  #fatherfigure-asset {
+    min-width: 0;
+  }
 
   /* Mobile design stage adjustments */
   .design-stage {
