@@ -1260,80 +1260,49 @@ let touchState = {
 let touchJumpTriggered = false; // Prevent continuous jumping on touch
 
 function createTouchControls() {
-  // Only create touch controls on mobile devices
   if (!('ontouchstart' in window)) return;
-  
+
   touchControls = document.createElement('div');
   touchControls.id = 'touch-controls';
   touchControls.innerHTML = `
-    <div class="touch-dpad">
-      <button class="touch-btn touch-up" data-key="up">↑</button>
-      <div class="touch-middle">
-        <button class="touch-btn touch-left" data-key="left">←</button>
-        <button class="touch-btn touch-right" data-key="right">→</button>
-      </div>
+    <div class="touch-left-cluster">
+      <button class="touch-btn touch-left" data-key="left">←</button>
+      <button class="touch-btn touch-right" data-key="right">→</button>
     </div>
+    <button class="touch-btn touch-jump" data-key="up">↑</button>
   `;
-  
+
   document.body.appendChild(touchControls);
-  
-  // Add touch event listeners
-  const touchButtons = touchControls.querySelectorAll('.touch-btn');
-  touchButtons.forEach(btn => {
+
+  touchControls.querySelectorAll('.touch-btn').forEach(btn => {
     const key = btn.getAttribute('data-key');
-    
-    // Touch start
+
     btn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       touchState[key] = true;
       btn.classList.add('active');
-      
-      // Handle jump button - only jump once per press
       if (key === 'up' && onGround && !touchJumpTriggered) {
         vy = -CONFIG.physics.jumpSpeed;
         onGround = false;
         touchJumpTriggered = true;
       }
-      
-      if (key === 'interact') {
-        if (canInteract) {
-          if (scene === 'outside') tryEnterHouse();
-          else if (scene === 'inside') {
-            if (canOpenSuitcase) openInventory();
-            else tryExitHouse();
-          }
-        }
-      }
-    });
-    
-    // Touch end
+    }, { passive: false });
+
     btn.addEventListener('touchend', (e) => {
       e.preventDefault();
       touchState[key] = false;
       btn.classList.remove('active');
-      
-      // Reset jump flag when up button is released
-      if (key === 'up') {
-        touchJumpTriggered = false;
-      }
+      if (key === 'up') touchJumpTriggered = false;
     });
-    
-    // Touch cancel (when finger moves off button)
+
     btn.addEventListener('touchcancel', (e) => {
       e.preventDefault();
       touchState[key] = false;
       btn.classList.remove('active');
-      
-      // Reset jump flag when up button is cancelled
-      if (key === 'up') {
-        touchJumpTriggered = false;
-      }
+      if (key === 'up') touchJumpTriggered = false;
     });
-    
-    // Prevent context menu on long press
-    btn.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
+
+    btn.addEventListener('contextmenu', (e) => e.preventDefault());
   });
 }
 
@@ -1360,6 +1329,7 @@ function createSuitcaseUI() {
   suitcaseHotspot.alt = 'Open suitcase';
   worldEl.appendChild(suitcaseHotspot);
   suitcaseHotspot.addEventListener('click', () => openInventory());
+  suitcaseHotspot.addEventListener('touchend', (e) => { e.preventDefault(); openInventory(); });
   suitcaseHotspot.addEventListener('mouseenter', () => { mouseOverSuitcase = true; });
   suitcaseHotspot.addEventListener('mouseleave', () => { mouseOverSuitcase = false; });
 
@@ -2189,9 +2159,12 @@ async function startGame() {
     
     // create touch controls for mobile
     createTouchControls();
-    // create custom floating cursor
-    createCustomCursor();
-    
+    if ('ontouchstart' in window && movementInstructionsEl) {
+      movementInstructionsEl.textContent = 'use the controls below to move ⋆˙⟡';
+    }
+    // create custom floating cursor (desktop only — skip on touch devices)
+    if (!('ontouchstart' in window)) createCustomCursor();
+
     // Recompute layout on resize to keep full image height visible
     window.addEventListener('resize', () => {
       // Re-fit current scene
@@ -2265,12 +2238,7 @@ function showMobileWarning() {
 
 // Main initialization with loading screen
 (async function init() {
-  // Check if user is on mobile device
-  if (isMobileDevice()) {
-    console.log('Mobile device detected, showing mobile warning');
-    showMobileWarning();
-    return; // Exit initialization, don't load the game
-  }
+  // Mobile devices are now supported - game runs on all screen sizes
 
   try {
     // Initialize the asset preloader

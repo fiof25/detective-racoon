@@ -1546,6 +1546,17 @@ body.loading #game {
   }
 }
 
+/* Touch-only: hide desktop cursor, push instructions above D-pad */
+@media (hover: none) and (pointer: coarse) {
+  #custom-cursor {
+    display: none !important;
+  }
+
+  .movement-instructions {
+    bottom: 120px;
+  }
+}
+
 /* Touch-friendly styles */
 @media (hover: none) and (pointer: coarse) {
   /* Remove hover effects on touch devices */
@@ -1603,84 +1614,61 @@ body.loading #game {
 /* Touch Controls */
 #touch-controls {
   position: fixed;
-  bottom: 20px;
+  bottom: 24px;
   left: 20px;
   right: 20px;
-  display: none; /* Hidden by default, shown only on touch devices */
+  display: none;
   justify-content: space-between;
   align-items: flex-end;
   pointer-events: none;
   z-index: 1000;
 }
 
-.touch-dpad {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  width: 140px;
-  height: 100px;
-  pointer-events: auto;
-}
-
-.touch-up {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.touch-middle {
-  grid-column: 1 / 4;
-  grid-row: 2;
+.touch-left-cluster {
   display: flex;
-  justify-content: space-between;
+  gap: 12px;
+  pointer-events: auto;
 }
 
 .touch-btn {
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  color: #fff;
-  font-size: 18px;
+  background: rgba(255, 226, 181, 0.12);
+  border: 2px solid rgba(255, 226, 181, 0.3);
+  border-radius: 50%;
+  color: rgba(255, 226, 181, 0.9);
+  font-size: 24px;
   font-weight: bold;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  backdrop-filter: blur(10px);
-  transition: all 0.1s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.08s ease, transform 0.08s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
+  width: 64px;
+  height: 64px;
   pointer-events: auto;
+  touch-action: manipulation;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 226, 181, 0.1);
 }
 
-.touch-dpad .touch-btn {
-  width: 40px;
-  height: 40px;
-}
-
-.touch-interact {
-  width: 60px;
-  height: 60px;
-  font-size: 24px;
-  border-radius: 50%;
-  background: rgba(255, 213, 130, 0.2);
-  border-color: rgba(255, 213, 130, 0.5);
+.touch-jump {
+  width: 72px;
+  height: 72px;
+  font-size: 28px;
+  pointer-events: auto;
+  background: rgba(255, 226, 181, 0.16);
+  border-color: rgba(255, 226, 181, 0.4);
 }
 
 .touch-btn:active,
 .touch-btn.active {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
-  transform: scale(0.95);
-}
-
-.touch-interact:active,
-.touch-interact.active {
-  background: rgba(255, 213, 130, 0.4);
-  border-color: rgba(255, 213, 130, 0.8);
+  background: rgba(255, 226, 181, 0.3);
+  border-color: rgba(255, 226, 181, 0.7);
+  transform: scale(0.9);
+  box-shadow: 0 0 16px rgba(255, 226, 181, 0.3);
 }
 
 /* Show touch controls only on touch devices */
