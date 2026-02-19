@@ -2166,7 +2166,7 @@ async function startGame() {
     // create touch controls for mobile
     createTouchControls();
     if ('ontouchstart' in window && movementInstructionsEl) {
-      movementInstructionsEl.textContent = 'use the controls below to move ⋆˙⟡';
+      movementInstructionsEl.textContent = 'please view on desktop for best experience ⋆˙⟡';
     }
     // create custom floating cursor (desktop only — skip on touch devices)
     if (!('ontouchstart' in window)) createCustomCursor();
