@@ -1442,12 +1442,14 @@ body.loading #game {
     min-width: 0;
   }
 
-  /* All note/notebook images: leave room for the nav bar */
+  /* All note/notebook/profile images: fill screen width so positioned
+     children scale proportionally with the container */
   .notebook-image,
   .jam-notebook-image,
   .lucy-notebook-image,
   .revision-note-image,
-  .designto-note-image {
+  .designto-note-image,
+  .about-me-image {
     width: 98vw;
     max-height: 82vh;
     height: auto;
@@ -1483,14 +1485,10 @@ body.loading #game {
     max-width: 32vw;
   }
 
-  /* Mobile mail me icon - maintain fixed size */
-  .mail-me-icon {
-    width: 110px;
-  }
-
-  /* Mobile message me icon - maintain fixed size */
+  /* Mail/msg icons: scale proportionally with the about-me container */
+  .mail-me-icon,
   .msg-me-icon {
-    width: 110px;
+    width: 22vw;
   }
 
   /* Mobile chat bubble */
