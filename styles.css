@@ -433,7 +433,7 @@ body.loading #game {
 
 #interact {
   position: absolute;
-  padding: 8px 12px;
+  padding: 4px 8px;
   font-family: 'Love Ya Like A Sister';
   font-size: 14px;
   font-weight: 400;
@@ -1327,7 +1327,7 @@ body.loading #game {
   /* Mobile-friendly interact button */
   #interact {
     font-size: 16px;
-    padding: 12px 16px;
+    padding: 6px 10px;
     min-height: 44px; /* iOS touch target minimum */
     min-width: 44px;
   }
@@ -1549,7 +1549,7 @@ body.loading #game {
   #interact,
   .hotspot {
     font-size: 14px;
-    padding: 10px 14px;
+    padding: 5px 10px;
   }
 
   .overlay-close {
