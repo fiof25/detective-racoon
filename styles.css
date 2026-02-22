@@ -235,7 +235,8 @@ body.loading #game {
 
 /* Mobile inside: shrink game area so camera re-centres raccoon upward */
 #game.inside-mobile {
-  height: calc(100vh - 50px);
+  height: calc(100vh - 25px);
+  z-index: 1; /* sit above the floor bar */
 }
 
 #mobile-floor-bar {
@@ -244,9 +245,9 @@ body.loading #game {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 50px;
-  background: #000;
-  z-index: 15;
+  height: 25px;
+  background: #0F0A0A;
+  z-index: 0; /* behind the game */
 }
 
 /* Spotlight overlay for both outside and inside scenes */
@@ -1456,11 +1457,15 @@ body.loading #game {
     height: 26%;
   }
 
-  /* Mobile suitcase: size by height so the landscape image fills more screen */
+  /* Mobile suitcase: keep original sizing, apply slight scale to zoom in */
   .suitcase-image {
-    height: 55vh;
-    width: auto;
-    max-width: 98vw;
+    width: 98vw;
+    max-height: 85vh;
+    height: auto;
+  }
+
+  .suitcase-container {
+    transform: scale(1.15);
   }
 
   #design-asset,

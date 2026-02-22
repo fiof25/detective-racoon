@@ -675,6 +675,7 @@ async function enterInside() {
     if (isMobile && floorBar) {
       floorBar.style.display = 'block';
       gameEl.classList.add('inside-mobile');
+      void gameEl.offsetHeight; // force reflow so viewportSize() reads reduced height
     }
 
     const img = await loadImage(CONFIG.inside.bgSrc);
