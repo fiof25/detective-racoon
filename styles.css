@@ -227,6 +227,7 @@ body.loading #game {
   height: 100vh; /* ensure full image height is visible */
   overflow: hidden; /* camera effect via translate of #world */
   background: transparent;
+  z-index: 1; /* always sit above #mobile-floor-bar */
 }
 
 #game.hidden {
@@ -236,7 +237,6 @@ body.loading #game {
 /* Mobile: shrink game area so camera re-centres raccoon upward */
 #game.inside-mobile {
   height: calc(100vh - 50px);
-  z-index: 1; /* sit above the floor bar */
 }
 
 #mobile-floor-bar {
