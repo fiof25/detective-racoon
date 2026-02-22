@@ -1531,12 +1531,10 @@ body.loading #game {
     max-width: 32vw;
   }
 
-  /* GitHub icons: explicit vw width */
-  .github-link img,
-  .jam-github-link img {
-    width: 8vw;
-    min-width: 0;
-    max-width: 10vw;
+  /* GitHub icons: hidden on mobile */
+  .github-link,
+  .jam-github-link {
+    display: none;
   }
 
   /* Jam github was at left: 90% which overflows on mobile */
