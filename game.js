@@ -608,16 +608,20 @@ async function enterOutside() {
   console.log('enterOutside function called');
   try {
     // On mobile, show floor bar and shrink game height BEFORE fitting world
-    // so viewportSize() returns the reduced height when computing world scale
+    // so viewportSize() returns the reduced height when computing world scale.
+    // Use window.innerHeight (visual viewport) not 100vh (layout viewport) so
+    // Safari doesn't cut off the bottom behind its browser chrome.
     const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
     const floorBar = document.getElementById('mobile-floor-bar');
     if (isMobile && floorBar) {
       floorBar.style.display = 'block';
       gameEl.classList.add('inside-mobile');
+      gameEl.style.height = `${window.innerHeight - floorBar.offsetHeight}px`;
       void gameEl.offsetHeight; // force reflow so viewportSize() reads reduced height
     } else if (floorBar) {
       floorBar.style.display = 'none';
       gameEl.classList.remove('inside-mobile');
+      gameEl.style.height = '';
     }
 
     console.log('enterOutside - setting scene to outside');
@@ -677,12 +681,15 @@ async function enterInside() {
     }
     
     // On mobile, show black floor bar and shrink game height BEFORE fitting world
-    // so viewportSize() returns the reduced height when computing world scale
+    // so viewportSize() returns the reduced height when computing world scale.
+    // Use window.innerHeight (visual viewport) not 100vh (layout viewport) so
+    // Safari doesn't cut off the bottom behind its browser chrome.
     const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
     const floorBar = document.getElementById('mobile-floor-bar');
     if (isMobile && floorBar) {
       floorBar.style.display = 'block';
       gameEl.classList.add('inside-mobile');
+      gameEl.style.height = `${window.innerHeight - floorBar.offsetHeight}px`;
       void gameEl.offsetHeight; // force reflow so viewportSize() reads reduced height
     }
 
@@ -2208,6 +2215,12 @@ async function startGame() {
     window.addEventListener('resize', () => {
       // Re-fit current scene
       if (!bgEl.naturalWidth || !bgEl.naturalHeight) return;
+      // Re-sync game height to visual viewport on mobile (Safari 100vh != innerHeight)
+      const resizeFloorBar = document.getElementById('mobile-floor-bar');
+      if (resizeFloorBar && resizeFloorBar.style.display === 'block') {
+        gameEl.style.height = `${window.innerHeight - resizeFloorBar.offsetHeight}px`;
+        void gameEl.offsetHeight;
+      }
       if (scene === 'outside') {
         fitBackgroundToViewportCover(bgEl);
         updateDoorWorldFromScaled();
