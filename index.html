@@ -65,6 +65,9 @@
     >
   </div>
 
+  <!-- Brown bar below game area on mobile to push content upward (painted before #game so game sits on top by DOM order) -->
+  <div id="mobile-floor-bar"></div>
+
   <div id="game" class="hidden">
     <!-- World layer holds background and raccoon -->
     <div id="world">
@@ -177,7 +180,6 @@
     script.defer = true;
     document.head.appendChild(script);
   </script>
-  <!-- Black bar shown below game area on mobile inside scene to push content upward -->
-  <div id="mobile-floor-bar"></div>
+
 </body>
 </html>

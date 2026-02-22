@@ -227,7 +227,6 @@ body.loading #game {
   height: 100vh; /* ensure full image height is visible */
   overflow: hidden; /* camera effect via translate of #world */
   background: transparent;
-  z-index: 1; /* always sit above #mobile-floor-bar */
 }
 
 #game.hidden {
