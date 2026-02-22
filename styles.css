@@ -358,6 +358,12 @@ body.loading #game {
   margin-top: 3.591px; /* Move down by 10% of icon size */
 }
 
+#twitter-link .nav-icon {
+  width: 35px !important;
+  height: 35px !important;
+  margin-top: 4px;
+}
+
 /* Top middle navigation bar */
 #top-middle-nav {
   position: fixed;
@@ -1370,6 +1376,11 @@ body.loading #game {
     width: 29.925px !important; /* 31.5px * 0.95 */
     height: 29.925px !important; /* 31.5px * 0.95 */
     margin-top: 2.9925px; /* Move down by 10% of icon size */
+  }
+
+  #twitter-link .nav-icon {
+    width: 29px !important;
+    height: 29px !important;
   }
 
   /* Mobile top middle navigation */
