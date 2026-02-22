@@ -1685,7 +1685,6 @@ body.loading #game {
   /* Remove hover effects on touch devices */
   #interact:hover,
   .hotspot:hover,
-  .overlay-close:hover,
   .nav-arrow:hover,
   .github-link:hover,
   .jam-github-link:hover,
@@ -1700,6 +1699,14 @@ body.loading #game {
     filter: none;
     background: inherit;
     box-shadow: inherit;
+  }
+
+  /* overlay-close:hover must NOT reset background — doing so makes it transparent
+     (iOS sticky hover applies to the inventory X button after closing a project overlay
+     since both buttons share the same screen position, hiding the exitButton.webp image) */
+  .overlay-close:hover {
+    transform: none;
+    filter: none;
   }
 
   /* Add active states for touch feedback */
