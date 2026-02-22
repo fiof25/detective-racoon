@@ -233,6 +233,22 @@ body.loading #game {
   visibility: hidden;
 }
 
+/* Mobile inside: shrink game area so camera re-centres raccoon upward */
+#game.inside-mobile {
+  height: calc(100vh - 50px);
+}
+
+#mobile-floor-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: #000;
+  z-index: 15;
+}
+
 /* Spotlight overlay for both outside and inside scenes */
 #spotlight-overlay {
   position: absolute;
@@ -1440,11 +1456,11 @@ body.loading #game {
     height: 26%;
   }
 
-  /* Mobile suitcase: fill most of the screen, let assets scale by % only */
+  /* Mobile suitcase: size by height so the landscape image fills more screen */
   .suitcase-image {
-    width: 98vw;
-    max-height: 85vh;
-    height: auto;
+    height: 55vh;
+    width: auto;
+    max-width: 98vw;
   }
 
   #design-asset,
@@ -1484,7 +1500,7 @@ body.loading #game {
   .designto-icon {
     width: 35vw;
     max-width: 38vw;
-    left: 68%;
+    left: 78%;
   }
 
   /* Lucy/revision project links: explicit vw width so they scale with viewport */

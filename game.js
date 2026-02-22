@@ -594,10 +594,8 @@ function fitBackgroundToViewportCover(imgEl, zoomFactor = 1.03) {
 
 // Ground line (feet Y position)
 function getGroundY() {
-  if (scene === 'outside') return worldH - CONFIG.physics.groundOffsetOutside;
-  // On mobile, match outside ground offset so raccoon stays at same screen position on scene transition
-  const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
-  return worldH - (isMobile ? CONFIG.physics.groundOffsetOutside : CONFIG.physics.groundOffsetInside);
+  const off = scene === 'outside' ? CONFIG.physics.groundOffsetOutside : CONFIG.physics.groundOffsetInside;
+  return worldH - off;
 }
 
 function getCeilingY() {
@@ -609,12 +607,17 @@ function getCeilingY() {
 async function enterOutside() {
   console.log('enterOutside function called');
   try {
+    // Remove mobile floor bar before fitting outside world
+    const floorBar = document.getElementById('mobile-floor-bar');
+    if (floorBar) floorBar.style.display = 'none';
+    gameEl.classList.remove('inside-mobile');
+
     console.log('enterOutside - setting scene to outside');
     scene = 'outside';
     console.log('enterOutside - loading background image');
     const img = await loadImage(CONFIG.outside.bgSrc);
     bgEl.src = CONFIG.outside.bgSrc;
-    
+
     // Hide back button when outside
     const backButton = document.getElementById('back-button');
     if (backButton) backButton.classList.add('hidden');
@@ -665,9 +668,18 @@ async function enterInside() {
       suitcaseHotspot.classList.remove('hover-active');
     }
     
+    // On mobile, show black floor bar and shrink game height BEFORE fitting world
+    // so viewportSize() returns the reduced height when computing world scale
+    const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
+    const floorBar = document.getElementById('mobile-floor-bar');
+    if (isMobile && floorBar) {
+      floorBar.style.display = 'block';
+      gameEl.classList.add('inside-mobile');
+    }
+
     const img = await loadImage(CONFIG.inside.bgSrc);
     bgEl.src = CONFIG.inside.bgSrc;
-    
+
     // Show back button when inside
     const backButton = document.getElementById('back-button');
     if (backButton) backButton.classList.remove('hidden');
