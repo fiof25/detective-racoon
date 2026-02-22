@@ -1541,11 +1541,11 @@ body.loading #game {
   /* About-me buttons: use container-relative % so they scale with the image */
   .mail-me-link {
     right: 21%;
-    width: 13%;
+    width: 11%;
   }
   .msg-me-link {
     right: 7%;
-    width: 13%;
+    width: 11%;
   }
   .mail-me-icon,
   .msg-me-icon {
