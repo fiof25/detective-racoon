@@ -1381,6 +1381,7 @@ body.loading #game {
   #twitter-link .nav-icon {
     width: 29px !important;
     height: 29px !important;
+    margin-top: 4px;
   }
 
   /* Mobile top middle navigation */
@@ -1481,27 +1482,31 @@ body.loading #game {
 
   /* DesignTO: scale the overlay icon way down and keep it within the note */
   .designto-icon {
+    width: 35vw;
     max-width: 38vw;
     left: 68%;
   }
 
-  /* Lucy/revision project links: remove fixed min-width */
+  /* Lucy/revision project links: explicit vw width so they scale with viewport */
   .lucy-news-link img,
   .lucy-project-link img,
   .revision-project-link img {
+    width: 25vw;
     min-width: 0;
     max-width: 30vw;
   }
 
-  /* Jam launch icon: remove fixed min-width */
+  /* Jam launch icon: explicit vw width */
   .jam-launch-icon {
+    width: 28vw;
     min-width: 0;
     max-width: 32vw;
   }
 
-  /* GitHub icons: remove fixed min-width so they scale with container */
+  /* GitHub icons: explicit vw width */
   .github-link img,
   .jam-github-link img {
+    width: 8vw;
     min-width: 0;
     max-width: 10vw;
   }

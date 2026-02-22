@@ -594,8 +594,10 @@ function fitBackgroundToViewportCover(imgEl, zoomFactor = 1.03) {
 
 // Ground line (feet Y position)
 function getGroundY() {
-  const off = scene === 'outside' ? CONFIG.physics.groundOffsetOutside : CONFIG.physics.groundOffsetInside;
-  return worldH - off;
+  if (scene === 'outside') return worldH - CONFIG.physics.groundOffsetOutside;
+  // On mobile, match outside ground offset so raccoon stays at same screen position on scene transition
+  const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
+  return worldH - (isMobile ? CONFIG.physics.groundOffsetOutside : CONFIG.physics.groundOffsetInside);
 }
 
 function getCeilingY() {
