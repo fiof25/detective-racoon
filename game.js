@@ -1682,7 +1682,12 @@ function createSuitcaseUI() {
       window.open('https://eye-tester-app.vercel.app', '_blank');
     });
   }
-  
+
+  // On mobile, clear the sticker thumbnail/button so it's an invisible hit area
+  if ('ontouchstart' in window && window.innerWidth < 768) {
+    if (jamVideoContainer) jamVideoContainer.innerHTML = '';
+  }
+
   // Create designto overlay
   designtoOverlay = document.createElement('div');
   designtoOverlay.id = 'designtoOverlay';

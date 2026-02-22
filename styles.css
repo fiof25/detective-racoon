@@ -1448,6 +1448,7 @@ body.loading #game {
     width: 32%;
     height: auto;
     aspect-ratio: 16 / 9;
+    box-shadow: none;
   }
 
   .lucy-youtube-embed-container {
@@ -1456,6 +1457,7 @@ body.loading #game {
     width: 22%;
     height: auto;
     aspect-ratio: 16 / 9;
+    box-shadow: none;
   }
 
   /* Mobile suitcase: keep original sizing, apply slight scale to zoom in */
