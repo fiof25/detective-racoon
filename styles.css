@@ -1347,12 +1347,12 @@ body.loading #game {
     height: calc(641.25px * var(--scale-factor, 0.5));
   }
 
-  /* Mobile-friendly interact button */
+  /* Mobile interact button — match desktop size exactly */
   #interact {
-    font-size: 16px;
-    padding: 6px 10px;
-    min-height: 44px; /* iOS touch target minimum */
-    min-width: 44px;
+    font-size: 14px;
+    padding: 4px 8px;
+    min-height: 0;
+    min-width: 0;
   }
 
   /* Mobile overlay close button - 2x bigger */
@@ -1465,7 +1465,7 @@ body.loading #game {
   }
 
   .suitcase-container {
-    transform: scale(1.15);
+    transform: scale(1.45);
   }
 
   #design-asset,
@@ -1505,7 +1505,7 @@ body.loading #game {
   .designto-icon {
     width: 35vw;
     max-width: 38vw;
-    left: 78%;
+    left: 72%;
   }
 
   /* Lucy/revision project links: explicit vw width so they scale with viewport */
@@ -1538,10 +1538,18 @@ body.loading #game {
     right: 2%;
   }
 
-  /* Mail/msg icons: fit side-by-side within the 14% gap between right: 7% and right: 21% */
+  /* About-me buttons: size via the link container so icon scales as 100% of it */
+  .mail-me-link {
+    right: 27%;   /* increased gap vs desktop's 21% so buttons don't overlap */
+    width: 13vw;
+  }
+  .msg-me-link {
+    right: 5%;    /* shifted slightly in from desktop's 7% */
+    width: 13vw;
+  }
   .mail-me-icon,
   .msg-me-icon {
-    width: 12vw;
+    width: 100%;  /* fill the link container */
   }
 
   /* Mobile chat bubble */
@@ -1586,7 +1594,7 @@ body.loading #game {
   #interact,
   .hotspot {
     font-size: 14px;
-    padding: 5px 10px;
+    padding: 4px 8px;
   }
 
   .overlay-close {
@@ -1619,12 +1627,9 @@ body.loading #game {
 
   /* Extra small mobile - buttons/icons scale automatically with container */
 
-  .mail-me-icon {
-    width: 100px;
-  }
-
+  .mail-me-icon,
   .msg-me-icon {
-    width: 100px;
+    width: 100%; /* inherit from link container */
   }
 
   .chat {

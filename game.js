@@ -787,6 +787,16 @@ function openInventory() {
   overlayOpen = true;
   inventoryOverlay?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
+
+  // Prevent ghost taps (iOS touch → click delay) from immediately closing
+  // the inventory via backdrop when returning from a project overlay
+  if ('ontouchstart' in window) {
+    const backdrop = inventoryOverlay?.querySelector('.overlay-backdrop');
+    if (backdrop) {
+      backdrop.style.pointerEvents = 'none';
+      setTimeout(() => { if (backdrop) backdrop.style.pointerEvents = ''; }, 350);
+    }
+  }
   
   // Hide back button when inventory is open to prevent confusion with close button
   const backButton = document.getElementById('back-button');
