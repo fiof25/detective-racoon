@@ -1564,7 +1564,20 @@ function createSuitcaseUI() {
       goToNextPage();
     });
   }
-  
+
+  // On mobile, replace iframe with a tap-to-open-YouTube hit area
+  if ('ontouchstart' in window && window.innerWidth < 768) {
+    const ytContainer = fatherFigureOverlay.querySelector('#youtubeContainer');
+    if (ytContainer) {
+      ytContainer.innerHTML = '';
+      ytContainer.style.cursor = 'pointer';
+      ytContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.open('https://www.youtube.com/watch?v=rnDSdft8QbM', '_blank');
+      });
+    }
+  }
+
   // Create design overlay
   designOverlay = document.createElement('div');
   designOverlay.id = 'designOverlay';
@@ -1746,13 +1759,26 @@ function createSuitcaseUI() {
       </div>
     </div>`;
   ui.appendChild(lucyOverlay);
-  
+
   // Close on backdrop click
   lucyOverlay.addEventListener('click', (e) => {
     const t = e.target;
     if (t instanceof Element && t.hasAttribute('data-close-lucy')) closeLucyOverlay();
   });
-  
+
+  // On mobile, replace iframe with a tap-to-open-YouTube hit area
+  if ('ontouchstart' in window && window.innerWidth < 768) {
+    const ytContainer = lucyOverlay.querySelector('#lucyYoutubeContainer');
+    if (ytContainer) {
+      ytContainer.innerHTML = '';
+      ytContainer.style.cursor = 'pointer';
+      ytContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.open('https://www.youtube.com/watch?v=GRENRaAo0oI', '_blank');
+      });
+    }
+  }
+
   // Create revision overlay
   revisionOverlay = document.createElement('div');
   revisionOverlay.id = 'revisionOverlay';
