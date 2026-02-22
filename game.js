@@ -934,9 +934,10 @@ function updateFatherFigurePage() {
     }
   }
   
-  // Position GitHub link differently on each page
+  // Position GitHub link differently on each page (hidden on mobile)
   if (githubLink) {
-    githubLink.style.display = 'block'; // Show on both pages
+    const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
+    githubLink.style.display = isMobile ? 'none' : 'block';
     if (currentFatherFigurePage === 1) {
       // Page 1: Next to "father figure" title
       githubLink.style.left = '43%';
