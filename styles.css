@@ -1441,19 +1441,21 @@ body.loading #game {
     right: 0;
   }
 
-  /* Mobile YouTube embed adjustments - maintain relative positioning */
+  /* Mobile YouTube embed adjustments - height derived from width via aspect-ratio */
   .youtube-embed-container {
     left: 18%;
     top: 26%;
     width: 32%;
-    height: 36%;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .lucy-youtube-embed-container {
     left: 58%;
     top: 16%;
     width: 22%;
-    height: 26%;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   /* Mobile suitcase: keep original sizing, apply slight scale to zoom in */
@@ -1508,12 +1510,16 @@ body.loading #game {
   }
 
   /* Lucy/revision project links: explicit vw width so they scale with viewport */
-  .lucy-news-link img,
   .lucy-project-link img,
   .revision-project-link img {
     width: 25vw;
     min-width: 0;
     max-width: 30vw;
+  }
+  .lucy-news-link img {
+    width: 20vw;
+    min-width: 0;
+    max-width: 25vw;
   }
 
   /* Jam launch icon: explicit vw width */
@@ -1613,7 +1619,8 @@ body.loading #game {
     left: 18%;
     top: 26%;
     width: 34%;
-    height: 38%;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   .lucy-youtube-embed-container {
@@ -1621,7 +1628,8 @@ body.loading #game {
     left: 58%;
     top: 16%;
     width: 24%;
-    height: 28%;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 
   /* Extra small mobile - buttons/icons scale automatically with container */
