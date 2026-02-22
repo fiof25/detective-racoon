@@ -1538,18 +1538,18 @@ body.loading #game {
     right: 2%;
   }
 
-  /* About-me buttons: size via the link container so icon scales as 100% of it */
+  /* About-me buttons: use container-relative % so they scale with the image */
   .mail-me-link {
-    right: 27%;   /* increased gap vs desktop's 21% so buttons don't overlap */
-    width: 13vw;
+    right: 21%;
+    width: 13%;
   }
   .msg-me-link {
-    right: 5%;    /* shifted slightly in from desktop's 7% */
-    width: 13vw;
+    right: 7%;
+    width: 13%;
   }
   .mail-me-icon,
   .msg-me-icon {
-    width: 100%;  /* fill the link container */
+    width: 100%;
   }
 
   /* Mobile chat bubble */
