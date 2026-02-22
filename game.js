@@ -607,10 +607,18 @@ function getCeilingY() {
 async function enterOutside() {
   console.log('enterOutside function called');
   try {
-    // Remove mobile floor bar before fitting outside world
+    // On mobile, show floor bar and shrink game height BEFORE fitting world
+    // so viewportSize() returns the reduced height when computing world scale
+    const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
     const floorBar = document.getElementById('mobile-floor-bar');
-    if (floorBar) floorBar.style.display = 'none';
-    gameEl.classList.remove('inside-mobile');
+    if (isMobile && floorBar) {
+      floorBar.style.display = 'block';
+      gameEl.classList.add('inside-mobile');
+      void gameEl.offsetHeight; // force reflow so viewportSize() reads reduced height
+    } else if (floorBar) {
+      floorBar.style.display = 'none';
+      gameEl.classList.remove('inside-mobile');
+    }
 
     console.log('enterOutside - setting scene to outside');
     scene = 'outside';

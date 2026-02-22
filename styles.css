@@ -233,9 +233,9 @@ body.loading #game {
   visibility: hidden;
 }
 
-/* Mobile inside: shrink game area so camera re-centres raccoon upward */
+/* Mobile: shrink game area so camera re-centres raccoon upward */
 #game.inside-mobile {
-  height: calc(100vh - 25px);
+  height: calc(100vh - 50px);
   z-index: 1; /* sit above the floor bar */
 }
 
@@ -245,7 +245,7 @@ body.loading #game {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 25px;
+  height: 50px;
   background: #0F0A0A;
   z-index: 0; /* behind the game */
 }
