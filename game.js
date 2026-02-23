@@ -19,7 +19,7 @@ const CONFIG = {
   raccoon: {
     width: 609,            // px (5% smaller than 641px)
     height: 609,           // px (5% smaller than 641px)
-    speed: 450,            // px per second (faster walking)
+    speed: 550,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
     // Start on the left side of the screen
