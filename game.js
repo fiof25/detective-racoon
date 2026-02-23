@@ -45,8 +45,8 @@ const CONFIG = {
   },
   upstairs: {
     get bgSrc() { return versionedAsset('assets/upstairs.jpg'); },
-    lantern: { xPct: 52, yPct: 75, widthPct: 35 },
-    shelf: { xPct: 75, yPct: 72, widthPct: 33 },
+    lantern: { xPct: 84, yPct: 75, widthPct: 35 },
+    shelf: { xPct: 63, yPct: 72, widthPct: 33, radius: 380 },
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
@@ -95,6 +95,11 @@ let suitcaseWorld = { x: 0, y: 0 };
 let globalPreloader = null; // Global reference to asset preloader
 let upstairsLanternEls = []; // lantern img elements in upstairs world
 let upstairsShelfEl = null; // shelf img element in upstairs world
+let shelfOverlay = null; // shelf overlay DOM element
+let shelfOverlayOpen = false; // shelf overlay open state
+let canOpenShelf = false; // raccoon is near shelf
+let mouseOverShelf = false; // mouse hovering over shelf hotspot
+let shelfWorld = { x: 0, y: 0 }; // shelf world-space center for proximity
 let skipNextInsideGreeting = false; // suppress greeting when returning from upstairs
 
 // DOM elements
@@ -548,14 +553,42 @@ function placeUpstairsLantern() {
 
 function createUpstairsShelf() {
   if (upstairsShelfEl) return;
+  const ui = document.getElementById('ui');
+
   upstairsShelfEl = document.createElement('img');
   upstairsShelfEl.id = 'upstairsShelf';
   upstairsShelfEl.className = 'hotspot-img hidden';
   upstairsShelfEl.src = versionedAsset('assets/shelf.webp');
   upstairsShelfEl.alt = 'shelf';
   upstairsShelfEl.draggable = false;
-  upstairsShelfEl.style.pointerEvents = 'none';
   worldEl.appendChild(upstairsShelfEl);
+  upstairsShelfEl.addEventListener('click', () => openShelfOverlay());
+  upstairsShelfEl.addEventListener('touchend', (e) => { e.preventDefault(); openShelfOverlay(); });
+  upstairsShelfEl.addEventListener('mouseenter', () => { mouseOverShelf = true; });
+  upstairsShelfEl.addEventListener('mouseleave', () => { mouseOverShelf = false; });
+
+  // Shelf overlay
+  shelfOverlay = document.createElement('div');
+  shelfOverlay.id = 'shelfOverlay';
+  shelfOverlay.className = 'overlay hidden';
+  shelfOverlay.setAttribute('aria-hidden', 'true');
+  shelfOverlay.innerHTML = `
+    <div class="overlay-backdrop" data-close></div>
+    <button class="overlay-close" data-close aria-label="Close"></button>
+    <div class="overlay-panel">
+      <div class="suitcase-stage">
+        <div class="suitcase-container">
+          <img src="${versionedAsset('assets/shelf_overlay.webp')}" alt="Shelf" class="suitcase-image">
+          <img src="${versionedAsset('assets/hirono.webp')}" alt="Hirono" id="shelfHirono" style="position:absolute;top:47%;left:20%;transform:translate(-50%,-50%);width:38%;pointer-events:none;">
+          <img src="${versionedAsset('assets/chess.webp')}" alt="Chess" id="shelfChess" style="position:absolute;top:55%;left:48%;transform:translate(-50%,-50%);width:32%;pointer-events:none;">
+          <img src="${versionedAsset('assets/mollytea.webp')}" alt="Molly Tea" id="shelfMollyTea" style="position:absolute;top:50%;left:81%;transform:translate(-50%,-50%);width:39%;pointer-events:none;">
+        </div>
+      </div>
+    </div>`;
+  ui.appendChild(shelfOverlay);
+  shelfOverlay.addEventListener('click', (e) => {
+    if (e.target instanceof Element && e.target.hasAttribute('data-close')) closeShelfOverlay();
+  });
 }
 
 function placeUpstairsShelf() {
@@ -567,6 +600,9 @@ function placeUpstairsShelf() {
   upstairsShelfEl.style.height = `${h}px`;
   upstairsShelfEl.style.left = `${(cfg.xPct / 100) * worldW - w / 2}px`;
   upstairsShelfEl.style.top = `${(cfg.yPct / 100) * worldH - h}px`;
+  // Store world-space center for proximity detection
+  shelfWorld.x = (cfg.xPct / 100) * worldW;
+  shelfWorld.y = (cfg.yPct / 100) * worldH - h / 2;
   show(upstairsShelfEl);
 }
 
@@ -794,6 +830,7 @@ async function enterInside() {
     // Hide upstairs assets when back inside
     upstairsLanternEls.forEach(el => hide(el));
     if (upstairsShelfEl) hide(upstairsShelfEl);
+    if (shelfOverlayOpen) closeShelfOverlay();
 
     // Show chat bubble briefly when entering the house (not when returning from upstairs)
     if (skipNextInsideGreeting) {
@@ -927,7 +964,7 @@ function tryEnterUpstairs() {
 }
 
 function tryExitUpstairs() {
-  if (scene !== 'upstairs') return;
+  if (scene !== 'upstairs' || shelfOverlayOpen) return;
   playSound(doorSound);
   sceneTransitioning = true;
   canGoDownstairs = false;
@@ -972,23 +1009,23 @@ function closeInventory() {
   overlayOpen = false;
   inventoryOverlay?.classList.add('hidden');
   document.body.classList.remove('overlay-open');
-  
+
   // Show back button again when closing inventory (if inside)
   const backButton = document.getElementById('back-button');
   if (backButton && scene === 'inside') {
     backButton.classList.remove('hidden');
   }
-  
+
   // Reset interaction state and check if we should show exit prompt
   canInteract = false;
   canOpenSuitcase = false;
-  
+
   // Check if we're near the exit after closing inventory
   if (scene === 'inside') {
     const e = CONFIG.inside.exit;
     const exitDist = distance({ x: racX, y: racY }, exitWorld);
     const nearExit = e ? exitDist <= e.radius : false;
-    
+
     if (nearExit) {
       canInteract = true;
       show(interactBtn);
@@ -996,6 +1033,38 @@ function closeInventory() {
       placeInteractButtonAtWorld(exitWorld.x, exitWorld.y);
     }
   }
+}
+
+function openShelfOverlay() {
+  if (shelfOverlayOpen) return;
+  playSound(boxSound);
+  shelfOverlayOpen = true;
+  shelfOverlay?.classList.remove('hidden');
+  document.body.classList.add('overlay-open');
+
+  if ('ontouchstart' in window) {
+    const backdrop = shelfOverlay?.querySelector('.overlay-backdrop');
+    if (backdrop) {
+      backdrop.style.pointerEvents = 'none';
+      setTimeout(() => { if (backdrop) backdrop.style.pointerEvents = ''; }, 350);
+    }
+  }
+
+  const backButton = document.getElementById('back-button');
+  if (backButton) backButton.classList.add('hidden');
+}
+
+function closeShelfOverlay() {
+  if (!shelfOverlayOpen) return;
+  shelfOverlayOpen = false;
+  shelfOverlay?.classList.add('hidden');
+  document.body.classList.remove('overlay-open');
+
+  canInteract = false;
+  canOpenShelf = false;
+
+  const backButton = document.getElementById('back-button');
+  if (backButton) backButton.classList.remove('hidden');
 }
 
 let cachedFatherFigureElements = null;
@@ -1406,6 +1475,10 @@ window.addEventListener('keydown', (e) => {
     if (k === 'escape' || k === 'esc') { e.preventDefault(); closeAboutMeOverlay(); }
     return;
   }
+  if (shelfOverlayOpen) {
+    if (k === 'escape' || k === 'esc') { e.preventDefault(); closeShelfOverlay(); }
+    return;
+  }
   if (['arrowleft','arrowright','a','d'].includes(k)) {
     keys.add(k);
   }
@@ -1416,7 +1489,8 @@ window.addEventListener('keydown', (e) => {
       else if (canGoUpstairs) tryEnterUpstairs();
       else if (canInteract) tryExitHouse();
     } else if (scene === 'upstairs') {
-      if (canGoDownstairs) tryExitUpstairs();
+      if (canOpenShelf) openShelfOverlay();
+      else if (canGoDownstairs) tryExitUpstairs();
     }
   }
   // Jump: spacebar or up arrow
@@ -1444,7 +1518,8 @@ interactBtn.addEventListener('click', () => {
       tryExitHouse();
     }
   } else if (scene === 'upstairs') {
-    if (canGoDownstairs) tryExitUpstairs();
+    if (canOpenShelf) openShelfOverlay();
+    else if (canGoDownstairs) tryExitUpstairs();
   }
 });
 
@@ -2110,16 +2185,38 @@ function tick(ts) {
       canGoUpstairs = false;
     }
   } else if (scene === 'upstairs') {
-    // Downstairs check (right edge of upstairs scene)
-    if (!sceneTransitioning) {
+    if (shelfOverlayOpen || sceneTransitioning) {
+      hide(interactBtn);
+      canOpenShelf = false;
+      canGoDownstairs = false;
+      if (upstairsShelfEl) upstairsShelfEl.classList.remove('hover-active');
+    } else {
+      // Always show shelf when upstairs
+      if (upstairsShelfEl) {
+        show(upstairsShelfEl);
+        const shelfDist = distance({ x: racX, y: racY }, shelfWorld);
+        const nearShelf = shelfDist <= CONFIG.upstairs.shelf.radius;
+        if (nearShelf || mouseOverShelf) {
+          upstairsShelfEl.classList.add('hover-active');
+          canOpenShelf = true;
+          canInteract = true;
+          show(interactBtn);
+          interactBtn.textContent = 'Open shelf ⏎';
+          placeInteractButtonAtWorld(shelfWorld.x, shelfWorld.y + 100);
+        } else {
+          upstairsShelfEl.classList.remove('hover-active');
+          canOpenShelf = false;
+        }
+      }
+      // Downstairs check (right edge of upstairs scene)
       const nearDownstairs = racX >= worldW - 150;
       canGoDownstairs = nearDownstairs;
-      if (nearDownstairs) {
+      if (nearDownstairs && !canOpenShelf) {
         canInteract = true;
         show(interactBtn);
         interactBtn.textContent = 'Go downstairs ⏎';
         placeInteractButtonAtWorld(racX, racY - 200);
-      } else {
+      } else if (!nearDownstairs && !canOpenShelf) {
         canGoDownstairs = false;
         canInteract = false;
         hide(interactBtn);
@@ -2392,7 +2489,7 @@ async function startGame() {
         if (scene === 'inside' && !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen) {
           console.log('Attempting to exit house...');
           tryExitHouse();
-        } else if (scene === 'upstairs') {
+        } else if (scene === 'upstairs' && !shelfOverlayOpen) {
           console.log('Attempting to go downstairs...');
           tryExitUpstairs();
         } else {

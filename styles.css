@@ -493,6 +493,12 @@ body.loading #game {
   filter: drop-shadow(0 8px 20px rgba(255, 213, 130, 0.7));
 }
 
+/* Shelf uses half the glow intensity */
+#upstairsShelf:hover,
+#upstairsShelf.hover-active {
+  filter: drop-shadow(0 4px 10px rgba(255, 213, 130, 0.15));
+}
+
 /* Fade for transitions */
 #fade {
   position: absolute;
