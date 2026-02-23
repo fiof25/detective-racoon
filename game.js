@@ -408,7 +408,7 @@ function placeChatAtWorld(x, y) {
   if (wasHidden) chatEl.classList.remove('hidden');
   const w = chatEl.offsetWidth || 0;
   const h = chatEl.offsetHeight || 0;
-  // Position bubble centered horizontally with a small upward offset
+  // Position bubble centered on raccoon horizontally, above raccoon vertically
   chatEl.style.left = `${vx - w / 2}px`;
   chatEl.style.top = `${vyWorld - h - 16}px`;
   if (wasHidden && chatTimerId === null) chatEl.classList.add('hidden');
@@ -575,19 +575,35 @@ function createUpstairsShelf() {
   shelfOverlay.innerHTML = `
     <div class="overlay-backdrop" data-close></div>
     <button class="overlay-close" data-close aria-label="Close"></button>
+    <div id="shelfItemHint" class="shelf-item-hint hidden"></div>
     <div class="overlay-panel">
       <div class="suitcase-stage">
         <div class="suitcase-container">
           <img src="${versionedAsset('assets/shelf_overlay.webp')}" alt="Shelf" class="suitcase-image">
-          <img src="${versionedAsset('assets/hirono.webp')}" alt="Hirono" id="shelfHirono" style="position:absolute;top:47%;left:20%;transform:translate(-50%,-50%);width:38%;pointer-events:none;">
-          <img src="${versionedAsset('assets/chess.webp')}" alt="Chess" id="shelfChess" style="position:absolute;top:55%;left:48%;transform:translate(-50%,-50%);width:32%;pointer-events:none;">
-          <img src="${versionedAsset('assets/mollytea.webp')}" alt="Molly Tea" id="shelfMollyTea" style="position:absolute;top:50%;left:81%;transform:translate(-50%,-50%);width:39%;pointer-events:none;">
+          <img src="${versionedAsset('assets/hirono.webp')}" alt="Hirono" id="shelfHirono" class="shelf-overlay-item" data-hint="Sometimes I wish I could turn into a hirono..." style="position:absolute;top:47%;left:20%;transform:translate(-50%,-50%);width:38%;">
+          <img src="${versionedAsset('assets/chess.webp')}" alt="Chess" id="shelfChess" class="shelf-overlay-item" data-hint="Fancy a game?" style="position:absolute;top:55%;left:48%;transform:translate(-50%,-50%);width:32%;">
+          <img src="${versionedAsset('assets/mollytea.webp')}" alt="Molly Tea" id="shelfMollyTea" class="shelf-overlay-item" data-hint="I am 50% raccoon and 50% molly tea." style="position:absolute;top:50%;left:81%;transform:translate(-50%,-50%);width:39%;">
         </div>
       </div>
     </div>`;
   ui.appendChild(shelfOverlay);
   shelfOverlay.addEventListener('click', (e) => {
     if (e.target instanceof Element && e.target.hasAttribute('data-close')) closeShelfOverlay();
+  });
+  const shelfHintEl = shelfOverlay.querySelector('#shelfItemHint');
+  shelfOverlay.querySelectorAll('.shelf-overlay-item').forEach(img => {
+    img.addEventListener('mouseenter', () => {
+      shelfHintEl.textContent = img.dataset.hint;
+      shelfHintEl.classList.remove('hidden');
+    });
+    img.addEventListener('mouseleave', () => {
+      shelfHintEl.classList.add('hidden');
+    });
+  });
+  const chessEl = shelfOverlay.querySelector('#shelfChess');
+  chessEl.style.cursor = 'pointer';
+  chessEl.addEventListener('click', () => {
+    window.open('https://www.chess.com/member/bunnycake4', '_blank');
   });
 }
 
