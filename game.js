@@ -239,8 +239,17 @@ class AssetPreloader {
       'assets/revisionAsset.webp',
       'assets/revisionAsset2.webp',
       'assets/fatherfigureAsset.webp',
-      'assets/fatherfigureAsset2.webp'
-      
+      'assets/fatherfigureAsset2.webp',
+
+      // Upstairs assets
+      'assets/upstairs.jpg',
+      'assets/shelf.webp',
+      'assets/shelf_overlay.webp',
+      'assets/lantern.webp',
+      'assets/hirono.webp',
+      'assets/chess.webp',
+      'assets/mollytea.webp'
+
       // Note: Project detail assets (notes, etc.) will lazy-load when needed
       // This reduces initial loading time while ensuring core functionality works
     ];
