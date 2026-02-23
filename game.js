@@ -590,7 +590,7 @@ function createUpstairsShelf() {
         <div class="suitcase-container">
           <img src="${versionedAsset('assets/shelf_overlay.webp')}" alt="Shelf" class="suitcase-image">
           <img src="${versionedAsset('assets/hirono.webp')}" alt="Hirono" id="shelfHirono" class="shelf-overlay-item" data-hint="Sometimes I wish I could turn into a hirono..." style="position:absolute;top:47%;left:20%;transform:translate(-50%,-50%);width:38%;">
-          <img src="${versionedAsset('assets/chess.webp')}" alt="Chess" id="shelfChess" class="shelf-overlay-item" data-hint="Fancy a game?" style="position:absolute;top:55%;left:48%;transform:translate(-50%,-50%);width:32%;">
+          <img src="${versionedAsset('assets/chess.webp')}" alt="Chess" id="shelfChess" class="shelf-overlay-item" data-hint="Fancy a game?" style="position:absolute;top:54%;left:49%;transform:translate(-50%,-50%);width:34%;">
           <img src="${versionedAsset('assets/mollytea.webp')}" alt="Molly Tea" id="shelfMollyTea" class="shelf-overlay-item" data-hint="I am 50% raccoon and 50% molly tea." style="position:absolute;top:50%;left:81%;transform:translate(-50%,-50%);width:39%;">
         </div>
       </div>
@@ -600,13 +600,15 @@ function createUpstairsShelf() {
     if (e.target instanceof Element && e.target.hasAttribute('data-close')) closeShelfOverlay();
   });
   const shelfHintEl = shelfOverlay.querySelector('#shelfItemHint');
+  const SHELF_DEFAULT_HINT = 'My handy dandy shelf of my favourite things.';
+  shelfHintEl.textContent = SHELF_DEFAULT_HINT;
   shelfOverlay.querySelectorAll('.shelf-overlay-item').forEach(img => {
     img.addEventListener('mouseenter', () => {
       shelfHintEl.textContent = img.dataset.hint;
       shelfHintEl.classList.remove('hidden');
     });
     img.addEventListener('mouseleave', () => {
-      shelfHintEl.classList.add('hidden');
+      shelfHintEl.textContent = SHELF_DEFAULT_HINT;
     });
   });
   const chessEl = shelfOverlay.querySelector('#shelfChess');
@@ -1065,6 +1067,7 @@ function openShelfOverlay() {
   playSound(boxSound);
   shelfOverlayOpen = true;
   shelfOverlay?.classList.remove('hidden');
+  shelfOverlay?.querySelector('#shelfItemHint')?.classList.remove('hidden');
   document.body.classList.add('overlay-open');
 
   if ('ontouchstart' in window) {
