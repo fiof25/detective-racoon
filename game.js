@@ -43,20 +43,27 @@ const CONFIG = {
     // widthPct controls how wide the hotspot image is relative to world width
     suitcase: { xPct: 21.5, yPct: 94, radius: 220, widthPct: 27 }
   },
+  upstairs: {
+    get bgSrc() { return versionedAsset('assets/upstairs.jpg'); },
+    lantern: { xPct: 51, yPct: 0, widthPct: 35 },
+    shelf: { xPct: 75, yPct: 32, widthPct: 33 },
+  },
   physics: {
     gravity: 1800,     // px/s^2 downward
     jumpSpeed: 900,    // initial upward speed
     groundOffsetOutside: 140, // px from bottom (raised by 100px)
     groundOffsetInside: 90, // lowered ground by 50px (from 140)
+    groundOffsetUpstairs: 90,
     climbSpeed: 700,   // px/s when holding up/down (faster so up arrow feels responsive)
     ceilingOffsetOutside: 10,
-    ceilingOffsetInside: 10
+    ceilingOffsetInside: 10,
+    ceilingOffsetUpstairs: 10
   },
   transitionMs: 300
 };
 
 // -------- State --------
-let scene = 'outside'; // 'outside' | 'inside'
+let scene = 'outside'; // 'outside' | 'inside' | 'upstairs'
 let keys = new Set();
 let lastTime = 0;
 let worldW = 0, worldH = 0; // natural bg size per scene
@@ -70,7 +77,8 @@ let lastFacing = 1; // 1 = facing right, -1 = facing left
 let vy = 0;         // vertical velocity for jump/gravity
 let onGround = false;
 let chatTimerId = null; // auto-hide timer for chat bubble
-let constructionMessageShown = false; // track if construction message has been shown
+let canGoUpstairs = false; // track if raccoon can go upstairs
+let canGoDownstairs = false; // track if raccoon can go downstairs
 let hasStartedMoving = false; // track if user has started moving
 let overlayOpen = false; // inventory open state
 let fatherFigureOverlayOpen = false; // father figure overlay state
@@ -85,6 +93,9 @@ let aboutMeOverlayOpen = false; // about me overlay state
 let currentFatherFigurePage = 1; // track current page (1 or 2)
 let suitcaseWorld = { x: 0, y: 0 };
 let globalPreloader = null; // Global reference to asset preloader
+let upstairsLanternEls = []; // lantern img elements in upstairs world
+let upstairsShelfEl = null; // shelf img element in upstairs world
+let skipNextInsideGreeting = false; // suppress greeting when returning from upstairs
 
 // DOM elements
 const gameEl = document.getElementById('game');
@@ -503,6 +514,62 @@ function spawnRaccoonInside() {
   racY = worldH - CONFIG.raccoon.spawnInside.yFromBottom;
 }
 
+function spawnRaccoonUpstairs() {
+  // Spawn on the right side where the stairs are
+  racX = worldW - 140;
+  racY = worldH - CONFIG.raccoon.spawnInside.yFromBottom;
+}
+
+function createUpstairsLantern() {
+  if (upstairsLanternEls.length > 0) return; // already created
+  const el = document.createElement('img');
+  el.id = 'upstairsLantern';
+  el.className = 'hotspot-img hidden';
+  el.src = versionedAsset('assets/lantern.webp');
+  el.alt = 'lantern';
+  el.draggable = false;
+  el.style.pointerEvents = 'none';
+  worldEl.appendChild(el);
+  upstairsLanternEls.push(el);
+}
+
+function placeUpstairsLantern() {
+  const el = upstairsLanternEls[0];
+  if (!el) return;
+  const cfg = CONFIG.upstairs.lantern;
+  const w = (cfg.widthPct / 100) * worldW;
+  const h = w; // lantern.webp is 2048×2048 (square)
+  el.style.width = `${w}px`;
+  el.style.height = `${h}px`;
+  el.style.left = `${(cfg.xPct / 100) * worldW - w / 2}px`;
+  el.style.top = `${(cfg.yPct / 100) * worldH - h}px`;
+  show(el);
+}
+
+function createUpstairsShelf() {
+  if (upstairsShelfEl) return;
+  upstairsShelfEl = document.createElement('img');
+  upstairsShelfEl.id = 'upstairsShelf';
+  upstairsShelfEl.className = 'hotspot-img hidden';
+  upstairsShelfEl.src = versionedAsset('assets/shelf.webp');
+  upstairsShelfEl.alt = 'shelf';
+  upstairsShelfEl.draggable = false;
+  upstairsShelfEl.style.pointerEvents = 'none';
+  worldEl.appendChild(upstairsShelfEl);
+}
+
+function placeUpstairsShelf() {
+  if (!upstairsShelfEl) return;
+  const cfg = CONFIG.upstairs.shelf;
+  const w = (cfg.widthPct / 100) * worldW;
+  const h = w * (1640 / 2360); // shelf.webp is 2360×1640
+  upstairsShelfEl.style.width = `${w}px`;
+  upstairsShelfEl.style.height = `${h}px`;
+  upstairsShelfEl.style.left = `${(cfg.xPct / 100) * worldW - w / 2}px`;
+  upstairsShelfEl.style.top = `${(cfg.yPct / 100) * worldH - h}px`;
+  show(upstairsShelfEl);
+}
+
 function fitBackgroundToViewportHeight(imgEl, zoomFactor) {
   // On mobile portrait, use a larger zoom so worldH > viewport height,
   // giving the camera enough range to hide the ceiling (capped at 1.2 to keep
@@ -594,13 +661,15 @@ function fitBackgroundToViewportCover(imgEl, zoomFactor = 1.03) {
 
 // Ground line (feet Y position)
 function getGroundY() {
-  const off = scene === 'outside' ? CONFIG.physics.groundOffsetOutside : CONFIG.physics.groundOffsetInside;
-  return worldH - off;
+  if (scene === 'outside') return worldH - CONFIG.physics.groundOffsetOutside;
+  if (scene === 'upstairs') return worldH - CONFIG.physics.groundOffsetUpstairs;
+  return worldH - CONFIG.physics.groundOffsetInside;
 }
 
 function getCeilingY() {
-  const off = scene === 'outside' ? CONFIG.physics.ceilingOffsetOutside : CONFIG.physics.ceilingOffsetInside;
-  return off;
+  if (scene === 'outside') return CONFIG.physics.ceilingOffsetOutside;
+  if (scene === 'upstairs') return CONFIG.physics.ceilingOffsetUpstairs;
+  return CONFIG.physics.ceilingOffsetInside;
 }
 
 // -------- Scenes --------
@@ -670,10 +739,7 @@ async function enterOutside() {
 async function enterInside() {
   try {
     scene = 'inside';
-    
-    // Reset construction message flag when entering inside
-    constructionMessageShown = false;
-    
+
     // Hide suitcase immediately to prevent glitch during transition
     if (suitcaseHotspot) {
       hide(suitcaseHotspot);
@@ -725,16 +791,24 @@ async function enterInside() {
     // Enable spotlight effect for inside scene too
     enableSpotlight();
 
-    // Show chat bubble briefly when entering the house
-    if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
-    chatEl.textContent = 'Not too shabby.. Eh?';
-    show(chatEl);
-    // initial placement above raccoon (feet are at racY)
-    placeChatAtWorld(racX, racY - 220);
-    chatTimerId = setTimeout(() => {
-      hide(chatEl);
-      chatTimerId = null;
-    }, 2600);
+    // Hide upstairs assets when back inside
+    upstairsLanternEls.forEach(el => hide(el));
+    if (upstairsShelfEl) hide(upstairsShelfEl);
+
+    // Show chat bubble briefly when entering the house (not when returning from upstairs)
+    if (skipNextInsideGreeting) {
+      skipNextInsideGreeting = false;
+    } else {
+      if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
+      chatEl.textContent = 'Not too shabby.. Eh?';
+      show(chatEl);
+      // initial placement above raccoon (feet are at racY)
+      placeChatAtWorld(racX, racY - 220);
+      chatTimerId = setTimeout(() => {
+        hide(chatEl);
+        chatTimerId = null;
+      }, 2600);
+    }
   } catch (error) {
     console.error('Error entering inside scene:', error);
     // Fallback behavior
@@ -770,7 +844,7 @@ function tryExitHouse() {
   console.log('tryExitHouse called - Scene:', scene, 'canInteract:', canInteract, 'Overlays:', {
     overlayOpen, fatherFigureOverlayOpen, designtoOverlayOpen, revisionOverlayOpen, aboutMeOverlayOpen
   });
-  
+
   if (overlayOpen || fatherFigureOverlayOpen || designtoOverlayOpen || revisionOverlayOpen || aboutMeOverlayOpen) {
     console.log('Exiting early - overlay is open');
     return; // ignore while any overlay is open
@@ -779,7 +853,7 @@ function tryExitHouse() {
     console.log('Exiting early - scene is not inside');
     return;
   }
-  
+
   console.log('Starting house exit transition...');
   playSound(doorSound);
   sceneTransitioning = true;
@@ -793,6 +867,79 @@ function tryExitHouse() {
     placeRaccoon();
     centerCameraOn(racX, racY);
     console.log('House exit complete');
+  });
+}
+
+async function enterUpstairs() {
+  try {
+    scene = 'upstairs';
+
+    const isMobile = 'ontouchstart' in window && window.innerWidth < 768;
+    const floorBar = document.getElementById('mobile-floor-bar');
+    if (isMobile && floorBar) {
+      floorBar.style.display = 'block';
+      gameEl.classList.add('inside-mobile');
+      gameEl.style.height = `${window.innerHeight - floorBar.offsetHeight}px`;
+      void gameEl.offsetHeight;
+    }
+
+    const img = await loadImage(CONFIG.upstairs.bgSrc);
+    bgEl.src = CONFIG.upstairs.bgSrc;
+
+    // Show back button when upstairs
+    const backButton = document.getElementById('back-button');
+    if (backButton) backButton.classList.remove('hidden');
+    await img.decode?.();
+    fitBackgroundToViewportCover(img, 1.05);
+
+    spawnRaccoonUpstairs();
+    racY = getGroundY(); vy = 0; onGround = true;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    placeRaccoon();
+    centerCameraOn(racX, racY);
+
+    enableSpotlight();
+
+    // Place upstairs assets in scene
+    createUpstairsLantern();
+    placeUpstairsLantern();
+    createUpstairsShelf();
+    placeUpstairsShelf();
+  } catch (error) {
+    console.error('Error entering upstairs scene:', error);
+    scene = 'upstairs';
+    spawnRaccoonUpstairs();
+    racY = getGroundY(); vy = 0; onGround = true;
+    setRaccoonImage(CONFIG.raccoon.idleSrc);
+    placeRaccoon();
+  }
+}
+
+function tryEnterUpstairs() {
+  if (scene !== 'inside' || !canGoUpstairs) return;
+  playSound(doorSound);
+  sceneTransitioning = true;
+  canGoUpstairs = false;
+  fadeOutIn(async () => {
+    await enterUpstairs();
+    sceneTransitioning = false;
+  });
+}
+
+function tryExitUpstairs() {
+  if (scene !== 'upstairs') return;
+  playSound(doorSound);
+  sceneTransitioning = true;
+  canGoDownstairs = false;
+  skipNextInsideGreeting = true;
+  fadeOutIn(async () => {
+    await enterInside();
+    sceneTransitioning = false;
+    // Place raccoon at right side near the stairs when coming back downstairs
+    racX = worldW - 140;
+    racY = getGroundY();
+    placeRaccoon();
+    centerCameraOn(racX, racY);
   });
 }
 
@@ -1266,7 +1413,10 @@ window.addEventListener('keydown', (e) => {
     if (scene === 'outside') tryEnterHouse();
     else if (scene === 'inside') {
       if (canOpenSuitcase) openInventory();
-      else if (canInteract) tryExitHouse(); // Only exit when near the door
+      else if (canGoUpstairs) tryEnterUpstairs();
+      else if (canInteract) tryExitHouse();
+    } else if (scene === 'upstairs') {
+      if (canGoDownstairs) tryExitUpstairs();
     }
   }
   // Jump: spacebar or up arrow
@@ -1282,15 +1432,19 @@ window.addEventListener('keyup', (e) => {
 
 interactBtn.addEventListener('click', () => {
   if (!canInteract) return;
-  
+
   if (scene === 'outside') {
     tryEnterHouse();
   } else if (scene === 'inside') {
     if (canOpenSuitcase) {
       openInventory();
+    } else if (canGoUpstairs) {
+      tryEnterUpstairs();
     } else {
       tryExitHouse();
     }
+  } else if (scene === 'upstairs') {
+    if (canGoDownstairs) tryExitUpstairs();
   }
 });
 
@@ -1877,7 +2031,7 @@ function tick(ts) {
   }
 
   // Camera behaviour
-  if (scene === 'inside' || scene === 'outside') {
+  if (scene === 'inside' || scene === 'outside' || scene === 'upstairs') {
     const { w, h } = viewportSize();
     const targetCamX = clamp(racX - w / 2, 0, Math.max(0, worldW - w));
     const targetCamY = clamp(racY - h * 0.75, 0, Math.max(0, worldH - h));
@@ -1942,9 +2096,40 @@ function tick(ts) {
         }
       }
     }
+    // Upstairs check (right edge of inside scene)
+    if (!canOpenSuitcase && !sceneTransitioning) {
+      const nearUpstairs = racX >= worldW - 400;
+      canGoUpstairs = nearUpstairs;
+      if (nearUpstairs) {
+        canInteract = true;
+        show(interactBtn);
+        interactBtn.textContent = 'Go upstairs ⏎';
+        placeInteractButtonAtWorld(racX, racY - 200);
+      }
+    } else {
+      canGoUpstairs = false;
+    }
+  } else if (scene === 'upstairs') {
+    // Downstairs check (right edge of upstairs scene)
+    if (!sceneTransitioning) {
+      const nearDownstairs = racX >= worldW - 150;
+      canGoDownstairs = nearDownstairs;
+      if (nearDownstairs) {
+        canInteract = true;
+        show(interactBtn);
+        interactBtn.textContent = 'Go downstairs ⏎';
+        placeInteractButtonAtWorld(racX, racY - 200);
+      } else {
+        canGoDownstairs = false;
+        canInteract = false;
+        hide(interactBtn);
+      }
+    }
   } else {
     canInteract = false; hide(interactBtn);
     canOpenSuitcase = false;
+    canGoUpstairs = false;
+    canGoDownstairs = false;
     mouseOverSuitcase = false; // reset mouse hover state
     if (suitcaseHotspot) {
       hide(suitcaseHotspot);
@@ -1957,30 +2142,8 @@ function tick(ts) {
     placeChatAtWorld(racX, racY - 220);
   }
 
-  // Check if raccoon reached far right of downstairs and show construction message
-  if (scene === 'inside') {
-    if (!constructionMessageShown && racX >= worldW - 150) {
-      constructionMessageShown = true;
-      // Clear any existing chat timer
-      if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
-      chatEl.innerHTML = 'Hmm looks like this place is still under construction.. Maybe I\'ll check back later.';
-      chatEl.classList.add('construction-message');
-      show(chatEl);
-      placeChatAtWorld(racX, racY - 220);
-      chatTimerId = setTimeout(() => {
-        hide(chatEl);
-        chatEl.classList.remove('construction-message');
-        chatTimerId = null;
-      }, 4000); // Show for 4 seconds
-    } else if (constructionMessageShown && racX < worldW - 200) {
-      // Reset flag when raccoon moves away from the far right
-      constructionMessageShown = false;
-    }
-  }
-
   // Update spotlight position to follow raccoon
   updateSpotlight();
-
   requestAnimationFrame(tick);
 }
 
@@ -2228,9 +2391,12 @@ async function startGame() {
         });
         if (scene === 'inside' && !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen) {
           console.log('Attempting to exit house...');
-          tryExitHouse(); // Exit the house and place raccoon at door
+          tryExitHouse();
+        } else if (scene === 'upstairs') {
+          console.log('Attempting to go downstairs...');
+          tryExitUpstairs();
         } else {
-          console.log('Cannot exit house - conditions not met');
+          console.log('Cannot exit - conditions not met');
         }
       });
     }

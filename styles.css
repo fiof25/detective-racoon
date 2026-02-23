@@ -1315,12 +1315,6 @@ body.loading #game {
   border-top: 10px solid rgba(0, 0, 0, 0.5);
 }
 
-/* Construction message specific styling */
-.chat.construction-message {
-  width: 320px;
-  white-space: pre-line;
-}
-
 /* Movement instructions */
 .movement-instructions {
   position: fixed;
@@ -1564,11 +1558,6 @@ body.loading #game {
     padding: 8px 12px;
   }
 
-  /* Mobile construction message */
-  .chat.construction-message {
-    width: 280px;
-  }
-
   /* Mobile movement instructions */
   .movement-instructions {
     font-size: 18px;
@@ -1645,11 +1634,6 @@ body.loading #game {
   .chat {
     max-width: 240px;
     font-size: 13px;
-  }
-
-  /* Small mobile construction message */
-  .chat.construction-message {
-    width: 240px;
   }
 
   /* Small mobile movement instructions */
