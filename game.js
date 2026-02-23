@@ -45,8 +45,8 @@ const CONFIG = {
   },
   upstairs: {
     get bgSrc() { return versionedAsset('assets/upstairs.jpg'); },
-    lantern: { xPct: 51, yPct: 0, widthPct: 35 },
-    shelf: { xPct: 75, yPct: 32, widthPct: 33 },
+    lantern: { xPct: 52, yPct: 75, widthPct: 35 },
+    shelf: { xPct: 75, yPct: 72, widthPct: 33 },
   },
   physics: {
     gravity: 1800,     // px/s^2 downward
