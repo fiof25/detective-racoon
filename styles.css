@@ -1561,6 +1561,26 @@ body.loading #game {
     transform: scale(1.45);
   }
 
+  /* Shelf overlay: no zoom needed, fits naturally on mobile */
+  #shelfOverlay .suitcase-container {
+    transform: scale(1);
+  }
+
+  #shelfOverlay .suitcase-image {
+    width: 100vw;
+    max-height: 65vh;
+    height: auto;
+  }
+
+  /* Shelf hint text: smaller and repositioned for mobile */
+  .shelf-item-hint {
+    font-size: 16px;
+    top: 72px;
+    padding: 0 16px;
+    white-space: normal;
+    text-align: center;
+  }
+
   #design-asset,
   #designto-asset,
   #lucy-asset,
