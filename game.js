@@ -121,12 +121,18 @@ const bookSound = new Audio('assets/book.mp3');
 const doorSound = new Audio('assets/door.mp3');
 const boxSound = new Audio('assets/box.wav');
 const clickSound = new Audio('assets/click.mp3');
+const footstepsSound = new Audio('assets/footsteps.mp3');
 
 // Set volume levels
 bookSound.volume = 1.0; // Maximum volume
 doorSound.volume = 0.2; // Quieter
 boxSound.volume = 0.3; // Medium volume for box opening
 clickSound.volume = 0.5;
+footstepsSound.volume = 0.02;
+footstepsSound.loop = true;
+const footstepsOutsideSound = new Audio('assets/footsteps2.mp3');
+footstepsOutsideSound.volume = 0.07;
+footstepsOutsideSound.loop = true;
 
 // Function to play sound with error handling
 function playSound(audio) {
@@ -2109,6 +2115,19 @@ function tick(ts) {
 
   const moving = !overlayOpen && !fatherFigureOverlayOpen && !designOverlayOpen && !designtoOverlayOpen && !jamOverlayOpen && !lucyOverlayOpen && !revisionOverlayOpen && !aboutMeOverlayOpen && (vx !== 0 || vControl !== 0 || !onGround || vy !== 0);
   setRaccoonImage(moving ? CONFIG.raccoon.walkSrc : CONFIG.raccoon.idleSrc);
+
+  // Footsteps: play when walking horizontally on the ground
+  const walking = onGround && vx !== 0 && !overlayOpen;
+  const activeFootsteps = scene === 'outside' ? footstepsOutsideSound : footstepsSound;
+  const inactiveFootsteps = scene === 'outside' ? footstepsSound : footstepsOutsideSound;
+  // Stop whichever sound shouldn't be playing
+  if (!inactiveFootsteps.paused) { inactiveFootsteps.pause(); inactiveFootsteps.currentTime = 0; }
+  if (walking && activeFootsteps.paused) {
+    activeFootsteps.play().catch(() => {});
+  } else if (!walking && !activeFootsteps.paused) {
+    activeFootsteps.pause();
+    activeFootsteps.currentTime = 0;
+  }
 
   // Hide movement instructions when user starts moving
   if (moving && !hasStartedMoving) {
