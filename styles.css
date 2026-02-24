@@ -1563,7 +1563,7 @@ body.loading #game {
 
   /* Shelf overlay: no zoom needed, fits naturally on mobile */
   #shelfOverlay .suitcase-container {
-    transform: scale(1);
+    transform: scale(1.15);
   }
 
   #shelfOverlay .suitcase-image {
@@ -1574,7 +1574,7 @@ body.loading #game {
 
   /* Shelf hint text: smaller and repositioned for mobile */
   .shelf-item-hint {
-    font-size: 16px;
+    font-size: 19px;
     top: 72px;
     padding: 0 16px;
     white-space: normal;
