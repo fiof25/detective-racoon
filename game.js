@@ -120,11 +120,13 @@ const movementInstructionsEl = document.getElementById('movement-instructions');
 const bookSound = new Audio('assets/book.mp3');
 const doorSound = new Audio('assets/door.mp3');
 const boxSound = new Audio('assets/box.wav');
+const clickSound = new Audio('assets/click.mp3');
 
 // Set volume levels
 bookSound.volume = 1.0; // Maximum volume
 doorSound.volume = 0.2; // Quieter
 boxSound.volume = 0.3; // Medium volume for box opening
+clickSound.volume = 0.5;
 
 // Function to play sound with error handling
 function playSound(audio) {
@@ -609,6 +611,7 @@ function createUpstairsShelf() {
     img.addEventListener('mouseenter', () => {
       shelfHintEl.textContent = img.dataset.hint;
       shelfHintEl.classList.remove('hidden');
+      playSound(clickSound);
     });
     img.addEventListener('mouseleave', () => {
       shelfHintEl.textContent = SHELF_DEFAULT_HINT;
