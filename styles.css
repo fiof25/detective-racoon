@@ -1502,6 +1502,16 @@ body.loading #game {
     left: 16px;
   }
 
+  #upstairs-button {
+    top: 76px;
+    left: 100px;
+  }
+
+  #downstairs-button {
+    top: 76px;
+    left: 16px;
+  }
+
   .back-button-icon {
     max-width: 72px;
     max-height: 72px;
