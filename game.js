@@ -102,6 +102,8 @@ let mouseOverShelf = false; // mouse hovering over shelf hotspot (world-space ch
 let mouseScreenX = -9999, mouseScreenY = -9999; // raw screen mouse position
 let shelfWorld = { x: 0, y: 0 }; // shelf world-space center for proximity
 let skipNextInsideGreeting = false; // suppress greeting when returning from upstairs
+let pendingUpstairsGreeting = false; // show greeting once raccoon leaves downstairs zone
+let upstairsGreetingArmed = false;   // true once raccoon has entered the downstairs zone upstairs
 
 // DOM elements
 const gameEl = document.getElementById('game');
@@ -975,17 +977,9 @@ async function enterUpstairs() {
     createUpstairsShelf();
     placeUpstairsShelf();
 
-    // Show chat bubble after short delay
-    setTimeout(() => {
-      if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
-      chatEl.textContent = 'My cozy little corner...';
-      show(chatEl);
-      placeChatAtWorld(racX, racY - 220);
-      chatTimerId = setTimeout(() => {
-        hide(chatEl);
-        chatTimerId = null;
-      }, 2600);
-    }, 400);
+    // Greeting arms once raccoon enters the downstairs zone, fires when it leaves
+    pendingUpstairsGreeting = false;
+    upstairsGreetingArmed = false;
   } catch (error) {
     console.error('Error entering upstairs scene:', error);
     scene = 'upstairs';
@@ -2267,6 +2261,7 @@ function tick(ts) {
       const nearDownstairs = racX >= worldW - 150;
       canGoDownstairs = nearDownstairs;
       if (nearDownstairs && !canOpenShelf) {
+        upstairsGreetingArmed = true; // raccoon has been in the zone, greeting can now fire
         canInteract = true;
         show(interactBtn);
         interactBtn.textContent = 'Go downstairs ⏎';
@@ -2275,6 +2270,19 @@ function tick(ts) {
         canGoDownstairs = false;
         canInteract = false;
         hide(interactBtn);
+        // Show upstairs greeting only after raccoon was in the downstairs zone first
+        if (upstairsGreetingArmed && !pendingUpstairsGreeting) {
+          upstairsGreetingArmed = false;
+          pendingUpstairsGreeting = true;
+        }
+        if (pendingUpstairsGreeting) {
+          pendingUpstairsGreeting = false;
+          if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
+          chatEl.textContent = 'My cozy little corner...';
+          show(chatEl);
+          placeChatAtWorld(racX, racY - 220);
+          chatTimerId = setTimeout(() => { hide(chatEl); chatTimerId = null; }, 2600);
+        }
       }
     }
   } else {
