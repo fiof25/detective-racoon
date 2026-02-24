@@ -98,7 +98,8 @@ let upstairsShelfEl = null; // shelf img element in upstairs world
 let shelfOverlay = null; // shelf overlay DOM element
 let shelfOverlayOpen = false; // shelf overlay open state
 let canOpenShelf = false; // raccoon is near shelf
-let mouseOverShelf = false; // mouse hovering over shelf hotspot
+let mouseOverShelf = false; // mouse hovering over shelf hotspot (world-space check)
+let mouseScreenX = -9999, mouseScreenY = -9999; // raw screen mouse position
 let shelfWorld = { x: 0, y: 0 }; // shelf world-space center for proximity
 let skipNextInsideGreeting = false; // suppress greeting when returning from upstairs
 
@@ -575,8 +576,6 @@ function createUpstairsShelf() {
   worldEl.appendChild(upstairsShelfEl);
   upstairsShelfEl.addEventListener('click', () => openShelfOverlay());
   upstairsShelfEl.addEventListener('touchend', (e) => { e.preventDefault(); openShelfOverlay(); });
-  upstairsShelfEl.addEventListener('mouseenter', () => { mouseOverShelf = true; });
-  upstairsShelfEl.addEventListener('mouseleave', () => { mouseOverShelf = false; });
 
   // Shelf overlay
   shelfOverlay = document.createElement('div');
@@ -2232,6 +2231,14 @@ function tick(ts) {
         show(upstairsShelfEl);
         const shelfDist = distance({ x: racX, y: racY }, shelfWorld);
         const nearShelf = shelfDist <= CONFIG.upstairs.shelf.radius;
+        // Check mouse over shelf using world-space bounds (avoids DOM event glitch when world scrolls)
+        const sLeft = parseFloat(upstairsShelfEl.style.left) || 0;
+        const sTop = parseFloat(upstairsShelfEl.style.top) || 0;
+        const sRight = sLeft + (upstairsShelfEl.offsetWidth || 0);
+        const sBottom = sTop + (upstairsShelfEl.offsetHeight || 0);
+        const mwx = mouseScreenX + cameraX;
+        const mwy = mouseScreenY + cameraY;
+        mouseOverShelf = mwx >= sLeft && mwx <= sRight && mwy >= sTop && mwy <= sBottom;
         if (nearShelf || mouseOverShelf) {
           upstairsShelfEl.classList.add('hover-active');
           canOpenShelf = true;
@@ -2362,6 +2369,8 @@ function createCustomCursor() {
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
+    mouseScreenX = e.clientX;
+    mouseScreenY = e.clientY;
     
     // Always ensure cursor is visible
     cursor.classList.add('active');
