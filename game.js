@@ -828,6 +828,8 @@ async function enterInside() {
     // Show back button when inside
     const backButton = document.getElementById('back-button');
     if (backButton) backButton.classList.remove('hidden');
+    const downstairsBtn = document.getElementById('downstairs-button');
+    if (downstairsBtn) downstairsBtn.classList.add('hidden');
     await img.decode?.();
     fitBackgroundToViewportHeight(img);
 
@@ -950,9 +952,11 @@ async function enterUpstairs() {
     const img = await loadImage(CONFIG.upstairs.bgSrc);
     bgEl.src = CONFIG.upstairs.bgSrc;
 
-    // Show back button when upstairs
+    // Hide back button upstairs, show downstairs button instead
     const backButton = document.getElementById('back-button');
-    if (backButton) backButton.classList.remove('hidden');
+    if (backButton) backButton.classList.add('hidden');
+    const downstairsBtn = document.getElementById('downstairs-button');
+    if (downstairsBtn) downstairsBtn.classList.remove('hidden');
     await img.decode?.();
     fitBackgroundToViewportCover(img, 1.05);
 
@@ -1078,8 +1082,11 @@ function openShelfOverlay() {
     }
   }
 
-  const backButton = document.getElementById('back-button');
-  if (backButton) backButton.classList.add('hidden');
+  if (scene !== 'upstairs') {
+    const backButton = document.getElementById('back-button');
+    if (backButton) backButton.classList.add('hidden');
+  }
+  document.getElementById('downstairs-button')?.classList.add('hidden');
 }
 
 function closeShelfOverlay() {
@@ -1091,8 +1098,11 @@ function closeShelfOverlay() {
   canInteract = false;
   canOpenShelf = false;
 
-  const backButton = document.getElementById('back-button');
-  if (backButton) backButton.classList.remove('hidden');
+  if (scene !== 'upstairs') {
+    const backButton = document.getElementById('back-button');
+    if (backButton) backButton.classList.remove('hidden');
+  }
+  document.getElementById('downstairs-button')?.classList.remove('hidden');
 }
 
 let cachedFatherFigureElements = null;
@@ -2549,6 +2559,14 @@ async function startGame() {
           upstairsButton.classList.remove('hidden');
         }
       }).observe(backButton, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    const downstairsButton = document.getElementById('downstairs-button');
+    if (downstairsButton) {
+      downstairsButton.addEventListener('click', () => {
+        if (scene !== 'upstairs' || sceneTransitioning || shelfOverlayOpen) return;
+        tryExitUpstairs();
+      });
     }
 
     // create touch controls for mobile

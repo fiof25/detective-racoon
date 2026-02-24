@@ -479,6 +479,32 @@ body.loading #game {
   transform: scale(0.95);
 }
 
+#downstairs-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: none;
+  opacity: 0.8;
+  transform: scale(0.99);
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  pointer-events: auto;
+  z-index: 50;
+}
+
+#downstairs-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.4)) drop-shadow(0 0 16px rgba(255, 255, 255, 0.2));
+}
+
+#downstairs-button:active {
+  transform: scale(0.95);
+}
+
 #interact {
   position: absolute;
   padding: 6px 11px;
