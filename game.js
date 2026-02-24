@@ -17,8 +17,8 @@ const CONFIG = {
     height: 900
   },
   raccoon: {
-    width: 609,            // px (5% smaller than 641px)
-    height: 609,           // px (5% smaller than 641px)
+    width: 670,            // px (1.1x scaled)
+    height: 670,           // px (1.1x scaled)
     speed: 550,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
@@ -248,7 +248,9 @@ class AssetPreloader {
       'assets/lantern.webp',
       'assets/hirono.webp',
       'assets/chess.webp',
-      'assets/mollytea.webp'
+      'assets/mollytea.webp',
+      'assets/uparrow.webp',
+      'assets/downarrow.webp'
 
       // Note: Project detail assets (notes, etc.) will lazy-load when needed
       // This reduces initial loading time while ensuring core functionality works
@@ -1082,10 +1084,6 @@ function openShelfOverlay() {
     }
   }
 
-  if (scene !== 'upstairs') {
-    const backButton = document.getElementById('back-button');
-    if (backButton) backButton.classList.add('hidden');
-  }
   document.getElementById('downstairs-button')?.classList.add('hidden');
 }
 
