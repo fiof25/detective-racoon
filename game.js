@@ -974,6 +974,18 @@ async function enterUpstairs() {
     placeUpstairsLantern();
     createUpstairsShelf();
     placeUpstairsShelf();
+
+    // Show chat bubble after short delay
+    setTimeout(() => {
+      if (chatTimerId) { clearTimeout(chatTimerId); chatTimerId = null; }
+      chatEl.textContent = 'My cozy little corner...';
+      show(chatEl);
+      placeChatAtWorld(racX, racY - 220);
+      chatTimerId = setTimeout(() => {
+        hide(chatEl);
+        chatTimerId = null;
+      }, 2600);
+    }, 400);
   } catch (error) {
     console.error('Error entering upstairs scene:', error);
     scene = 'upstairs';
