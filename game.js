@@ -2525,7 +2525,32 @@ async function startGame() {
         }
       });
     }
-    
+
+    const upstairsButton = document.getElementById('upstairs-button');
+    if (upstairsButton && backButton) {
+      upstairsButton.addEventListener('click', () => {
+        if (scene !== 'inside' || sceneTransitioning) return;
+        playSound(doorSound);
+        sceneTransitioning = true;
+        fadeOutIn(async () => {
+          await enterUpstairs();
+          sceneTransitioning = false;
+        });
+      });
+      // Mirror back button visibility but only on the inside scene
+      new MutationObserver(() => {
+        if (scene !== 'inside') {
+          upstairsButton.classList.add('hidden');
+          return;
+        }
+        if (backButton.classList.contains('hidden')) {
+          upstairsButton.classList.add('hidden');
+        } else {
+          upstairsButton.classList.remove('hidden');
+        }
+      }).observe(backButton, { attributes: true, attributeFilter: ['class'] });
+    }
+
     // create touch controls for mobile
     createTouchControls();
     if ('ontouchstart' in window && movementInstructionsEl) {
