@@ -131,7 +131,7 @@ clickSound.volume = 0.5;
 footstepsSound.volume = 0.02;
 footstepsSound.loop = true;
 const footstepsOutsideSound = new Audio('assets/footsteps2.mp3');
-footstepsOutsideSound.volume = 0.07;
+footstepsOutsideSound.volume = 0.13;
 footstepsOutsideSound.loop = true;
 
 // Function to play sound with error handling
