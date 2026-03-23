@@ -1421,8 +1421,8 @@ body.loading #game {
 @media (max-width: 768px) {
   /* Adjust raccoon size for mobile - use calc to maintain proportions */
   #raccoon {
-    width: 200px;
-    height: 200px;
+    width: 400px;
+    height: 400px;
   }
 
   /* Mobile interact button — match desktop size exactly */
