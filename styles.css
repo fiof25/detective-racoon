@@ -1421,8 +1421,8 @@ body.loading #game {
 @media (max-width: 768px) {
   /* Adjust raccoon size for mobile - use calc to maintain proportions */
   #raccoon {
-    width: calc(641.25px * var(--scale-factor, 0.5));
-    height: calc(641.25px * var(--scale-factor, 0.5));
+    width: 200px;
+    height: 200px;
   }
 
   /* Mobile interact button — match desktop size exactly */
@@ -1699,8 +1699,8 @@ body.loading #game {
 @media (max-width: 480px) {
   /* Extra small mobile devices */
   #raccoon {
-    width: calc(641.25px * var(--scale-factor, 0.37)); /* 5% smaller than 675px */
-    height: calc(641.25px * var(--scale-factor, 0.37));
+    width: 160px;
+    height: 160px;
   }
 
   #interact,
