@@ -17,8 +17,8 @@ const CONFIG = {
     height: 900
   },
   raccoon: {
-    width: 670,            // px (1.1x scaled)
-    height: 670,           // px (1.1x scaled)
+    width: 720,            // px (1.1x scaled)
+    height: 720,           // px (1.1x scaled)
     speed: 550,            // px per second (faster walking)
     get idleSrc() { return versionedAsset('assets/idle.gif'); },
     get walkSrc() { return versionedAsset('assets/walking.gif'); },
@@ -362,6 +362,13 @@ function getConsistentScale() {
   const scaleY = h / CONFIG.reference.height;
   // Use the smaller scale to ensure everything fits
   return Math.min(scaleX, scaleY);
+}
+
+function updateRaccoonSize() {
+  const scale = getConsistentScale();
+  const size = Math.round(CONFIG.raccoon.width * scale);
+  racEl.style.width = `${size}px`;
+  racEl.style.height = `${size}px`;
 }
 
 function centerCameraOn(x, y) {
@@ -2531,9 +2538,8 @@ async function hideLoadingScreen() {
 
 async function startGame() {
   try {
-    // size raccoon element from config and set initial src
-    racEl.style.width = `${CONFIG.raccoon.width}px`;
-    racEl.style.height = `${CONFIG.raccoon.height}px`;
+    // size raccoon element responsively based on screen size
+    updateRaccoonSize();
     
     // Ensure raccoon images are preloaded before setting
     await ensureRaccoonImagesLoaded();
@@ -2630,6 +2636,7 @@ async function startGame() {
     window.addEventListener('resize', () => {
       // Re-fit current scene
       if (!bgEl.naturalWidth || !bgEl.naturalHeight) return;
+      updateRaccoonSize();
       // Re-sync game height to visual viewport on mobile (Safari 100vh != innerHeight)
       const resizeFloorBar = document.getElementById('mobile-floor-bar');
       if (resizeFloorBar && resizeFloorBar.style.display === 'block') {
@@ -2660,8 +2667,7 @@ async function startGame() {
   } catch (error) {
     console.error('Error during game initialization:', error);
     // Fallback: still try to start the game with minimal functionality
-    racEl.style.width = `${CONFIG.raccoon.width}px`;
-    racEl.style.height = `${CONFIG.raccoon.height}px`;
+    updateRaccoonSize();
     setRaccoonImage(CONFIG.raccoon.idleSrc);
     requestAnimationFrame(tick);
   }

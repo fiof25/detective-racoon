@@ -300,8 +300,7 @@ body.loading #game {
 
 #raccoon {
   position: absolute;
-  width: 670px;
-  height: 670px;
+  /* width/height set dynamically by JS via updateRaccoonSize() */
   object-fit: contain; /* Keep image proportions within fixed container */
   object-position: center bottom; /* Align feet to bottom */
   transform: translate(-50%, -90%) scaleX(var(--facing, 1)); /* anchor feet - lowered position */
