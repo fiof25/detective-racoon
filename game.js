@@ -366,7 +366,8 @@ function getConsistentScale() {
 
 function updateRaccoonSize() {
   const scale = getConsistentScale();
-  const size = Math.round(CONFIG.raccoon.width * scale);
+  const minSize = 500; // never shrink below this on small screens
+  const size = Math.max(minSize, Math.round(CONFIG.raccoon.width * scale));
   racEl.style.width = `${size}px`;
   racEl.style.height = `${size}px`;
 }

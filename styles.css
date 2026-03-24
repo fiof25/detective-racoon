@@ -1419,12 +1419,6 @@ body.loading #game {
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
-  /* Adjust raccoon size for mobile - use calc to maintain proportions */
-  #raccoon {
-    width: 400px;
-    height: 400px;
-  }
-
   /* Mobile interact button — match desktop size exactly */
   #interact {
     font-size: 14px;
@@ -1698,11 +1692,6 @@ body.loading #game {
 
 @media (max-width: 480px) {
   /* Extra small mobile devices */
-  #raccoon {
-    width: 160px;
-    height: 160px;
-  }
-
   #interact,
   .hotspot {
     font-size: 14px;
